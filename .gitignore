@@ -22,3 +22,6 @@ bin
 premake4
 premake4.exe
 Makefile
+
+# IWBAN settings
+iwban.cfg
