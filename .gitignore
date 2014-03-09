@@ -16,6 +16,7 @@ bin
 # Eclipse project files
 .project
 .cproject
+.settings
 
 # Premake4 executables and generated Makefile
 premake4

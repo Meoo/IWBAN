@@ -95,7 +95,7 @@ void Renderer::fill(const sf::Color & color,
     _render_scene.draw(rect, states);
 }
 
-void Renderer::beginLight(const sf::Color & light_color = sf::Color::Black)
+void Renderer::beginLight(const sf::Color & light_color)
 {
     BOOST_ASSERT_MSG(_ready, "Renderer is not ready");
     BOOST_ASSERT_MSG(!_light_ready, "Renderer light is already ready");

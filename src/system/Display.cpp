@@ -33,6 +33,7 @@ sf::RenderWindow    win;
 sf::Image           win_icon;
 sf::Texture         bg_tex;
 sf::VertexArray     bg_mesh(sf::Quads, 4);
+sf::View            bg_view;
 
 // Screen size and view data
 float               zoom;
@@ -107,9 +108,12 @@ void display_open()
         bg_tex.setRepeated(true);
 
         bg_mesh[0].position = sf::Vector2f(0, 0);
-        bg_mesh[1].position = sf::Vector2f(win.getSize().x, 0);
-        bg_mesh[2].position = sf::Vector2f(win.getSize().x, win.getSize().y);
-        bg_mesh[3].position = sf::Vector2f(0, win.getSize().y);
+        bg_mesh[1].position = sf::Vector2f(1, 0);
+        bg_mesh[2].position = sf::Vector2f(1, 1);
+        bg_mesh[3].position = sf::Vector2f(0, 1);
+
+        bg_view.setCenter(0.5f, 0.5f);
+        bg_view.setSize(1, 1);
     }
 
     IWBAN_DEBUG(ready = true);
@@ -226,9 +230,15 @@ void display_run(sys::ScreenProjector & projector)
             // Prevent game lock by limiting consecutive updates
             if (++update_count >= IWBAN_MAX_UPDATES_FRAME)
             {
-                // Issue a warning when the game is slowing down
+                // Issue a warning when the game is slowing down,
+                // and reset next_update timer to prevent
+                // update burst after a lag spike
                 if (global_clock.getElapsedTime() > next_update)
+                {
+                    next_update = global_clock.getElapsedTime()
+                                + sf::seconds(IWBAN_UPDATE_TIME);
                     IWBAN_LOG_WARNING("Game is slowing down!\n");
+                }
 
                 break;
             }
@@ -242,6 +252,8 @@ void display_run(sys::ScreenProjector & projector)
         // Background rendering
         if (marginX > 0 || marginY > 0)
         {
+            win.setView(bg_view);
+
             float t = global_clock.getElapsedTime().asSeconds();
             float t2 = - t/2;
 
@@ -264,8 +276,6 @@ void display_run(sys::ScreenProjector & projector)
         renderer.begin();
         projector.render(renderer);
         renderer.end();
-
-        win.setView(win.getDefaultView());
 
 #ifndef NDEBUG
         perf_draw += global_clock.getElapsedTime();

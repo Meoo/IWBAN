@@ -17,9 +17,6 @@
 namespace game
 {
 
-/**
- * @brief
- */
 class World
 {
 public:
@@ -77,7 +74,7 @@ private:
 
     void    registerEntity(Entity * entity);
 
-    /*void    unregisterEntity(Entity * entity);*/
+    /*TODO void    unregisterEntity(Entity * entity);*/
 
 };
 // class World

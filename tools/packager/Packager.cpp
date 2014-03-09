@@ -3,36 +3,25 @@
  * @author Bastien Brunnenstein
  */
 
+#include <packager/PackagerConfig.hpp>
+#include <packager/WriteIndex.hpp>
+
+#include <boost/filesystem.hpp>
+
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <string>
 
-#include <boost/container/map.hpp>
-#include <boost/filesystem.hpp>
-
 namespace fs = boost::filesystem;
-
-// TODO Put config macros in a shared file?
-
-#define PACKAGE_EXTENSION ".dp"
-
-// Block size is 4k
-#define BLOCK_SIZE  0x00001000
-
-// TODO Better uint32_t
-typedef unsigned int uint32_t;
-
-class IndexEntry
-{
-public:
-    uint32_t   offset;
-    uint32_t   size;
-};
-typedef boost::container::map<std::string, IndexEntry> IndexMap;
 
 void process_folder(const char * path_name)
 {
+
+
+    using pkg::IndexMap;
+    using pkg::IndexEntry;
+
     // Check if given path is valid
     fs::path _path(path_name);
 
@@ -80,11 +69,18 @@ void process_folder(const char * path_name)
 
             // Insert an entry in the map
             index.insert(IndexMap::value_type(nice_path, IndexEntry()));
+
+            // Check for maximum number of files in a package
+            if (index.size() > PKG_MAX_FILES)
+            {
+                std::cout << "!!! Too many files in directory !!!" << std::endl;
+                return;
+            }
         }
     }
 
     // Open package file
-    std::string package_name(folder.leaf().string() + PACKAGE_EXTENSION);
+    std::string package_name(folder.leaf().string() + PKG_EXTENSION);
 
     std::ofstream package(package_name.c_str(),
             std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
@@ -94,7 +90,7 @@ void process_folder(const char * path_name)
     // ---- Write files
 
     // Reserve space for index
-    package.seekp(index_size + 1);
+    package.seekp(index_size);
 
     // Iterate over all files
     for (IndexMap::iterator it = index.begin();
@@ -104,6 +100,12 @@ void process_folder(const char * path_name)
         std::ifstream file((folder.string() + "/" + it->first).c_str(),
                 std::ifstream::in | std::ifstream::binary);
 
+        std::size_t file_size;
+
+        file.seekg(0, file.end);
+        file_size = file.tellg();
+        file.seekg(0, file.beg);
+
         if (!file.is_open())
         {
             std::cout << "!!! Error while opening file " << it->first.c_str()
@@ -111,20 +113,23 @@ void process_folder(const char * path_name)
             return;
         }
 
-        // Go to next block
-        std::size_t pos = ((std::size_t(package.tellp()) - 1) / BLOCK_SIZE + 1) * BLOCK_SIZE;
-        package.seekp(pos);
+        // Go to next block if necessary
+        std::size_t cpos = package.tellp();
+        std::size_t pos = ((cpos - 1) / PKG_BLOCK_SIZE + 1) * PKG_BLOCK_SIZE;
+
+        std::cout << (pos - cpos) << " < " << file_size << std::endl;
+        if ((pos - cpos) < file_size)
+            package.seekp(pos);
+        else
+            pos = cpos;
 
         // Copy single file to package
-        int file_size = 0;
         while (!file.eof())
         {
-            static char buffer[BLOCK_SIZE];
+            static char buffer[PKG_BLOCK_SIZE];
 
-            file.readsome(buffer, BLOCK_SIZE);
+            file.readsome(buffer, PKG_BLOCK_SIZE);
             package.write(buffer, file.gcount());
-
-            file_size += file.gcount();
 
             if (file.gcount() == 0) break;
         }
@@ -143,21 +148,7 @@ void process_folder(const char * path_name)
     // ---- Write index
 
     package.seekp(0);
-
-    // TODO Endianness
-    uint32_t index_entries = index.size();
-    package.write((const char *) &index_entries, sizeof(uint32_t));
-
-    for (IndexMap::iterator it = index.begin();
-            it != index.end(); ++it)
-    {
-        // TODO Endianness
-        package.write((const char *) &(it->second.offset), sizeof(uint32_t));
-        package.write((const char *) &(it->second.size), sizeof(uint32_t));
-
-        const char * fname = it->first.c_str();
-        package.write(fname, std::strlen(fname) + 1);
-    }
+    pkg::writeIndex(package, index);
 
     // ----
 

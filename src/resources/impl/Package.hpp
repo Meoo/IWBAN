@@ -13,6 +13,8 @@
 #include <boost/container/map.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
 
+#include <packager/Index.hpp>
+
 namespace res
 {
 
@@ -25,38 +27,25 @@ namespace impl
 class Package
 {
 private:
-    class IndexEntry
-    {
-    public:
-        uint32_t   offset;
-        uint32_t   size;
-    };
-
-    typedef boost::container::map<std::string, IndexEntry> IndexMap;
-
     typedef boost::iostreams::mapped_file_source MappedFile;
 
     // Data members
-    IndexMap    _index;
+    pkg::IndexMap   _index;
 
-    MappedFile  _file;
+    MappedFile      _file;
 
 
 public:
                 Package(const std::string & package_name);
 
-    FileImpl *  findFile(const std::string & filename) { return 0; }
-
-
-private:
-    void        readIndex();
+    FileImpl *  findFile(const std::string & filename);
 
 };
 // class Package
 
 // ---- ---- ---- ----
 
-Package * getPackage(const std::string & package) { return 0; }
+Package * getPackage(const std::string & package);
 
 }
 // namespace impl

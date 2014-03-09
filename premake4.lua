@@ -100,7 +100,7 @@ project "IWBAN"
   language "C++"
   location( MAKE_DIR )
 
-  includedirs { "src" }
+  includedirs { "src", "tools" }
 
   files       { "src/**.cpp" }
   excludes    { "src/Global.cpp" }
@@ -128,7 +128,7 @@ project "Packager"
   kind "ConsoleApp"
   targetname "pmk"
 
-  includedirs { "tools/packager" }
+  includedirs { "tools" }
 
   files       { "tools/packager/**.cpp" }
 
