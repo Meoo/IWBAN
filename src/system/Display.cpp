@@ -10,67 +10,26 @@
 #include <system/Display.hpp>
 #include <system/exceptions/RestartApp.hpp>
 
-#include <graphics/Renderer.hpp>
-
 #include <resources/File.hpp>
 
-#include <SFML/Graphics.hpp>
 #include <SFML/OpenGL.hpp>
 
 #ifndef NDEBUG
 #include <iomanip> // setprecision
 #endif
 
-namespace
-{
-
-IWBAN_DEBUG(bool ready = false);
-
-// Render window
-sf::RenderWindow    win;
-
-// Icon and background are fixed
-sf::Image           win_icon;
-sf::Texture         bg_tex;
-sf::VertexArray     bg_mesh(sf::Quads, 4);
-sf::View            bg_view;
-
-// Screen size and view data
-float               zoom;
-int                 sceneW;
-int                 sceneH;
-int                 marginX;
-int                 marginY;
-float               winW2;
-float               winH2;
-sf::View            render_view;
-
-void update_scene_view()
-{
-    zoom = std::min(win.getSize().x / (float) IWBAN_FRAME_WIDTH,
-                    win.getSize().y / (float) IWBAN_FRAME_HEIGHT);
-    if (cfg::zoom_multiplier)
-        zoom = zoom - std::fmod(zoom + 0.00001f, cfg::zoom_multiplier);
-    winW2 = win.getSize().x / 2;
-    winH2 = win.getSize().y / 2;
-    sceneW = IWBAN_FRAME_WIDTH * zoom;
-    sceneH = IWBAN_FRAME_HEIGHT * zoom;
-    marginX = (win.getSize().x - sceneW) / 2;
-    marginY = (win.getSize().y - sceneH) / 2;
-    render_view.setCenter(IWBAN_FRAME_WIDTH / 2, IWBAN_FRAME_HEIGHT / 2);
-    render_view.setSize(IWBAN_FRAME_WIDTH + marginX * 2 / zoom,
-                        IWBAN_FRAME_HEIGHT + marginY * 2 / zoom);
-}
-
-}
-// namespace
-
-// ---- ---- ---- ----
-
 namespace sys
 {
 
-void display_open()
+Display::Display()
+    : bg_mesh(sf::Quads, 4)
+{
+    IWBAN_DEBUG(ready = false);
+}
+
+// ---- ---- ---- ----
+
+void Display::open()
 {
     BOOST_ASSERT(!ready);
 
@@ -118,10 +77,11 @@ void display_open()
 
     IWBAN_DEBUG(ready = true);
 }
+// Display::open()
 
 // ---- ---- ---- ----
 
-void display_close()
+void Display::close()
 {
     BOOST_ASSERT(ready);
 
@@ -132,11 +92,11 @@ void display_close()
 
 // ---- ---- ---- ----
 
-void display_run(sys::ScreenProjector & projector)
+void Display::run(sys::ScreenProjector & projector)
 {
     BOOST_ASSERT(ready);
 
-    ::update_scene_view();
+    updateSceneView();
 
     // Scene data
     gfx::Renderer   renderer(win);
@@ -186,7 +146,7 @@ void display_run(sys::ScreenProjector & projector)
                     break;
                 }
 
-                ::update_scene_view();
+                updateSceneView();
                 break;
 
             case sf::Event::KeyPressed:
@@ -314,6 +274,26 @@ void display_run(sys::ScreenProjector & projector)
               << "Display : " << (perf_display / perf_total) * 100 << std::endl
               << "Other   : " << (1 - (perf_event + perf_update + perf_draw + perf_display) / perf_total) * 100 << std::endl;
 #endif
+}
+// Display::run()
+
+// ---- ---- ---- ----
+
+void Display::updateSceneView()
+{
+    zoom = std::min(win.getSize().x / (float) IWBAN_FRAME_WIDTH,
+                    win.getSize().y / (float) IWBAN_FRAME_HEIGHT);
+    if (cfg::zoom_multiplier)
+        zoom = zoom - std::fmod(zoom + 0.00001f, cfg::zoom_multiplier);
+    winW2 = win.getSize().x / 2;
+    winH2 = win.getSize().y / 2;
+    sceneW = IWBAN_FRAME_WIDTH * zoom;
+    sceneH = IWBAN_FRAME_HEIGHT * zoom;
+    marginX = (win.getSize().x - sceneW) / 2;
+    marginY = (win.getSize().y - sceneH) / 2;
+    render_view.setCenter(IWBAN_FRAME_WIDTH / 2, IWBAN_FRAME_HEIGHT / 2);
+    render_view.setSize(IWBAN_FRAME_WIDTH + marginX * 2 / zoom,
+                        IWBAN_FRAME_HEIGHT + marginY * 2 / zoom);
 }
 
 }

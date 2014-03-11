@@ -28,7 +28,8 @@ int main(int argc, char ** argv)
 
 
     IWBAN_LOG_INFO("Opening display\n");
-    sys::display_open();
+    sys::Display display;
+    display.open();
 
 
     IWBAN_LOG_INFO("Initializing main projector\n");
@@ -43,7 +44,7 @@ int main(int argc, char ** argv)
         try
         {
             // Run the game (blocking)
-            sys::display_run(main_projector);
+            display.run(main_projector);
 
             // Exit the loop if the game is closed in a clean way
             close = true;
@@ -53,8 +54,8 @@ int main(int argc, char ** argv)
             IWBAN_LOG_INFO("Restarting application : %s\n", exception.what());
 
             // Reload the display
-            sys::display_close();
-            sys::display_open();
+            display.close();
+            display.open();
         }
         catch (const sys::Exception & exception)
         {
@@ -83,7 +84,7 @@ int main(int argc, char ** argv)
     }
 
     IWBAN_LOG_INFO("Closing display\n");
-    sys::display_close();
+    display.close();
 
 
     IWBAN_LOG_INFO("Terminating threads\n");
