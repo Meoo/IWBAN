@@ -60,18 +60,17 @@ File openFile(const std::string & filename)
 #endif
 
     // Search in packages
-    fs::path filepath = fs::path(filename);
-
-    // Do not search if there is no parent directory
-    if (!(filepath.parent_path() != fs::path()))
+    std::size_t sep = filename.find_first_of('/');
+    if (sep != std::string::npos)
     {
-        std::string package_name = filepath.begin()->string();
+        // Get directory before first '/'
+        std::string package_name = filename.substr(0, sep - 1);
         impl::Package * package = impl::getPackage(package_name);
 
-        if (package)
+        if (package != 0)
         {
-            // FIXME Remove first directory from file path -> in file_id
-            std::string file_id(filename.c_str() + (package_name.length() + 1));
+            // Get path after first '/'
+            std::string file_id = filename.substr(sep + 1);
             impl::FileImpl * file_impl = package->findFile(file_id);
 
             if (file_impl)
@@ -95,5 +94,4 @@ File openFile(const std::string & filename)
 }
 
 }
-
 // namespace res

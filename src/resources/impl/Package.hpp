@@ -10,10 +10,10 @@
 
 #include <resources/File.hpp>
 
+#include <packager/Index.hpp>
+
 #include <boost/container/map.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
-
-#include <packager/Index.hpp>
 
 namespace res
 {
@@ -30,13 +30,21 @@ private:
     typedef boost::iostreams::mapped_file_source MappedFile;
 
     // Data members
-    pkg::IndexMap   _index;
 
-    MappedFile      _file;
+    // Localized
+    bool            _has_loc;
+    pkg::IndexMap   _loc_index;
+    MappedFile      _loc_file;
+
+    // Default
+    pkg::IndexMap   _base_index;
+    MappedFile      _base_file;
 
 
 public:
                 Package(const std::string & package_name);
+
+    // TODO Close files on destruction..?
 
     FileImpl *  findFile(const std::string & filename);
 
