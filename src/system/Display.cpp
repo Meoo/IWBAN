@@ -14,8 +14,17 @@
 
 #include <SFML/OpenGL.hpp>
 
+// Manually enable perf. monitoring
+//#define DISPLAY_PERF
+
+// Always enabled in Debug mode
 #ifndef NDEBUG
-#include <iomanip> // setprecision
+#   define DISPLAY_PERF
+#endif
+
+#ifdef DISPLAY_PERF
+#   include <iostream>
+#   include <iomanip> // setprecision
 #endif
 
 namespace sys
@@ -103,7 +112,7 @@ void Display::run(sys::ScreenProjector & projector)
     sf::Clock       global_clock;
     sf::Time        next_update(sf::seconds(IWBAN_UPDATE_TIME));
 
-#ifndef NDEBUG
+#ifdef DISPLAY_PERF
     // FPS counter
     sf::Clock       fps_clock;
     unsigned        fps_counter = 0;
@@ -121,7 +130,7 @@ void Display::run(sys::ScreenProjector & projector)
     // Main loop
     while(win.isOpen())
     {
-#ifndef NDEBUG
+#ifdef DISPLAY_PERF
         perf_event -= global_clock.getElapsedTime();
 #endif
 
@@ -173,7 +182,7 @@ void Display::run(sys::ScreenProjector & projector)
             }
         }
 
-#ifndef NDEBUG
+#ifdef DISPLAY_PERF
         perf_event += global_clock.getElapsedTime();
         perf_update -= global_clock.getElapsedTime();
 #endif
@@ -204,7 +213,7 @@ void Display::run(sys::ScreenProjector & projector)
             }
         }
 
-#ifndef NDEBUG
+#ifdef DISPLAY_PERF
         perf_update += global_clock.getElapsedTime();
         perf_draw -= global_clock.getElapsedTime();
 #endif
@@ -237,7 +246,7 @@ void Display::run(sys::ScreenProjector & projector)
         projector.render(renderer);
         renderer.end();
 
-#ifndef NDEBUG
+#ifdef DISPLAY_PERF
         perf_draw += global_clock.getElapsedTime();
         perf_display -= global_clock.getElapsedTime();
 #endif
@@ -245,13 +254,11 @@ void Display::run(sys::ScreenProjector & projector)
         // Display on screen
         win.display();
 
-#ifndef NDEBUG
+#ifdef DISPLAY_PERF
         perf_display += global_clock.getElapsedTime();
-#endif
 
-#ifndef NDEBUG
         // Display FPS results every 1000 frames
-        if ((++fps_counter) == 1000)
+        if ((++fps_counter) >= 1000)
         {
             std::cout << "FPS : "<< (fps_counter / fps_clock.getElapsedTime().asSeconds()) << std::endl;
             fps_clock.restart();
@@ -262,7 +269,7 @@ void Display::run(sys::ScreenProjector & projector)
 
     } // while(win.isOpen())
 
-#ifndef NDEBUG
+#ifdef DISPLAY_PERF
     sf::Time perf_total = global_clock.getElapsedTime();
 
     std::cout << "Average FPS : " << (total_fps_counter / perf_total.asSeconds()) << std::endl
