@@ -47,6 +47,8 @@ File::File(impl::FileImpl * implementation)
 
 File openFile(const std::string & filename)
 {
+    IWBAN_LOG_DEBUG("Opening file '%s'\n", filename.c_str());
+    
     namespace fs = boost::filesystem;
 
 #ifndef NDEBUG
@@ -64,7 +66,7 @@ File openFile(const std::string & filename)
     if (sep != std::string::npos)
     {
         // Get directory before first '/'
-        std::string package_name = filename.substr(0, sep - 1);
+        std::string package_name = filename.substr(0, sep);
         impl::Package * package = impl::getPackage(package_name);
 
         if (package != 0)

@@ -26,26 +26,33 @@ namespace impl
  */
 class Package
 {
-private:
+public:
     typedef boost::iostreams::mapped_file_source MappedFile;
 
+
+private:
     // Data members
 
-    // Localized
+    // Localization
     bool            _has_loc;
+
     pkg::IndexMap   _loc_index;
     MappedFile      _loc_file;
 
-    // Default
+    // Default package
     pkg::IndexMap   _base_index;
     MappedFile      _base_file;
 
 
 public:
-                Package(const std::string & package_name);
+    // Constructor
+                Package(MappedFile & loc, MappedFile & base);
 
+    // Destructor
     // TODO Close files on destruction..?
+                ~Package();
 
+    // Accessor
     FileImpl *  findFile(const std::string & filename);
 
 };

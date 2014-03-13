@@ -117,7 +117,6 @@ void process_folder(const char * path_name)
         std::size_t cpos = package.tellp();
         std::size_t pos = ((cpos - 1) / PKG_BLOCK_SIZE + 1) * PKG_BLOCK_SIZE;
 
-        std::cout << (pos - cpos) << " < " << file_size << std::endl;
         if ((pos - cpos) < file_size)
             package.seekp(pos);
         else
