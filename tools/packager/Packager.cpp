@@ -17,8 +17,6 @@ namespace fs = boost::filesystem;
 
 void process_folder(const char * path_name)
 {
-
-
     using pkg::IndexMap;
     using pkg::IndexEntry;
 
