@@ -41,7 +41,7 @@ public:
     void begin();
     void end();
 
-    void draw(sf::Drawable & drawable,
+    void draw(const sf::Drawable & drawable,
               const sf::RenderStates & states = sf::RenderStates::Default);
 
     void fill(const sf::Color & color,
@@ -50,7 +50,7 @@ public:
     void beginLight(const sf::Color & light_color = sf::Color::Black);
     void endLight();
 
-    void drawLight(sf::Drawable & drawable);
+    void drawLight(const sf::Drawable & drawable);
 
 };
 // class Renderer

@@ -44,6 +44,8 @@ Renderer::Renderer(sf::RenderTarget & target)
 
         if (_blur_filter.loadFromMemory(vert_str, frag_str))
         {
+            _blur_filter.setParameter("texture", sf::Shader::CurrentTexture);
+
             _render_light_inter.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
             _smooth_light = true;
         }
@@ -77,7 +79,7 @@ void Renderer::end()
     _target.draw(sf::Sprite(_render_scene.getTexture()));
 }
 
-void Renderer::draw(sf::Drawable & drawable,
+void Renderer::draw(const sf::Drawable & drawable,
                     const sf::RenderStates & states)
 {
     BOOST_ASSERT_MSG(_ready, "Renderer is not ready");
@@ -114,7 +116,6 @@ void Renderer::endLight()
     {
         sf::RenderStates state(sf::BlendNone);
         state.shader = &_blur_filter;
-        _blur_filter.setParameter("texture", sf::Shader::CurrentTexture);
         _blur_filter.setParameter("blur_x", 1.f / IWBAN_FRAME_WIDTH);
         _blur_filter.setParameter("blur_y", 0.f);
 
@@ -138,7 +139,7 @@ void Renderer::endLight()
     }
 }
 
-void Renderer::drawLight(sf::Drawable & drawable)
+void Renderer::drawLight(const sf::Drawable & drawable)
 {
     BOOST_ASSERT_MSG(_ready, "Renderer is not ready");
     BOOST_ASSERT_MSG(_light_ready, "Renderer light is not ready");
