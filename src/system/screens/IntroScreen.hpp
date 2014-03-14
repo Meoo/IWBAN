@@ -20,7 +20,14 @@ class IntroScreen : public Screen
 protected:
     // Callbacks
     virtual void    onUpdate() {}
-    virtual void    onRender(gfx::Renderer & renderer) const {}
+    virtual void    onRender(gfx::Renderer & renderer) const
+    {
+        renderer.beginLight();
+        static sf::CircleShape s(256);
+        s.setFillColor(sf::Color::White);
+        renderer.drawLight(s);
+        renderer.endLight();
+    }
 
     virtual void    onShow() {}
     virtual void    onHide() {}
