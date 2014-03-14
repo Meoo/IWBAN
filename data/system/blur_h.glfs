@@ -1,0 +1,30 @@
+#version 110
+
+uniform sampler2D texture;
+uniform float blur_x;
+
+void main()
+{
+   vec4 sum = vec4(0.0);
+ 
+   sum += texture2D(texture, vec2(gl_TexCoord[0].x - 4.0 * blur_x,
+                                  gl_TexCoord[0].y)) * 0.05;
+   sum += texture2D(texture, vec2(gl_TexCoord[0].x - 3.0 * blur_x,
+                                  gl_TexCoord[0].y)) * 0.09;
+   sum += texture2D(texture, vec2(gl_TexCoord[0].x - 2.0 * blur_x,
+                                  gl_TexCoord[0].y)) * 0.12;
+   sum += texture2D(texture, vec2(gl_TexCoord[0].x - blur_x,
+                                  gl_TexCoord[0].y)) * 0.15;
+   sum += texture2D(texture, vec2(gl_TexCoord[0].x,
+                                  gl_TexCoord[0].y)) * 0.16;
+   sum += texture2D(texture, vec2(gl_TexCoord[0].x + blur_x,
+                                  gl_TexCoord[0].y)) * 0.15;
+   sum += texture2D(texture, vec2(gl_TexCoord[0].x + 2.0 * blur_x,
+                                  gl_TexCoord[0].y)) * 0.12;
+   sum += texture2D(texture, vec2(gl_TexCoord[0].x + 3.0 * blur_x,
+                                  gl_TexCoord[0].y)) * 0.09;
+   sum += texture2D(texture, vec2(gl_TexCoord[0].x + 4.0 * blur_x,
+                                  gl_TexCoord[0].y)) * 0.05;
+ 
+   gl_FragColor = sum;
+}

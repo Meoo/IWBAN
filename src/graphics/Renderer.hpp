@@ -25,7 +25,8 @@ private:
     sf::RenderTexture   _render_light_inter;
 
     bool                _smooth_light;
-    sf::Shader          _blur_filter;
+    sf::Shader          _blur_h_filter;
+    sf::Shader          _blur_v_filter;
 
     IWBAN_DEBUG(bool    _ready);
     IWBAN_DEBUG(bool    _light_ready);

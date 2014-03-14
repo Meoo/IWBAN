@@ -30,21 +30,35 @@ Renderer::Renderer(sf::RenderTarget & target)
     _render_scene.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
     _render_light.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
 
+    // TODO Smooth enabled by default?
+    //_render_scene.setSmooth(true);
+    
     _smooth_light = false;
 
     // Smooth lightning
     if (cfg::smooth_light && sf::Shader::isAvailable())
     {
         // TODO Use resource manager for shaders
+        // Pipeline vertex shader
         res::File vert = res::openFile("system/pipeline.glvs");
         std::string vert_str((const char*) vert.getData(), vert.getSize());
 
-        res::File frag = res::openFile("system/blur.glfs");
-        std::string frag_str((const char*) frag.getData(), frag.getSize());
+        // Horizontal blur
+        res::File frag_h = res::openFile("system/blur_h.glfs");
+        std::string frag_h_str((const char*) frag_h.getData(), frag_h.getSize());
 
-        if (_blur_filter.loadFromMemory(vert_str, frag_str))
+        // Vertical blur
+        res::File frag_v = res::openFile("system/blur_v.glfs");
+        std::string frag_v_str((const char*) frag_v.getData(), frag_v.getSize());
+        
+        if (_blur_h_filter.loadFromMemory(vert_str, frag_h_str)
+         && _blur_v_filter.loadFromMemory(vert_str, frag_v_str))
         {
-            _blur_filter.setParameter("texture", sf::Shader::CurrentTexture);
+            _blur_h_filter.setParameter("texture", sf::Shader::CurrentTexture);
+            _blur_h_filter.setParameter("blur_x", 1.f / IWBAN_FRAME_WIDTH);
+            
+            _blur_v_filter.setParameter("texture", sf::Shader::CurrentTexture);
+            _blur_v_filter.setParameter("blur_y", 1.f / IWBAN_FRAME_HEIGHT);
 
             _render_light_inter.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
             _smooth_light = true;
@@ -114,19 +128,18 @@ void Renderer::endLight()
 
     if (_smooth_light)
     {
+        // Horizontal blur
         sf::RenderStates state(sf::BlendNone);
-        state.shader = &_blur_filter;
-        _blur_filter.setParameter("blur_x", 1.f / IWBAN_FRAME_WIDTH);
-        _blur_filter.setParameter("blur_y", 0.f);
+        state.shader = &_blur_h_filter;
 
         _render_light.display();
         _render_light_inter.draw(sf::Sprite(_render_light.getTexture()),
                                  state);
 
-        _blur_filter.setParameter("blur_x", 0.f);
-        _blur_filter.setParameter("blur_y", 1.f / IWBAN_FRAME_HEIGHT);
-
+        // Vertical blur
         state.blendMode = sf::BlendMultiply;
+        state.shader = &_blur_v_filter;
+
         _render_light_inter.display();
         _render_scene.draw(sf::Sprite(_render_light_inter.getTexture()),
                            state);
