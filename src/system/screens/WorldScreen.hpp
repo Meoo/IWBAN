@@ -22,8 +22,8 @@ private:
 
 protected:
     // Callbacks
-    virtual void    onUpdate() { _world.update(); }
-    virtual void    onRender(gfx::Renderer & renderer) const { _world.render(renderer); }
+    virtual void    onUpdate();
+    virtual void    onRender(gfx::Renderer & renderer) const;
 
     virtual void    onShow() {}
     virtual void    onHide() {}
