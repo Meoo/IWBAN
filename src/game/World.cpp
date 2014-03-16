@@ -53,7 +53,7 @@ void World::render(gfx::Renderer & renderer) const
 
 World::World()
 {
-    _next_serial = 0;
+    _next_serial = 1;
 }
 
 void World::updateEntities()
@@ -77,11 +77,18 @@ void World::renderEntities(gfx::Renderer & renderer) const
 
     while (node != end)
     {
-        // TODO Call render function
-
+        // TODO Sort by render order
 
         node = node->getNext();
     }
+
+    // TODO Call render function
+
+    //renderer.beginLight();
+
+    // TODO Call render light function
+
+    //renderer.endLight();
 }
 
 void World::spawnNewEntities()

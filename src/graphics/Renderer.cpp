@@ -71,6 +71,8 @@ Renderer::Renderer(sf::RenderTarget & target)
     IWBAN_DEBUG(_light_ready = false);
 }
 
+// TODO Assert messages are horrible
+
 void Renderer::begin()
 {
     BOOST_ASSERT_MSG(!_ready, "Renderer is already ready");
@@ -97,6 +99,7 @@ void Renderer::draw(const sf::Drawable & drawable,
                     const sf::RenderStates & states)
 {
     BOOST_ASSERT_MSG(_ready, "Renderer is not ready");
+    BOOST_ASSERT_MSG(!_light_ready, "Cannot draw while rendering lightning");
 
     _render_scene.draw(drawable, states);
 }
@@ -105,6 +108,7 @@ void Renderer::fill(const sf::Color & color,
                     const sf::RenderStates & states)
 {
     BOOST_ASSERT_MSG(_ready, "Renderer is not ready");
+    BOOST_ASSERT_MSG(!_light_ready, "Cannot draw while rendering lightning");
 
     sf::RectangleShape rect(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT));
     rect.setFillColor(color);

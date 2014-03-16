@@ -13,6 +13,14 @@ namespace game
 
 class Map
 {
+private:
+    // Data members
+    sf::Color   _ambient_light;
+
+
+public:
+    // Use white to disable lighting
+    const sf::Color & getAmbientLight() const { return _ambient_light; }
 
 };
 // class Map
