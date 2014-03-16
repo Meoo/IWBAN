@@ -8,6 +8,10 @@
 
 #include <Global.hpp>
 
+#include <game/Event.hpp>
+
+#include <graphics/Renderer.hpp>
+
 namespace game
 {
 
@@ -26,24 +30,24 @@ public:
 
 private:
     // Data members
-    Id      _id;
-    Serial  _serial;
+    Id              _id;
+    Serial          _serial;
 
-    bool    _alive;
+    bool            _alive;
 
 
 public:
-            Entity();
+                    Entity();
 
-    virtual ~Entity() {}
+    virtual         ~Entity() {}
 
-    Id      getId()     const { return _id; }
+    Id              getId()     const { return _id; }
 
-    Serial  getSerial() const { return _serial; }
+    Serial          getSerial() const { return _serial; }
 
-    bool    isAlive()   const { return _alive; }
+    bool            isAlive()   const { return _alive; }
 
-    // TODO send event
+    virtual void    send(const Event & event) = 0;
 
 
 protected:
@@ -52,9 +56,13 @@ protected:
 
     virtual void    spawn() = 0;
 
-    void    setId(Id id)                { _id = id; }
+    virtual void    render(gfx::Renderer & renderer) const = 0;
 
-    void    setSerial(Serial serial)    { _serial = serial; }
+    virtual void    renderLight(gfx::Renderer & renderer) const = 0;
+
+    void            setId(Id id)                { _id = id; }
+
+    void            setSerial(Serial serial)    { _serial = serial; }
 
 };
 // class Entity
