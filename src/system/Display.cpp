@@ -125,6 +125,12 @@ void Display::run(sys::ScreenProjector & projector)
     sf::Time        perf_display;
 #endif
 
+#ifndef NDEBUG
+    // Debbuging variables
+    bool            pause = false;
+    bool            play_next_frame = false;
+#endif
+
     // ---- ---- ---- ----
 
     // Main loop
@@ -167,6 +173,16 @@ void Display::run(sys::ScreenProjector & projector)
                     cfg::fullscreen = !cfg::fullscreen;
                     throw RestartApp("Alt + Enter pressed");
                 }
+#ifndef NDEBUG
+                if (event.key.code == sf::Keyboard::Insert)
+                {
+                    pause = !pause;
+                    play_next_frame = false;
+                    IWBAN_LOG_DEBUG("Pause %s\n", pause ? "enabled" : "disabled");
+                }
+                if (event.key.code == sf::Keyboard::PageDown)
+                    play_next_frame = true;
+#endif
                 break;
 
             case sf::Event::GainedFocus:
@@ -185,6 +201,27 @@ void Display::run(sys::ScreenProjector & projector)
 #ifdef DISPLAY_PERF
         perf_event += global_clock.getElapsedTime();
         perf_update -= global_clock.getElapsedTime();
+#endif
+
+#ifndef NDEBUG
+        // DEBUG : Allow the game to be paused by pressing Insert key
+        if (pause)
+        {
+            // Press PageDown key to process a single step
+            if (play_next_frame)
+            {
+                IWBAN_LOG_DEBUG("Processing single frame\n");
+                projector.update();
+                play_next_frame = false;
+            }
+
+            // Prevent "Game is slowing down" warning on resume
+            next_update = global_clock.getElapsedTime()
+                        + sf::seconds(IWBAN_UPDATE_TIME);
+
+        } // if (pause)
+        else
+        {
 #endif
 
         // Update rate is always IWBAN_UPDATE_RATE
@@ -212,6 +249,10 @@ void Display::run(sys::ScreenProjector & projector)
                 break;
             }
         }
+
+#ifndef NDEBUG
+        } // else if (pause)
+#endif
 
 #ifdef DISPLAY_PERF
         perf_update += global_clock.getElapsedTime();
