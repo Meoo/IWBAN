@@ -14,6 +14,32 @@
 namespace pkg
 {
 
+namespace impl
+{
+
+uint32_t readUInt32(std::istream & stream)
+{
+    char c;
+    uint32_t r;
+
+    stream.get(c);
+    r = c;
+    
+    stream.get(c);
+    r &= c << 8;
+    
+    stream.get(c);
+    r &= c << 16;
+    
+    stream.get(c);
+    r &= c << 24;
+    
+    return r;
+}
+
+}
+// namespace impl
+
 bool readIndex(std::istream & package, IndexMap & index)
 {
     std::size_t file_size;

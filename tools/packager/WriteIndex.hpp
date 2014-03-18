@@ -13,18 +13,30 @@
 namespace pkg
 {
 
+namespace impl
+{
+
+inline void writeUInt32(std::ostream & stream, const uint32_t & value)
+{
+    stream.put(value);
+    stream.put(value >> 8);
+    stream.put(value >> 16);
+    stream.put(value >> 24);
+}
+
+}
+// namespace impl
+
 void writeIndex(std::ostream & package, const IndexMap & index)
 {
-    // TODO Endianness
     uint32_t index_entries = index.size();
-    package.write((const char *) &index_entries, sizeof(uint32_t));
+    impl::writeUInt32(package, index_entries);
 
     for (IndexMap::const_iterator it = index.begin();
             it != index.end(); ++it)
     {
-        // TODO Endianness
-        package.write((const char *) &(it->second.offset), sizeof(uint32_t));
-        package.write((const char *) &(it->second.size), sizeof(uint32_t));
+        impl::writeUInt32(package, it->second.offset);
+        impl::writeUInt32(package, it->second.size);
 
         const char * fname = it->first.c_str();
         package.write(fname, std::strlen(fname) + 1);
