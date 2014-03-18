@@ -32,6 +32,7 @@ public:
 
 private:
     // Data members
+    std::string     _package_name;
 
     // Localization
     bool            _has_loc;
@@ -46,7 +47,8 @@ private:
 
 public:
     // Constructor
-                Package(MappedFile & loc, MappedFile & base);
+                Package(const std::string & package_name,
+                        MappedFile & loc, MappedFile & base);
 
     // Destructor
     // TODO Close files on destruction..?

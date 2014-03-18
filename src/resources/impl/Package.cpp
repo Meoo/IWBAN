@@ -30,10 +30,11 @@ typedef boost::container::map<std::string, Package *> PackageMap;
 
 // ---- ---- ---- ----
 
-Package::Package(MappedFile & loc, MappedFile & base)
-    : _loc_file(loc), _base_file(base)
+Package::Package(const std::string & package_name,
+                 MappedFile & loc, MappedFile & base)
+    : _package_name(package_name), _loc_file(loc), _base_file(base)
 {
-    // TODO Handle errors with real filenames
+    // TODO MappedFiles should be loaded from inside this function, and not in getPackage
     _has_loc = loc.is_open();
     if (_has_loc)
     {
@@ -44,7 +45,8 @@ Package::Package(MappedFile & loc, MappedFile & base)
         
         // Read index
         if (!pkg::readIndex(loc_st, _loc_index))
-            throw sys::FileCorrupted("Loc");
+            throw sys::FileCorrupted((_package_name + "."
+                    + cfg::language + PKG_EXTENSION).c_str());
     }
 
     // Create stream
@@ -54,7 +56,7 @@ Package::Package(MappedFile & loc, MappedFile & base)
     
     // Read index
     if (!pkg::readIndex(base_st, _base_index))
-        throw sys::FileCorrupted("Base");
+        throw sys::FileCorrupted((_package_name + PKG_EXTENSION).c_str());
 }
 
 FileImpl * Package::findFile(const std::string & filename)
@@ -113,7 +115,7 @@ Package * getPackage(const std::string & package)
         catch (...) {}
 
         // Finally, create package
-        Package * p = new Package(loc, base);
+        Package * p = new Package(package, loc, base);
         s_packageMap[package] = p;
         
         IWBAN_LOG_INFO("Package '%s' found (%s '%s' localization)\n",
