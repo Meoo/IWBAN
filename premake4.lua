@@ -79,6 +79,7 @@ solution "IWannaBeANinja"
   end
   
   if GPROF then
+    flags { "Symbols" }
     configuration "GMake"
       buildoptions { "-pg" }
       linkoptions  { "-pg" }
