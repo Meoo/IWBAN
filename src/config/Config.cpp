@@ -7,6 +7,7 @@
 
 #include <config/Config.hpp>
 
+#include <cctype>   // isalpha()
 #include <fstream>
 
 namespace cfg
@@ -96,6 +97,19 @@ void load()
 
     // Check values
 
+    if (language.size() != 2
+        || !std::isalpha(language[0])
+        || !std::isalpha(language[1]))
+    {
+        IWBAN_LOG_WARNING("Invalid value for 'language', setting to default\n");
+        language = "fr";
+    }
+
+    if (particles > 2)
+    {
+        IWBAN_LOG_WARNING("Invalid value for 'particles', setting to default\n");
+        particles = 2;
+    }
 }
 
 #undef LOAD
