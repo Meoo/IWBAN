@@ -26,6 +26,7 @@ bool        vsync           = false;
 std::string language        = "fr";
 
 bool        smooth_light    = true;
+int         particles       = 2;
 
 // ---- ---- ---- ----
 
@@ -53,6 +54,7 @@ void save()
     SAVE(vsync);
     SAVE(language);
     SAVE(smooth_light);
+    SAVE(particles);
 
     f.flush();
     f.close();
@@ -85,6 +87,7 @@ void load()
         LOAD(vsync);
         LOAD(language);
         LOAD(smooth_light);
+        LOAD(particles);
 
         f >> std::ws;
     }
