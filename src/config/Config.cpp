@@ -26,7 +26,7 @@ bool        vsync           = false;
 std::string language        = "fr";
 
 bool        smooth_light    = true;
-int         particles       = 2;
+unsigned    particles       = 2;
 
 // ---- ---- ---- ----
 
@@ -93,6 +93,9 @@ void load()
     }
 
     f.close();
+
+    // Check values
+
 }
 
 #undef LOAD
