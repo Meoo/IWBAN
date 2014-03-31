@@ -24,7 +24,8 @@ extern bool         vsync;
 
 extern std::string  language;
 
-extern bool         smooth_light;
+extern bool         light_smooth;
+extern bool         light_quality;
 extern unsigned     particles;
 
 // ---- ---- ---- ----

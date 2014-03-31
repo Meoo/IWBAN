@@ -28,15 +28,28 @@ Renderer::Renderer(sf::RenderTarget & target)
     : _target(target)
 {
     _render_scene.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
-    _render_light.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
+
+    // First buffer
+    if (cfg::light_quality)
+    {
+        _light_quality = true;
+        _render_light.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
+    }
+    else
+    {
+        _light_quality = false;
+        _render_light.create(IWBAN_FRAME_WIDTH/2, IWBAN_FRAME_HEIGHT/2);
+        _render_light.setSmooth(true);
+        _render_light.setView(_render_scene.getView());
+    }
 
     // TODO Smooth enabled by default?
     //_render_scene.setSmooth(true);
     
-    _smooth_light = false;
+    _light_smooth = false;
 
     // Smooth lightning
-    if (cfg::smooth_light && sf::Shader::isAvailable())
+    if (cfg::light_smooth && sf::Shader::isAvailable())
     {
         // TODO Use resource manager for shaders
         // Pipeline vertex shader
@@ -60,11 +73,19 @@ Renderer::Renderer(sf::RenderTarget & target)
             _blur_v_filter.setParameter("texture", sf::Shader::CurrentTexture);
             _blur_v_filter.setParameter("blur_y", 1.f / IWBAN_FRAME_HEIGHT);
 
-            _render_light_inter.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
-            _smooth_light = true;
+            // Second buffer
+            if (cfg::light_quality)
+                _render_light_inter.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
+            else
+            {
+                _render_light_inter.create(IWBAN_FRAME_WIDTH/2, IWBAN_FRAME_HEIGHT/2);
+                _render_light_inter.setSmooth(true);
+            }
+
+            _light_smooth = true;
         }
         else
-            IWBAN_LOG_WARNING("Failed to load blur shader, no smooth light\n");
+            IWBAN_LOG_WARNING("Failed to load blur shader, smooth light disabled\n");
     }
 
     IWBAN_DEBUG(_ready = false);
@@ -130,7 +151,7 @@ void Renderer::endLight()
     BOOST_ASSERT_MSG(_light_ready, "Renderer light is not ready");
     IWBAN_DEBUG(_light_ready = false);
 
-    if (_smooth_light)
+    if (_light_smooth)
     {
         // Horizontal blur
         sf::RenderStates state(sf::BlendNone);
@@ -145,14 +166,31 @@ void Renderer::endLight()
         state.shader = &_blur_v_filter;
 
         _render_light_inter.display();
-        _render_scene.draw(sf::Sprite(_render_light_inter.getTexture()),
-                           state);
+
+        if (_light_quality)
+            _render_scene.draw(sf::Sprite(_render_light_inter.getTexture()),
+                               state);
+        else
+        {
+            sf::Sprite sprite(_render_light_inter.getTexture());
+            sprite.setScale(2, 2);
+            _render_scene.draw(sprite, state);
+        }
     }
     else
     {
+        // No blur
         _render_light.display();
-        _render_scene.draw(sf::Sprite(_render_light.getTexture()),
-                           sf::RenderStates(sf::BlendMultiply));
+
+        if (_light_quality)
+            _render_scene.draw(sf::Sprite(_render_light.getTexture()),
+                               sf::RenderStates(sf::BlendMultiply));
+        else
+        {
+            sf::Sprite sprite(_render_light.getTexture());
+            sprite.setScale(2, 2);
+            _render_scene.draw(sprite, sf::RenderStates(sf::BlendMultiply));
+        }
     }
 }
 

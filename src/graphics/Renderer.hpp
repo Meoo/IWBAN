@@ -24,7 +24,8 @@ private:
     sf::RenderTexture   _render_light;
     sf::RenderTexture   _render_light_inter;
 
-    bool                _smooth_light;
+    bool                _light_smooth;
+    bool                _light_quality;
     sf::Shader          _blur_h_filter;
     sf::Shader          _blur_v_filter;
 
