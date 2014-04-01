@@ -7,6 +7,8 @@
 
 #include <resources/Async.hpp>
 
+#include <system/exceptions/ResourceError.hpp>
+
 #include <condition_variable>
 #include <mutex>
 #include <thread>
@@ -60,7 +62,8 @@ namespace
     {
         Lock lock(jobs_mutex);
 
-        BOOST_ASSERT_MSG(first_free_job, "No more job slots");
+        if (!first_free_job)
+            throw sys::ResourceError("Cannot schedule task : no more job slots");
 
         volatile Job * job = first_free_job;
         first_free_job = job->next;

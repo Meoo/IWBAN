@@ -10,6 +10,8 @@
 
 #include <resources/Resource.hpp>
 
+#include <system/exceptions/ResourceError.hpp>
+
 #include <boost/type_traits/is_base_of.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/utility/enable_if.hpp>
@@ -140,7 +142,7 @@ public:
      * @param id Resource identifier.
      * @param resource Resource pointer to register.
      * @return Smart pointer to the resource.
-     * @throw TODO ???_exception A resource with this identifier already exists.
+     * @throw sys::ResourceError A resource with this identifier already exists.
      */
     TPtr put(const I & id, T * resource)
     {
@@ -152,7 +154,8 @@ public:
             return TPtr(resource);
         }
         else
-            throw "Resource already exists"; // TODO Better throw, this one is stupid
+            // TODO Show identifier if it's printable
+            throw sys::ResourceError("Resource already exists");
     }
 
     /**

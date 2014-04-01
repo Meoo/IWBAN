@@ -26,6 +26,7 @@ void terminate();
 // Set priority to true to run it as soon as possible
 // This function should be thread safe, so you can use it within a secondary thread
 // If threading is disabled in Config, using it "recursively" will probably cause errors
+// Throw sys::ResourceError if all job slots are in use
 void run(AsyncFunction function, void * param, bool priority = false);
 
 }
