@@ -89,8 +89,23 @@ public:
         : _allocator(allocator)
     {}
 
-    // Destructor TODO Deallocate everything
-    ~Manager() {}
+    // Destructor
+    ~Manager()
+    {
+        for (typename ResMap::iterator it = _resource_map.begin();
+             it != _resource_map.end(); ++it)
+        {
+            if (it->second->getReferencesCount() != 0)
+                // TODO Show identifier if it's printable
+                IWBAN_LOG_ERROR("Cleaning resource with active references\n");
+
+            _allocator.destroy(it->second);
+            it = _resource_map.erase(it);
+
+            if (it == _resource_map.end())
+                return;
+        }
+    }
 
     // Functions
     /**
