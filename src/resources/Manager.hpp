@@ -40,7 +40,7 @@ public:
      * @param id Resource identifier.
      * @return Pointer to a valid resource, or null pointer.
      */
-    T *     construct(const I & id) { return nullptr; }
+    T *     construct(const I & id) { return 0; }
 
     /**
      * Destroy and deallocate a resource.
