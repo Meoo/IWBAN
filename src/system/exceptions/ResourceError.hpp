@@ -22,7 +22,7 @@ private:
 public:
     ResourceError(const char * what)
     {
-        std::snprintf(_what, sizeof(_what), "%s", filename);
+        std::snprintf(_what, sizeof(_what), "%s", what);
     }
 
     virtual const char * title() const noexcept
