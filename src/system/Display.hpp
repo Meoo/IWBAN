@@ -8,7 +8,7 @@
 
 #include <Global.hpp>
 
-#include <system/ScreenProjector.hpp>
+#include <system/Projector.hpp>
 
 #include <SFML/Graphics.hpp>
 
@@ -48,7 +48,7 @@ public:
 
     void close();
 
-    void run(sys::ScreenProjector & projector);
+    void run(sys::Projector & projector);
 
 
 private:

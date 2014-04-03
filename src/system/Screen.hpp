@@ -13,12 +13,12 @@
 namespace sys
 {
 
-class ScreenProjector;
+class Projector;
 
 class Screen
 {
 public:
-    friend class ScreenProjector;
+    friend class Projector;
 
 
 public:

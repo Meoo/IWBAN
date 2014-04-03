@@ -1,18 +1,18 @@
 /**
- * @file   ScreenProjector.cpp
+ * @file   Projector.cpp
  * @author Bastien Brunnenstein
  */
 
 #include <Global.hpp>
 
-#include <system/ScreenProjector.hpp>
+#include <system/Projector.hpp>
 
 #include <system/Screen.hpp>
 
 namespace sys
 {
 
-ScreenProjector::ScreenProjector(Screen * screen)
+Projector::Projector(Screen * screen)
     : _current_screen(screen)
 {
     BOOST_ASSERT_MSG(screen, "Screen cannot be null");
@@ -20,12 +20,12 @@ ScreenProjector::ScreenProjector(Screen * screen)
     _current_screen->onShow();
 }
 
-ScreenProjector::~ScreenProjector()
+Projector::~Projector()
 {
     _current_screen->onHide();
 }
 
-void ScreenProjector::setScreen(Screen * screen)
+void Projector::setScreen(Screen * screen)
 {
     BOOST_ASSERT_MSG(screen, "Screen cannot be null");
 
@@ -36,13 +36,13 @@ void ScreenProjector::setScreen(Screen * screen)
     _current_screen->onShow();
 }
 
-void ScreenProjector::update()
+void Projector::update()
 {
     // TODO Update if screen is changed?
     _current_screen->onUpdate();
 }
 
-void ScreenProjector::render(gfx::Renderer & renderer) const
+void Projector::render(gfx::Renderer & renderer) const
 {
     _current_screen->onRender(renderer);
 }

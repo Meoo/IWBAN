@@ -1,10 +1,10 @@
 /**
- * @file   ScreenProjector.hpp
+ * @file   Projector.hpp
  * @author Bastien Brunnenstein
  */
 
-#ifndef _IWBAN_SCREENPROJECTOR_HPP_
-#define _IWBAN_SCREENPROJECTOR_HPP_
+#ifndef _IWBAN_PROJECTOR_HPP_
+#define _IWBAN_PROJECTOR_HPP_
 
 #include <Global.hpp>
 
@@ -18,7 +18,7 @@ namespace sys
 class Screen;
 
 // TODO ScreenTransition(s)
-class ScreenProjector : public boost::noncopyable
+class Projector : public boost::noncopyable
 {
 private:
     Screen * _current_screen;
@@ -26,10 +26,10 @@ private:
 
 public:
     // Constructor
-            ScreenProjector(Screen * screen);
+            Projector(Screen * screen);
 
     // Destructor
-            ~ScreenProjector();
+            ~Projector();
 
     // Functions
     Screen * getCurrentScreen() { return _current_screen; }
@@ -41,9 +41,9 @@ public:
     void    render(gfx::Renderer & renderer) const;
 
 };
-// class ScreenProjector
+// class Projector
 
 }
 // namespace sys
 
-#endif // _IWBAN_SCREENPROJECTOR_HPP_
+#endif // _IWBAN_PROJECTOR_HPP_

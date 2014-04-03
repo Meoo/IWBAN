@@ -101,7 +101,7 @@ void Display::close()
 
 // ---- ---- ---- ----
 
-void Display::run(sys::ScreenProjector & projector)
+void Display::run(sys::Projector & projector)
 {
     BOOST_ASSERT(ready);
 

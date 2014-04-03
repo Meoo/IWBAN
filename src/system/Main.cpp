@@ -11,7 +11,7 @@
 
 #include <system/Display.hpp>
 #include <system/Exception.hpp>
-#include <system/ScreenProjector.hpp>
+#include <system/Projector.hpp>
 #include <system/exceptions/RestartApp.hpp>
 #include <system/screens/ExceptionScreen.hpp>
 #include <system/screens/IntroScreen.hpp>
@@ -33,7 +33,7 @@ int main(int argc, char ** argv)
 
 
     IWBAN_LOG_INFO("Initializing main projector\n");
-    sys::ScreenProjector main_projector(new sys::IntroScreen());
+    sys::Projector main_projector(new sys::IntroScreen());
 
 
     // Loop until the game is closed
