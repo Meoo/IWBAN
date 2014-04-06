@@ -40,12 +40,14 @@ private:
     sf::View            render_view;
 
     // Debug variable
-    IWBAN_DEBUG(bool ready);
+    IWBAN_DEBUG(bool    ready);
 
 
 public:
+    // Constructor
          Display();
 
+    // Functions
     void open();
 
     void close();

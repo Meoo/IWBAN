@@ -23,17 +23,19 @@ protected:
     // Callbacks
     virtual void    onUpdate()
     {
+        const float spd = 3.f;
+
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            s.setPosition(s.getPosition().x + 3.f, s.getPosition().y);
+            s.setPosition(s.getPosition().x + spd, s.getPosition().y);
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-            s.setPosition(s.getPosition().x - 3.f, s.getPosition().y);
+            s.setPosition(s.getPosition().x - spd, s.getPosition().y);
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-            s.setPosition(s.getPosition().x, s.getPosition().y - 3.f);
+            s.setPosition(s.getPosition().x, s.getPosition().y - spd);
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-            s.setPosition(s.getPosition().x, s.getPosition().y + 3.f);
+            s.setPosition(s.getPosition().x, s.getPosition().y + spd);
     }
 
     virtual void    onRender(gfx::Renderer & renderer) const
