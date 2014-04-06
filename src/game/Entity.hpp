@@ -56,10 +56,6 @@ protected:
 
     virtual void    spawn() = 0;
 
-    virtual void    render(gfx::Renderer & renderer) const = 0;
-
-    virtual void    renderLight(gfx::Renderer & renderer) const = 0;
-
     void            setId(Id id)                { _id = id; }
 
     void            setSerial(Serial serial)    { _serial = serial; }

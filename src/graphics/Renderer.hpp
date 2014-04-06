@@ -8,9 +8,10 @@
 
 #include <Global.hpp>
 
-#include <SFML/Graphics.hpp>
+#include <graphics/contexts/DrawContext.hpp>
+#include <graphics/contexts/LightContext.hpp>
 
-#include <boost/container/vector.hpp>
+#include <SFML/Graphics.hpp>
 
 namespace gfx
 {
@@ -18,41 +19,38 @@ namespace gfx
 class Renderer
 {
 private:
+    // Data members
     sf::RenderTarget &  _target;
 
-    sf::RenderTexture   _render_scene;
-    sf::RenderTexture   _render_light;
-    sf::RenderTexture   _render_light_inter;
+    Context *           _current_context;
 
-    bool                _light_smooth;
-    bool                _light_quality;
-    sf::Shader          _blur_h_filter;
-    sf::Shader          _blur_v_filter;
+    DrawContext *       _draw_context;
+    bool                _draw_enabled;
 
-    IWBAN_DEBUG(bool    _ready);
-    IWBAN_DEBUG(bool    _light_ready);
+    LightContext *      _light_context;
+    bool                _light_enabled;
+
+    sf::Shader          _light_mix;
+
+    IWBAN_DEBUG(bool    _active);
+
 
 public:
     // Constructor
     Renderer(sf::RenderTarget & target);
 
-    // Destructor
-    ~Renderer() {}
-
     // Functions
+    DrawContext & openDrawContext();
+
+    LightContext & openLightContext(const sf::Color & ambient_light);
+
+    void closeCurrentContext();
+
+    void reloadConfiguration();
+
     void begin();
+
     void end();
-
-    void draw(const sf::Drawable & drawable,
-              const sf::RenderStates & states = sf::RenderStates::Default);
-
-    void fill(const sf::Color & color,
-              const sf::RenderStates & states = sf::RenderStates::Default);
-
-    void beginLight(const sf::Color & light_color = sf::Color::Black);
-    void endLight();
-
-    void drawLight(const sf::Drawable & drawable);
 
 };
 // class Renderer

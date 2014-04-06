@@ -11,6 +11,7 @@
 #include <game/Entity.hpp>
 
 #include <graphics/Renderer.hpp> // TODO Fwd decl?
+#include <graphics/Drawable.hpp>
 
 #include <utils/IndexedPool.hpp>
 
@@ -38,6 +39,7 @@ private:
 
     typedef ut::IndexedPool<EntityDesc, IWBAN_ENTS_BLK_SIZE,
                                         IWBAN_ENTS_BLK_COUNT> EntityDescPool;
+
     typedef EntityDescPool::Node    PoolNode;
     typedef EntityDescPool::List    EntityList;
 

@@ -18,6 +18,8 @@ namespace sys
 class Display
 {
 private:
+    // TODO Rename data members
+    // Data members
     // Render window
     sf::RenderWindow    win;
 

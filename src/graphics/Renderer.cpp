@@ -6,6 +6,9 @@
 #include <Global.hpp>
 
 #include <graphics/Renderer.hpp>
+#include <graphics/contexts/DrawContext.hpp>
+#include <graphics/contexts/impl/QuickLightContext.hpp>
+#include <graphics/contexts/impl/SmoothLightContext.hpp>
 
 #include <config/Config.hpp>
 
@@ -25,181 +28,110 @@ namespace gfx
 {
 
 Renderer::Renderer(sf::RenderTarget & target)
-    : _target(target)
+    : _target(target), _current_context(0), _draw_context(0), _light_context(0)
 {
-    _render_scene.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
+    IWBAN_DEBUG(_active = false);
 
-    // First buffer
-    if (cfg::light_quality)
+    // TODO Use resource manager for shaders
+    // Light mix
+    res::File light = res::openFile("system/light.glfs");
+    std::string frag_light_str((const char*) light.getData(), light.getSize());
+
+    if (_light_mix.loadFromMemory(frag_light_str, sf::Shader::Fragment))
     {
-        _light_quality = true;
-        _render_light.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
+        _light_mix.setParameter("texture", sf::Shader::CurrentTexture);
     }
     else
-    {
-        _light_quality = false;
-        _render_light.create(IWBAN_FRAME_WIDTH/2, IWBAN_FRAME_HEIGHT/2);
-        _render_light.setSmooth(true);
-        _render_light.setView(_render_scene.getView());
-    }
+        // TODO Should throw?
+        IWBAN_LOG_ERROR("Failed to load light mix shader\n");
 
-    // TODO Smooth enabled by default?
-    //_render_scene.setSmooth(true);
-    
-    _light_smooth = false;
-
-    // Smooth lightning
-    if (cfg::light_smooth && sf::Shader::isAvailable())
-    {
-        // TODO Use resource manager for shaders
-        // Pipeline vertex shader
-        res::File vert = res::openFile("system/pipeline.glvs");
-        std::string vert_str((const char*) vert.getData(), vert.getSize());
-
-        // Horizontal blur
-        res::File frag_h = res::openFile("system/blur_h.glfs");
-        std::string frag_h_str((const char*) frag_h.getData(), frag_h.getSize());
-
-        // Vertical blur
-        res::File frag_v = res::openFile("system/blur_v.glfs");
-        std::string frag_v_str((const char*) frag_v.getData(), frag_v.getSize());
-        
-        if (_blur_h_filter.loadFromMemory(vert_str, frag_h_str)
-         && _blur_v_filter.loadFromMemory(vert_str, frag_v_str))
-        {
-            _blur_h_filter.setParameter("texture", sf::Shader::CurrentTexture);
-            _blur_h_filter.setParameter("blur_x", 1.f / IWBAN_FRAME_WIDTH);
-            
-            _blur_v_filter.setParameter("texture", sf::Shader::CurrentTexture);
-            _blur_v_filter.setParameter("blur_y", 1.f / IWBAN_FRAME_HEIGHT);
-
-            // Second buffer
-            if (cfg::light_quality)
-                _render_light_inter.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
-            else
-            {
-                _render_light_inter.create(IWBAN_FRAME_WIDTH/2, IWBAN_FRAME_HEIGHT/2);
-                _render_light_inter.setSmooth(true);
-            }
-
-            _light_smooth = true;
-        }
-        else
-            IWBAN_LOG_WARNING("Failed to load blur shader, smooth light disabled\n");
-    }
-
-    IWBAN_DEBUG(_ready = false);
-    IWBAN_DEBUG(_light_ready = false);
+    reloadConfiguration();
 }
 
-// TODO Assert messages are horrible
+DrawContext & Renderer::openDrawContext()
+{
+    BOOST_ASSERT_MSG(_active, "Cannot open a context while the Renderer is inactive");
+    BOOST_ASSERT_MSG(!_draw_enabled, "Cannot open a context twice in a frame");
+
+    closeCurrentContext();
+
+    _draw_enabled = true;
+    _current_context = _draw_context;
+    _draw_context->open();
+    return *_draw_context;
+}
+
+LightContext & Renderer::openLightContext(const sf::Color & ambient_light)
+{
+    BOOST_ASSERT_MSG(_active, "Cannot open a context while the Renderer is inactive");
+    BOOST_ASSERT_MSG(!_light_enabled, "Cannot open a context twice in a frame");
+
+    closeCurrentContext();
+
+    _light_enabled = true;
+    _current_context = _light_context;
+    _light_context->open(ambient_light);
+    return *_light_context;
+}
+
+void Renderer::closeCurrentContext()
+{
+    if (_current_context)
+    {
+        _current_context->close();
+        _current_context = 0;
+    }
+}
+
+void Renderer::reloadConfiguration()
+{
+    BOOST_ASSERT_MSG(!_active, "Cannot reload configuration while the Renderer is active");
+
+    delete _draw_context;
+    delete _light_context;
+
+    _draw_context = new DrawContext();
+
+    if (cfg::light_smooth)
+        _light_context = new impl::SmoothLightContext();
+    else
+        _light_context = new impl::QuickLightContext();
+}
 
 void Renderer::begin()
 {
-    BOOST_ASSERT_MSG(!_ready, "Renderer is already ready");
-    IWBAN_DEBUG(_ready = true);
+    BOOST_ASSERT_MSG(!_active, "Renderer is already active");
 
-#ifndef NDEBUG
-    _render_scene.clear(sf::Color(
-        std::abs(((debug_bg_block.getElapsedTime().asMilliseconds() / 31) % 510) - 255),
-        std::abs(((debug_bg_block.getElapsedTime().asMilliseconds() / 43) % 510) - 255),
-        std::abs(((debug_bg_block.getElapsedTime().asMilliseconds() / 59) % 510) - 255)));
-#endif
+    _draw_enabled = false;
+    _light_enabled = false;
+
+    IWBAN_DEBUG(_active = true);
 }
 
 void Renderer::end()
 {
-    BOOST_ASSERT_MSG(_ready, "Renderer is not ready");
-    IWBAN_DEBUG(_ready = false);
+    BOOST_ASSERT_MSG(_active, "Renderer is already inactive");
 
-    _render_scene.display();
-    _target.draw(sf::Sprite(_render_scene.getTexture()));
-}
+    closeCurrentContext();
 
-void Renderer::draw(const sf::Drawable & drawable,
-                    const sf::RenderStates & states)
-{
-    BOOST_ASSERT_MSG(_ready, "Renderer is not ready");
-    BOOST_ASSERT_MSG(!_light_ready, "Cannot draw while rendering lightning");
-
-    _render_scene.draw(drawable, states);
-}
-
-void Renderer::fill(const sf::Color & color,
-                    const sf::RenderStates & states)
-{
-    BOOST_ASSERT_MSG(_ready, "Renderer is not ready");
-    BOOST_ASSERT_MSG(!_light_ready, "Cannot draw while rendering lightning");
-
-    sf::RectangleShape rect(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT));
-    rect.setFillColor(color);
-    _render_scene.draw(rect, states);
-}
-
-void Renderer::beginLight(const sf::Color & light_color)
-{
-    BOOST_ASSERT_MSG(_ready, "Renderer is not ready");
-    BOOST_ASSERT_MSG(!_light_ready, "Renderer light is already ready");
-    IWBAN_DEBUG(_light_ready = true);
-
-    _render_light.clear(light_color);
-}
-
-void Renderer::endLight()
-{
-    BOOST_ASSERT_MSG(_ready, "Renderer is not ready");
-    BOOST_ASSERT_MSG(_light_ready, "Renderer light is not ready");
-    IWBAN_DEBUG(_light_ready = false);
-
-    if (_light_smooth)
+    // TODO Lighting
+    if (_draw_enabled)
     {
-        // Horizontal blur
         sf::RenderStates state(sf::BlendNone);
-        state.shader = &_blur_h_filter;
 
-        _render_light.display();
-        _render_light_inter.draw(sf::Sprite(_render_light.getTexture()),
-                                 state);
+        sf::RectangleShape sprite(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT));
+        sprite.setTexture(&_draw_context->getTexture());
 
-        // Vertical blur
-        state.blendMode = sf::BlendMultiply;
-        state.shader = &_blur_v_filter;
-
-        _render_light_inter.display();
-
-        if (_light_quality)
-            _render_scene.draw(sf::Sprite(_render_light_inter.getTexture()),
-                               state);
-        else
+        if (_light_enabled)
         {
-            sf::Sprite sprite(_render_light_inter.getTexture());
-            sprite.setScale(2, 2);
-            _render_scene.draw(sprite, state);
+            _light_mix.setParameter("light_map", _light_context->getTexture());
+            state.shader = &_light_mix;
         }
+
+        _target.draw(sprite, state);
     }
-    else
-    {
-        // No blur
-        _render_light.display();
 
-        if (_light_quality)
-            _render_scene.draw(sf::Sprite(_render_light.getTexture()),
-                               sf::RenderStates(sf::BlendMultiply));
-        else
-        {
-            sf::Sprite sprite(_render_light.getTexture());
-            sprite.setScale(2, 2);
-            _render_scene.draw(sprite, sf::RenderStates(sf::BlendMultiply));
-        }
-    }
-}
-
-void Renderer::drawLight(const sf::Drawable & drawable)
-{
-    BOOST_ASSERT_MSG(_ready, "Renderer is not ready");
-    BOOST_ASSERT_MSG(_light_ready, "Renderer light is not ready");
-
-    _render_light.draw(drawable, sf::RenderStates(sf::BlendAdd));
+    IWBAN_DEBUG(_active = false);
 }
 
 }

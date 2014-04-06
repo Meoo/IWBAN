@@ -17,6 +17,8 @@ class IntroScreen : public Screen
 {
 protected:
     sf::CircleShape s;
+    sf::CircleShape s2;
+    sf::RectangleShape r;
 
     // Callbacks
     virtual void    onUpdate()
@@ -36,16 +38,30 @@ protected:
 
     virtual void    onRender(gfx::Renderer & renderer) const
     {
-        renderer.beginLight();
-        renderer.drawLight(s);
-        renderer.endLight();
+        {
+            gfx::LightContext & light = renderer.openLightContext(sf::Color::Black);
+            light.draw(s);
+            light.draw(s2);
+        }
+        {
+            gfx::DrawContext & draw = renderer.openDrawContext();
+            draw.draw(r);
+        }
     }
 
     virtual void    onShow()
     {
-        s.setRadius(32.f);
+        s.setRadius(64.f);
         s.setPosition(100.f, 100.f);
         s.setFillColor(sf::Color::White);
+
+        s2.setRadius(196.f);
+        s2.setPosition(200.f, 150.f);
+        s2.setFillColor(sf::Color::Magenta);
+
+        r.setSize(sf::Vector2f(200, 200));
+        r.setPosition(200.f, 160.f);
+        r.setFillColor(sf::Color::Cyan);
     }
     virtual void    onHide() {}
 
