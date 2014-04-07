@@ -20,8 +20,8 @@ const sf::Clock debug_bg_block;
 namespace gfx
 {
 
-// TODO ready flag and asserts
 DrawContext::DrawContext()
+    : _open(false)
 {
     _render_scene.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
 
@@ -32,12 +32,16 @@ DrawContext::DrawContext()
 void DrawContext::draw(const sf::Drawable & drawable,
                        const sf::RenderStates & states)
 {
+    BOOST_ASSERT(_open);
+
     _render_scene.draw(drawable, states);
 }
 
 void DrawContext::fill(const sf::Color & color,
                        const sf::RenderStates & states)
 {
+    BOOST_ASSERT(_open);
+
     sf::RectangleShape rect(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT));
     rect.setFillColor(color);
     _render_scene.draw(rect, states);
@@ -45,17 +49,25 @@ void DrawContext::fill(const sf::Color & color,
 
 void DrawContext::open()
 {
+    BOOST_ASSERT(!_open);
+
 #ifndef NDEBUG
     _render_scene.clear(sf::Color(
         std::abs(((debug_bg_block.getElapsedTime().asMilliseconds() / 31) % 510) - 255),
         std::abs(((debug_bg_block.getElapsedTime().asMilliseconds() / 43) % 510) - 255),
         std::abs(((debug_bg_block.getElapsedTime().asMilliseconds() / 59) % 510) - 255)));
 #endif
+
+    _open = true;
 }
 
 void DrawContext::close()
 {
+    BOOST_ASSERT(_open);
+
     _render_scene.display();
+
+    _open = false;
 }
 
 const sf::Texture & DrawContext::getTexture() const

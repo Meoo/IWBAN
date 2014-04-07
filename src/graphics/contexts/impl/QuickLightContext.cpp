@@ -13,25 +13,35 @@ namespace gfx
 namespace impl
 {
 
-// TODO ready flag and asserts
 QuickLightContext::QuickLightContext()
+    : _open(false)
 {
     _render_light.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
 }
 
 void QuickLightContext::draw(const sf::Drawable & drawable)
 {
+    BOOST_ASSERT(_open);
+
     _render_light.draw(drawable, sf::RenderStates(sf::BlendAdd));
 }
 
 void QuickLightContext::open(const sf::Color & ambient_light)
 {
+    BOOST_ASSERT(!_open);
+
     _render_light.clear(ambient_light);
+
+    _open = true;
 }
 
 void QuickLightContext::close()
 {
+    BOOST_ASSERT(_open);
+ 
     _render_light.display();
+
+    _open = false;
 }
 
 const sf::Texture & QuickLightContext::getTexture() const

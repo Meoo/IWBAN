@@ -40,15 +40,20 @@ protected:
 
     virtual void    onRender(gfx::Renderer & renderer) const
     {
-        {
-            gfx::LightContext & light = renderer.openLightContext(sf::Color::Black);
-            light.draw(s);
-            light.draw(s2);
-        }
-        {
-            gfx::DrawContext & draw = renderer.openDrawContext();
-            draw.draw(r);
-        }
+        // Lighting
+        gfx::LightContext & light = renderer.openLightContext(sf::Color::Black);
+
+        light.draw(s);
+        light.draw(s2);
+
+        light.close(); // Ligth must be closed before opening another context
+
+        // Color
+        gfx::DrawContext & draw = renderer.openDrawContext();
+
+        draw.draw(r);
+
+        draw.close();
     }
 
     virtual void    onShow()

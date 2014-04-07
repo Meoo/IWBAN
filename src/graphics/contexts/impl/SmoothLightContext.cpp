@@ -15,8 +15,8 @@ namespace gfx
 namespace impl
 {
 
-// TODO ready flag and asserts
 SmoothLightContext::SmoothLightContext()
+    : _open(false)
 {
     // TODO Use resource manager for shaders
     // Horizontal blur
@@ -47,16 +47,24 @@ SmoothLightContext::SmoothLightContext()
 
 void SmoothLightContext::draw(const sf::Drawable & drawable)
 {
+    BOOST_ASSERT(_open);
+
     _render_light.draw(drawable, sf::RenderStates(sf::BlendAdd));
 }
 
 void SmoothLightContext::open(const sf::Color & ambient_light)
 {
+    BOOST_ASSERT(!_open);
+
     _render_light.clear(ambient_light);
+
+    _open = true;
 }
 
 void SmoothLightContext::close()
 {
+    BOOST_ASSERT(_open);
+
     sf::RenderStates state(sf::BlendNone);
 
     // Horizontal blur
@@ -74,6 +82,8 @@ void SmoothLightContext::close()
                        state);
 
     _render_light.display();
+
+    _open = false;
 }
 
 const sf::Texture & SmoothLightContext::getTexture() const

@@ -34,8 +34,6 @@ protected:
     // Protected functions for Renderer
     virtual void open(const sf::Color & ambient_light) = 0;
 
-    virtual void close() = 0;
-
     virtual const sf::Texture & getTexture() const = 0;
 
 };

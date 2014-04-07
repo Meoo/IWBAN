@@ -20,6 +20,8 @@ public:
     virtual ~Context() {}
 
     // Virtual functions
+    virtual bool isOpen() const = 0;
+
     virtual void close() = 0;
 
 };

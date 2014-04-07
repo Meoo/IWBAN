@@ -44,8 +44,6 @@ public:
 
     LightContext & openLightContext(const sf::Color & ambient_light);
 
-    void closeCurrentContext();
-
     void reloadConfiguration();
 
     void begin();

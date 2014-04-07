@@ -22,6 +22,8 @@ private:
     // Data members
     sf::RenderTexture   _render_light;
 
+    bool                _open;
+
 
 public:
     QuickLightContext();
@@ -29,12 +31,14 @@ public:
     // Virtual functions
     virtual void draw(const sf::Drawable & drawable);
 
+    virtual bool isOpen() const { return _open; }
+
+    virtual void close();
+
 
 protected:
     // Protected functions for Renderer
     virtual void open(const sf::Color & ambient_light);
-
-    virtual void close();
 
     virtual const sf::Texture & getTexture() const;
 

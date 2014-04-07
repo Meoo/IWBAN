@@ -26,6 +26,8 @@ private:
     sf::Shader          _blur_h_filter;
     sf::Shader          _blur_v_filter;
 
+    bool                _open;
+
 
 public:
     SmoothLightContext();
@@ -33,12 +35,14 @@ public:
     // Virtual functions
     virtual void draw(const sf::Drawable & drawable);
 
+    virtual bool isOpen() const { return _open; }
+
+    virtual void close();
+
 
 protected:
     // Protected functions for Renderer
     virtual void open(const sf::Color & ambient_light);
-
-    virtual void close();
 
     virtual const sf::Texture & getTexture() const;
 

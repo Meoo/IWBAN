@@ -53,11 +53,12 @@ DrawContext & Renderer::openDrawContext()
     BOOST_ASSERT_MSG(_active, "Cannot open a context while the Renderer is inactive");
     BOOST_ASSERT_MSG(!_draw_enabled, "Cannot open a context twice in a frame");
 
-    closeCurrentContext();
+    BOOST_ASSERT_MSG(!_current_context || !_current_context->isOpen(),
+                     "You must close the current context before opening another");
 
     _draw_enabled = true;
-    _current_context = _draw_context;
     _draw_context->open();
+    _current_context = _draw_context;
     return *_draw_context;
 }
 
@@ -66,21 +67,13 @@ LightContext & Renderer::openLightContext(const sf::Color & ambient_light)
     BOOST_ASSERT_MSG(_active, "Cannot open a context while the Renderer is inactive");
     BOOST_ASSERT_MSG(!_light_enabled, "Cannot open a context twice in a frame");
 
-    closeCurrentContext();
+    BOOST_ASSERT_MSG(!_current_context || !_current_context->isOpen(),
+                     "You must close the current context before opening another");
 
     _light_enabled = true;
-    _current_context = _light_context;
     _light_context->open(ambient_light);
+    _current_context = _light_context;
     return *_light_context;
-}
-
-void Renderer::closeCurrentContext()
-{
-    if (_current_context)
-    {
-        _current_context->close();
-        _current_context = 0;
-    }
 }
 
 void Renderer::reloadConfiguration()
@@ -112,7 +105,8 @@ void Renderer::end()
 {
     BOOST_ASSERT_MSG(_active, "Renderer is already inactive");
 
-    closeCurrentContext();
+    BOOST_ASSERT_MSG(!_current_context || !_current_context->isOpen(),
+                     "You must close the current context in order to finish rendering");
 
     // TODO Lighting
     if (_draw_enabled)

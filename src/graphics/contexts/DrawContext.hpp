@@ -26,6 +26,8 @@ private:
     // Data members
     sf::RenderTexture   _render_scene;
 
+    bool                _open;
+
 
 public:
     DrawContext();
@@ -36,12 +38,14 @@ public:
     void fill(const sf::Color & color,
               const sf::RenderStates & states = sf::RenderStates::Default);
 
+    virtual bool isOpen() const { return _open; }
+
+    virtual void close();
+
 
 protected:
     // Protected functions for Renderer
     void open();
-
-    virtual void close();
 
     const sf::Texture & getTexture() const;
 
