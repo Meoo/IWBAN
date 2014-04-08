@@ -40,7 +40,7 @@ public:
     class Comparator
     {
     public:
-        bool operator () (const Drawable & a, Drawable & b) const
+        bool operator () (const Drawable & a, const Drawable & b) const
             { return a.getPriority() < b.getPriority(); }
     };
     // class Comparator

@@ -30,6 +30,11 @@ private:
     LightContext *      _light_context;
     bool                _light_enabled;
 
+#ifndef NDEBUG
+    DrawContext *       _debug_context;
+    bool                _debug_enabled;
+#endif
+
     sf::Shader          _light_mix;
 
     IWBAN_DEBUG(bool    _active);
@@ -43,6 +48,10 @@ public:
     DrawContext & openDrawContext();
 
     LightContext & openLightContext(const sf::Color & ambient_light);
+
+#ifndef NDEBUG
+    DrawContext & openDebugContext();
+#endif
 
     void reloadConfiguration();
 

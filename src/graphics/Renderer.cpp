@@ -76,6 +76,22 @@ LightContext & Renderer::openLightContext(const sf::Color & ambient_light)
     return *_light_context;
 }
 
+#ifndef NDEBUG
+DrawContext & Renderer::openDebugContext()
+{
+    BOOST_ASSERT_MSG(_active, "Cannot open a context while the Renderer is inactive");
+    BOOST_ASSERT_MSG(!_debug_enabled, "Cannot open a context twice in a frame");
+
+    BOOST_ASSERT_MSG(!_current_context || !_current_context->isOpen(),
+                     "You must close the current context before opening another");
+
+    _debug_enabled = true;
+    _debug_context->open();
+    _current_context = _debug_context;
+    return *_debug_context;
+}
+#endif
+
 void Renderer::reloadConfiguration()
 {
     BOOST_ASSERT_MSG(!_active, "Cannot reload configuration while the Renderer is active");
@@ -89,6 +105,8 @@ void Renderer::reloadConfiguration()
         _light_context = new impl::SmoothLightContext();
     else
         _light_context = new impl::QuickLightContext();
+
+    IWBAN_DEBUG(_debug_context = new DrawContext());
 }
 
 void Renderer::begin()
@@ -97,6 +115,8 @@ void Renderer::begin()
 
     _draw_enabled = false;
     _light_enabled = false;
+
+    IWBAN_DEBUG(_debug_enabled = false);
 
     IWBAN_DEBUG(_active = true);
 }
@@ -125,9 +145,13 @@ void Renderer::end()
         _target.draw(sprite, state);
     }
 
+#ifndef NDEBUG
+    if (_debug_enabled)
+        _target.draw(sf::Sprite(_debug_context->getTexture()));
+#endif
+
     IWBAN_DEBUG(_active = false);
 }
 
 }
-
 // namespace gfx

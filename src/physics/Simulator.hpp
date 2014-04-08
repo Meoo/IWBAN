@@ -8,11 +8,28 @@
 
 #include <Global.hpp>
 
+#include <physics/Object.hpp>
+
 namespace phy
 {
 
 class Simulator
 {
+public:
+    // Data members
+    Object::List    _objects;
+
+    // Constructor
+         Simulator();
+
+    // Functions
+    void add(Object & object);
+
+    void remove(const Object & object);
+
+    void update();
+
+    void updateSingleObject(Object & object) const;
 
 };
 // class Simulator

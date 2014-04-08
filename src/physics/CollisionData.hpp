@@ -16,6 +16,7 @@ namespace phy
  */
 class CollisionData
 {
+public:
     Object  first;
     Object  second;
     Vector2 collision_point;

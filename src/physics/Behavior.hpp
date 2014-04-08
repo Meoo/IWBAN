@@ -19,9 +19,10 @@ public:
 
     // TODO Virtual functions
     virtual void step(const ObjectState last, ObjectState & current) = 0;
-    virtual void onCollide(CollisionData) = 0;
-    virtual void prepareState(const Object, ObjectState &) = 0;
-    virtual void freeState(const Object, ObjectState &) = 0;
+    virtual void onCollide(const CollisionData &) = 0;
+
+    virtual void prepareState(const Object &, ObjectState &) = 0;
+    virtual void freeState(const Object &, ObjectState &) = 0;
 
 };
 // class Behavior

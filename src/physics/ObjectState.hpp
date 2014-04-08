@@ -14,8 +14,10 @@ namespace phy
 class ObjectState
 {
 private:
+    // Data members
     Vector2     position;
-    float       rotation;
+
+    // Pointer reserved for Behavior sub-classes
     void *      userdata;
 
 };
