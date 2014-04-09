@@ -18,11 +18,17 @@ public:
     virtual ~Behavior() {}
 
     // TODO Virtual functions
-    virtual void step(const ObjectState last, ObjectState & current) = 0;
+    virtual void update(const Object &) = 0;
+
+    // Pre-condition : parent have been updated
+    virtual void updateChild(const Object & parent, Object & child) = 0;
+
     virtual void onCollide(const CollisionData &) = 0;
 
-    virtual void prepareState(const Object &, ObjectState &) = 0;
-    virtual void freeState(const Object &, ObjectState &) = 0;
+    // Callbacks used when an Object starts and stop using this Behavior
+    // Used to setup and free user_data pointer
+    virtual void prepare(Object &) = 0;
+    virtual void free(Object &) = 0;
 
 };
 // class Behavior

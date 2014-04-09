@@ -21,18 +21,19 @@ void Simulator::add(Object & object)
 
 void Simulator::remove(const Object & object)
 {
-    _objects.remove(object);
+    _objects.erase(_objects.iterator_to(object));
 }
 
 void Simulator::update()
 {
+    // TODO Simulator::update()
     // Preparation
-    for (Object & obj : _objects)
+    //for (Object & obj : _objects)
     {
         // obj.last = obj.current
         // obj.controller.step(obj.last, obj.current)
     }
-    for (Object & obj : _objects)
+    //for (Object & obj : _objects)
     {
         // if (obj.parent)
         {

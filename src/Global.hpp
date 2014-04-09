@@ -19,12 +19,6 @@
 
 #include <string>
 
-// TODO Placeholders
-typedef float Time;
-typedef std::string Path;
-typedef float Angle;
-
-// ---- ---- ---- ----
 
 #define _IWBAN_DO(action)       do { action; } while(0)
 

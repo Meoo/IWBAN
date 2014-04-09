@@ -9,8 +9,8 @@
 #include <Global.hpp>
 
 #include <physics/CollisionGroup.hpp>
-#include <physics/Shape.hpp>
-#include <physics/ObjectState.hpp>
+
+#include <utils/Vector.hpp>
 
 #include <boost/intrusive/list.hpp>
 
@@ -18,6 +18,7 @@ namespace phy
 {
 
 class Behavior;
+class Shape;
 
 class Object : public boost::intrusive::list_base_hook<>
 {
@@ -28,29 +29,41 @@ public:
 
 private:
     // Data members
-    Shape             shape;
+    Shape *         _shape;
 
-    ObjectState       current;
-    ObjectState       previous;
+    ut::Vector      _position;
+    ut::Vector      _last_position;
 
-    CollisionGroup    solidity;
-    CollisionGroup    collides_with;
+    Behavior *      _behavior;
+    void *          _user_data;
 
-    int               _collision_priority;
-    Behavior *        controller;
-    bool              awake;
+    CollisionGroup  _solidity;
+    CollisionGroup  _collides_with;
+
+    int             _collision_priority;
+    bool            _awake;
 
     // TODO Object additional states
-    //bool              smooth;
+    //Object * parent;
+    //bool just_teleported;
+    //bool smooth;
 
 
 public:
     // Constructor
             Object();
 
+    // Functions
+    void    move(const ut::Vector & delta);
+    void    teleport(const ut::Vector & position);
+
     // Getters / setters TODO Bad collision priority get/set name
     int     getPriority() const         { return _collision_priority; }
     void    setPriority(int priority)   { _collision_priority = priority; }
+
+    bool    isAwake() const             { return _awake; }
+    void    sleep()                     { _awake = false; }
+    void    wake()                      { _awake = true; }
 
 
     class Comparator

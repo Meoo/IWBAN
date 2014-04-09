@@ -1,12 +1,25 @@
 /**
- * @file   TMPVector.cpp
+ * @file   Vector.hpp
  * @author Bastien Brunnenstein
  */
 
+#ifndef _IWBAN_VECTOR_HPP_
+#define _IWBAN_VECTOR_HPP_
+
+#include <Global.hpp>
+
+namespace ut
+{
+
 // TODO Sort Vector / Rect classes out
 
-typedef struct { float x; float y; } Vector;
-typedef struct { float x; float y; float w; float h; } Rect;
+
+class Vector
+{
+public:
+    float x;
+    float y;
+};
 
 inline Vector operator+(const Vector & a, const Vector & b)
 {
@@ -15,6 +28,7 @@ inline Vector operator+(const Vector & a, const Vector & b)
     v.y = a.y + b.y;
     return v;
 }
+
 inline Vector operator-(const Vector & a, const Vector & b)
 {
     Vector v;
@@ -22,6 +36,7 @@ inline Vector operator-(const Vector & a, const Vector & b)
     v.y = a.y - b.y;
     return v;
 }
+
 template<typename T>
 inline Vector operator*(const Vector & a, const T & b)
 {
@@ -30,6 +45,7 @@ inline Vector operator*(const Vector & a, const T & b)
     v.y = a.y * b;
     return v;
 }
+
 template<typename T>
 inline Vector operator/(const Vector & a, const T & b)
 {
@@ -38,12 +54,14 @@ inline Vector operator/(const Vector & a, const T & b)
     v.y = a.y / b;
     return v;
 }
+
 inline Vector & operator+=(Vector & a, const Vector & b)
 {
     a.x += b.x;
     a.y += b.y;
     return a;
 }
+
 inline Vector & operator-=(Vector & a, const Vector & b)
 {
     a.x -= b.x;
@@ -51,3 +69,7 @@ inline Vector & operator-=(Vector & a, const Vector & b)
     return a;
 }
 
+}
+// namespace ut
+
+#endif // _IWBAN_VECTOR_HPP_
