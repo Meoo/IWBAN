@@ -4,6 +4,7 @@
  */
 
 #include <packager/PackagerConfig.hpp>
+#include <packager/ReadIndex.hpp>
 #include <packager/WriteIndex.hpp>
 
 #include <boost/filesystem.hpp>
@@ -15,19 +16,30 @@
 
 namespace fs = boost::filesystem;
 
-void process_folder(const char * path_name)
-{
-    using pkg::IndexMap;
-    using pkg::IndexEntry;
+using pkg::IndexMap;
+using pkg::IndexEntry;
 
+void print_help()
+{
+    std::cout << "===== IWBAN Packager Tool =====" << std::endl
+              << "pmk folder [folders]...   - package folders" << std::endl
+              << "pmk -h                    - show this message" << std::endl
+              << "pmk -l package            - list files in package" << std::endl
+              << "pmx -x filename package   - extract file from package" << std::endl;
+}
+
+// ---- ---- ---- ----
+
+int process_folder(const char * path_name)
+{
     // Check if given path is valid
     fs::path _path(path_name);
 
     if (!fs::exists(fs::path(_path)))
     {
-        std::cout << "!!!!! Path " << path_name << " is not valid !!!!!"
+        std::cerr << "!!!!! Path " << path_name << " is not valid !!!!!"
                   << std::endl << std::endl;
-        return;
+        return 1;
     }
 
     fs::path folder = fs::canonical(_path);
@@ -37,9 +49,9 @@ void process_folder(const char * path_name)
 
     if (!fs::is_directory(folder))
     {
-        std::cout << "!!!!! File " << folder.string().c_str()
+        std::cerr << "!!!!! File " << folder.string().c_str()
                   << " is not a directory !!!!!" << std::endl << std::endl;
-        return;
+        return 1;
     }
 
     // Path is a valid folder
@@ -71,8 +83,8 @@ void process_folder(const char * path_name)
             // Check for maximum number of files in a package
             if (index.size() > PKG_MAX_FILES)
             {
-                std::cout << "!!! Too many files in directory !!!" << std::endl;
-                return;
+                std::cerr << "!!! Too many files in directory !!!" << std::endl;
+                return 1;
             }
         }
     }
@@ -98,18 +110,18 @@ void process_folder(const char * path_name)
         std::ifstream file((folder.string() + "/" + it->first).c_str(),
                 std::ifstream::in | std::ifstream::binary);
 
+        if (!file.is_open())
+        {
+            std::cerr << "!!! Error while opening file " << it->first.c_str()
+                      << " !!!" << std::endl;
+            return 1;
+        }
+
         std::size_t file_size;
 
         file.seekg(0, file.end);
         file_size = file.tellg();
         file.seekg(0, file.beg);
-
-        if (!file.is_open())
-        {
-            std::cout << "!!! Error while opening file " << it->first.c_str()
-                      << " !!!" << std::endl;
-            return;
-        }
 
         // Go to next block if necessary
         std::size_t cpos = package.tellp();
@@ -155,13 +167,147 @@ void process_folder(const char * path_name)
     package.close();
 
     std::cout << std::endl;
-}
 
+    return 0;
+
+} // process_folder()
+
+// ---- ---- ---- ----
+
+int list_package(const char * packagefile)
+{
+    if (fs::is_directory(fs::path(packagefile)))
+    {
+        std::cerr << "!!! Given path is a directory !!!" << std::endl;
+        return 1;
+    }
+
+    std::ifstream package(packagefile,
+            std::ifstream::in | std::ofstream::binary);
+
+    if (!package.is_open())
+    {
+        std::cerr << "!!! Error while opening package !!!" << std::endl;
+        return 1;
+    }
+
+    IndexMap index;
+    if (!pkg::readIndex(package, index))
+    {
+        std::cerr << "!!! File is not a valid package !!!" << std::endl;
+        return 1;
+    }
+
+    for (IndexMap::iterator it = index.begin();
+            it != index.end(); ++it)
+    {
+        std::cout << it->first << " : " << it->second.size << std::endl;
+    }
+
+    return 0;
+
+} // list_package()
+
+// ---- ---- ---- ----
+
+int extract_file(const char * file, const char * packagefile)
+{
+    if (fs::is_directory(fs::path(packagefile)))
+    {
+        std::cerr << "!!! Given path is a directory !!!" << std::endl;
+        return 1;
+    }
+
+    std::ifstream package(packagefile,
+            std::ifstream::in | std::ofstream::binary);
+
+    if (!package.is_open())
+    {
+        std::cerr << "!!! Error while opening package !!!" << std::endl;
+        return 1;
+    }
+
+    IndexMap index;
+    if (!pkg::readIndex(package, index))
+    {
+        std::cerr << "!!! File is not a valid package !!!" << std::endl;
+        return 1;
+    }
+
+    IndexMap::iterator it = index.find(std::string(file));
+    if (it == index.end())
+    {
+        std::cerr << "!!! File not found in package !!!" << std::endl;
+        return 1;
+    }
+
+    package.seekg(it->second.offset);
+
+    std::ofstream out_file(fs::path(it->first).filename().c_str(),
+            std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
+
+    size_t size = it->second.size;
+    while (size > 0)
+    {
+        char buffer[4096];
+
+        package.read(buffer, (size < 4096 ? size : 4096));
+        out_file.write(buffer, package.gcount());
+
+        size -= package.gcount();
+    }
+
+    return 0;
+
+} // extract_file()
+
+// ---- ---- ---- ----
 
 int main(int argc, char ** argv)
 {
+    if (argc == 1)
+    {
+        print_help();
+        return 0;
+    }
+
+    if (argv[1][0] == '-')
+    {
+        switch(argv[1][1])
+        {
+        case 'l':
+            // List
+            if (argc != 3)
+            {
+                print_help();
+                return 0;
+            }
+            return list_package(argv[2]);
+
+        case 'x':
+            // Extract file
+            if (argc != 4)
+            {
+                print_help();
+                return 0;
+            }
+            return extract_file(argv[2], argv[3]);
+
+        case 'h':
+        default:
+            print_help();
+            return 0;
+        }
+    }
+
+    // Default behavior : Package folders
     for (int i = 1; i < argc; ++i)
-        process_folder(argv[i]);
+    {
+        int ret = process_folder(argv[i]);
+
+        if (ret != 0)
+            return ret;
+    }
 
     return 0;
 }

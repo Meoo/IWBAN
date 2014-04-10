@@ -16,6 +16,7 @@ namespace pkg
 namespace impl
 {
 
+// TODO Can probably be optimized
 inline void writeUInt32(std::ostream & stream, const uint32_t & value)
 {
     stream.put(value);

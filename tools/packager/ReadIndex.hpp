@@ -17,6 +17,7 @@ namespace pkg
 namespace impl
 {
 
+// TODO Can probably be optimized
 uint32_t readUInt32(std::istream & stream)
 {
     char c;
@@ -24,16 +25,13 @@ uint32_t readUInt32(std::istream & stream)
 
     stream.get(c);
     r = c;
-    
     stream.get(c);
     r &= c << 8;
-    
     stream.get(c);
     r &= c << 16;
-    
     stream.get(c);
     r &= c << 24;
-    
+
     return r;
 }
 
@@ -49,10 +47,8 @@ bool readIndex(std::istream & package, IndexMap & index)
     package.seekg(0, package.beg);
 
     uint32_t index_count;
-    // TODO Endianness
     package.read((char*) &index_count, sizeof(uint32_t));
 
-    // TODO Check index count value?
     if (index_count > PKG_MAX_FILES)
         return false;
 
@@ -60,7 +56,6 @@ bool readIndex(std::istream & package, IndexMap & index)
     {
         IndexEntry entry;
 
-        // TODO Endianness
         package.read((char*) &(entry.offset), sizeof(uint32_t));
         package.read((char*) &(entry.size), sizeof(uint32_t));
 
