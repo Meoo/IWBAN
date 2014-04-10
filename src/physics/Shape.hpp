@@ -13,6 +13,9 @@ namespace phy
 
 class Shape
 {
+public:
+    // Virtual destructor
+    virtual ~Shape() {}
 
 };
 // class Shape
