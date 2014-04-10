@@ -24,35 +24,36 @@ void Simulator::remove(const Object & object)
     _objects.erase(_objects.iterator_to(object));
 }
 
-void Simulator::update()
+void Simulator::prepare()
 {
-    // TODO Simulator::update()
-    // Preparation
-    //for (Object & obj : _objects)
+    for (Object & obj : _objects)
     {
-        // obj.last = obj.current
-        // obj.controller.step(obj.last, obj.current)
-    }
-    //for (Object & obj : _objects)
-    {
-        // if (obj.parent)
-        {
-            // obj.current + delta(obj.parent.current / last)
-        }
+        obj.prepare();
     }
     _objects.sort(Object::Comparator());
+}
 
-    // We can run particles updates in another thread by now
-    // ...
+void Simulator::update()
+{
+    // Perform collisions
+    for (Object & obj : _objects)
+    {
+        if (!obj.isAwake())
+            continue;
 
-    // Narrow phase
-    // ...
+        obj.update();
 
-    // Broad phase
-    // ...
+        // Broad phase
+        // TODO Slow because we have to compute broad phases for every object
+        // ...
 
-    // Response
-    // ...
+        // Narrow phase
+        // ...
+        {
+            // Response
+            // ...
+        }
+    }
 }
 
 void Simulator::updateSingleObject(Object & object) const

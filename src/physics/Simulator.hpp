@@ -24,11 +24,10 @@ public:
 
     // Functions
     void add(Object & object);
-
     void remove(const Object & object);
 
+    void prepare();
     void update();
-
     void updateSingleObject(Object & object) const;
 
 };
