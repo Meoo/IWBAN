@@ -48,7 +48,7 @@ File::File(impl::FileImpl * implementation)
 File openFile(const std::string & filename)
 {
     IWBAN_LOG_DEBUG("Opening file '%s'\n", filename.c_str());
-    
+
     namespace fs = boost::filesystem;
 
 #ifndef NDEBUG

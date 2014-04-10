@@ -42,7 +42,7 @@ Package::Package(const std::string & package_name,
         std::istringstream loc_st;
         loc_st.rdbuf()->pubsetbuf(
                 const_cast<char*>(_loc_file.data()), _loc_file.size());
-        
+
         // Read index
         if (!pkg::readIndex(loc_st, _loc_index))
             throw sys::FileCorrupted((_package_name + "."
@@ -53,7 +53,7 @@ Package::Package(const std::string & package_name,
     std::istringstream base_st;
     base_st.rdbuf()->pubsetbuf(
             const_cast<char*>(_base_file.data()), _base_file.size());
-    
+
     // Read index
     if (!pkg::readIndex(base_st, _base_index))
         throw sys::FileCorrupted((_package_name + PKG_EXTENSION).c_str());
@@ -61,7 +61,26 @@ Package::Package(const std::string & package_name,
 
 FileImpl * Package::findFile(const std::string & filename)
 {
-    // Localization
+    FileImpl * file = findFileLocalized(filename);
+    if (file)
+        return file;
+
+    return findFileUnlocalized(filename);
+}
+
+FileImpl * Package::findFileUnlocalized(const std::string & filename)
+{
+    // Unlocalized
+    pkg::IndexMap::iterator it = _base_index.find(filename);
+    if (it != _base_index.end())
+        return new PackagedFile(_base_file, it->second);
+
+    return 0;
+}
+
+FileImpl * Package::findFileLocalized(const std::string & filename)
+{
+    // Localized
     if (_has_loc)
     {
         pkg::IndexMap::iterator it = _loc_index.find(filename);
@@ -69,11 +88,6 @@ FileImpl * Package::findFile(const std::string & filename)
             return new PackagedFile(_loc_file, it->second);
     }
 
-    // Base
-    pkg::IndexMap::iterator it = _base_index.find(filename);
-    if (it != _base_index.end())
-        return new PackagedFile(_base_file, it->second);
-    
     return 0;
 }
 
@@ -84,10 +98,10 @@ Package * getPackage(const std::string & package)
     static PackageMap s_packageMap;
 
     PackageMap::iterator it = s_packageMap.find(package);
-    
+
     if (it != s_packageMap.end())
         return it->second;
-    
+
     else
     {
         // Base
@@ -97,7 +111,7 @@ Package * getPackage(const std::string & package)
 
         try { base.open(base_path); }
         catch (...) {}
-        
+
         if (!base.is_open())
         {
             // No package found
@@ -105,7 +119,7 @@ Package * getPackage(const std::string & package)
             s_packageMap[package] = 0;
             return 0;
         }
-        
+
         // Localization
         std::string loc_path = std::string(IWBAN_DATA_FOLDER "/")
                 + package + "." + cfg::language + PKG_EXTENSION;
@@ -117,11 +131,11 @@ Package * getPackage(const std::string & package)
         // Finally, create package
         Package * p = new Package(package, loc, base);
         s_packageMap[package] = p;
-        
+
         IWBAN_LOG_INFO("Package '%s' found (%s '%s' localization)\n",
                 package.c_str(), loc.is_open() ? "with" : "without",
                 cfg::language.c_str());
-        
+
         return p;
     }
 }

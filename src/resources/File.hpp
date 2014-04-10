@@ -78,8 +78,12 @@ private:
 
 // ---- ---- ---- ----
 
-// Static function
+// Static functions
 File openFile(const std::string & filename);
+
+// TODO File openFileUnlocalized(const std::string & filename);
+
+// TODO File openFileLocalized(const std::string & filename);
 
 }
 // namespace res

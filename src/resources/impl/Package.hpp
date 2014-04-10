@@ -57,6 +57,10 @@ public:
     // Accessor
     FileImpl *  findFile(const std::string & filename);
 
+    FileImpl *  findFileUnlocalized(const std::string & filename);
+
+    FileImpl *  findFileLocalized(const std::string & filename);
+
 };
 // class Package
 
