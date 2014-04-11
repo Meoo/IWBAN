@@ -52,6 +52,7 @@ public:
 
 protected:
     // Protected functions for World
+    // TODO Update function is probably not needed as the Entity should be Event driven
     virtual void    update() = 0;
 
     virtual void    spawn() = 0;

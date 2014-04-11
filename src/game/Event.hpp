@@ -11,6 +11,8 @@
 namespace game
 {
 
+class Entity;
+
 enum EventId
 {
     EVENT_DAMAGE,
@@ -18,6 +20,8 @@ enum EventId
 
     EVENT_ENABLE,
     EVENT_DISABLE,
+
+    EVENT_TOUCH,
 
     EVENT_ACTION1,
     EVENT_ACTION2,
@@ -36,11 +40,11 @@ public:
         : source(0), event_id(evt_id), param(0)
     {}
 
-    Event * source;
+    Entity *    source;
 
-    EventId event_id;
+    EventId     event_id;
 
-    int     param;
+    void *      param;
 
     // TODO Event delay ?
 
