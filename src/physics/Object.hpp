@@ -17,14 +17,15 @@
 namespace phy
 {
 
+class Behavior;
+class Shape;
+
 namespace impl
 {
+    // Tag for boost intrusive list
     class ChildTag {};
 }
 // namespace impl
-
-class Behavior;
-class Shape;
 
 // Child-list support auto-unlink feature
 class Object : public boost::intrusive::list_base_hook<>

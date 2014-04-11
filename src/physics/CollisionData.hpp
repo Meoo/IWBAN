@@ -8,8 +8,12 @@
 
 #include <Global.hpp>
 
+#include <utils/Vector.hpp>
+
 namespace phy
 {
+
+class Object;
 
 /**
  * @brief
@@ -17,10 +21,10 @@ namespace phy
 class CollisionData
 {
 public:
-    Object  first;
-    Object  second;
-    Vector2 collision_point;
-    Vector2 push_vector;
+    Object *    first;
+    Object *    second;
+    ut::Vector  collision_point;
+    ut::Vector  push_vector;
 
 };
 // class CollisionData

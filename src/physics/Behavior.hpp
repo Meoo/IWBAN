@@ -11,6 +11,9 @@
 namespace phy
 {
 
+class CollisionData;
+class Object;
+
 class Behavior
 {
 public:
