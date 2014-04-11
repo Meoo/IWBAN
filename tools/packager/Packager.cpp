@@ -243,7 +243,7 @@ int extract_file(const char * file, const char * packagefile)
 
     package.seekg(it->second.offset);
 
-    std::ofstream out_file(fs::path(it->first).filename().c_str(),
+    std::ofstream out_file(fs::path(it->first).filename().string().c_str(),
             std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
 
     size_t size = it->second.size;
