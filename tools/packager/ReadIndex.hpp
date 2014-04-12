@@ -20,17 +20,10 @@ namespace impl
 // TODO Can probably be optimized
 uint32_t readUInt32(std::istream & stream)
 {
-    char c;
-    uint32_t r;
-
-    stream.get(c);
-    r = c;
-    stream.get(c);
-    r &= c << 8;
-    stream.get(c);
-    r &= c << 16;
-    stream.get(c);
-    r &= c << 24;
+    uint32_t r = static_cast<unsigned char>(stream.get()) << 24;
+    r |= static_cast<unsigned char>(stream.get()) << 16;
+    r |= static_cast<unsigned char>(stream.get()) << 8;
+    r |= static_cast<unsigned char>(stream.get());
 
     return r;
 }
@@ -46,9 +39,10 @@ bool readIndex(std::istream & package, IndexMap & index)
     file_size = package.tellg();
     package.seekg(0, package.beg);
 
-    uint32_t index_count;
-    package.read((char*) &index_count, sizeof(uint32_t));
+    if (impl::readUInt32(package) != PKG_MAGIC)
+        return false;
 
+    uint32_t index_count = impl::readUInt32(package);
     if (index_count > PKG_MAX_FILES)
         return false;
 
@@ -56,8 +50,8 @@ bool readIndex(std::istream & package, IndexMap & index)
     {
         IndexEntry entry;
 
-        package.read((char*) &(entry.offset), sizeof(uint32_t));
-        package.read((char*) &(entry.size), sizeof(uint32_t));
+        entry.offset = impl::readUInt32(package);
+        entry.size = impl::readUInt32(package);
 
         // Check values
         if (entry.offset + entry.size > file_size)

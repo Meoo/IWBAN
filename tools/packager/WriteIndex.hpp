@@ -19,10 +19,10 @@ namespace impl
 // TODO Can probably be optimized
 inline void writeUInt32(std::ostream & stream, const uint32_t & value)
 {
-    stream.put(value);
-    stream.put(value >> 8);
-    stream.put(value >> 16);
     stream.put(value >> 24);
+    stream.put(value >> 16);
+    stream.put(value >> 8);
+    stream.put(value);
 }
 
 }
@@ -30,6 +30,8 @@ inline void writeUInt32(std::ostream & stream, const uint32_t & value)
 
 void writeIndex(std::ostream & package, const IndexMap & index)
 {
+    impl::writeUInt32(package, PKG_MAGIC);
+
     uint32_t index_entries = index.size();
     impl::writeUInt32(package, index_entries);
 

@@ -59,9 +59,9 @@ int process_folder(const char * path_name)
     std::cout << "===== Processing directory " << folder.leaf().string().c_str()
               << " =====" << std::endl;
 
-    // Index size is number of entries + length of paths + size of IndexEntries
+    // Index size is magic + number of entries + length of paths + size of IndexEntries
     IndexMap index;
-    std::size_t index_size = sizeof(uint32_t);
+    std::size_t index_size = sizeof(uint32_t) + sizeof(PKG_MAGIC);
 
     std::cout << "+++ Listing files +++" << std::endl;
 
@@ -201,7 +201,20 @@ int list_package(const char * packagefile)
     for (IndexMap::iterator it = index.begin();
             it != index.end(); ++it)
     {
-        std::cout << it->first << " : " << it->second.size << std::endl;
+        std::cout << it->first << "\t: ";
+        size_t sz = it->second.size;
+        if (sz >= 0x00400000u)
+        {
+            std::cout << (it->second.size / 0x00100000u) << " MB" << std::endl;
+        }
+        else if (sz >= 0x00001000u)
+        {
+            std::cout << (it->second.size / 0x00000400u) << " KB" << std::endl;
+        }
+        else
+        {
+            std::cout << it->second.size << " B" << std::endl;
+        }
     }
 
     return 0;

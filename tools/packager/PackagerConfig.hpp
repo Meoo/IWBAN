@@ -16,5 +16,8 @@
 // Maximum number of files in a package
 #define PKG_MAX_FILES   512
 
+// Package magic number 'IwPk'
+#define PKG_MAGIC       0x4977506B
+
 
 #endif // _PKG_PACKAGERCONFIG_HPP_
