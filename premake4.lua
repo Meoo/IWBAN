@@ -37,9 +37,6 @@ newoption {
 -- SFML2 configuration
 dofile "make/SFML.lua"
 
--- MwUtil configuration
-dofile "make/MwUtil.lua"
-
 -- Boost configuration
 dofile "make/Boost.lua"
 
