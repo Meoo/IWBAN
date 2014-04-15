@@ -20,5 +20,13 @@ void WorldScreen::onRender(gfx::Renderer & renderer) const
     _world.render(renderer);
 }
 
+void WorldScreen::onShow()
+{
+}
+
+void WorldScreen::onHide()
+{
+}
+
 }
 // namespace sys

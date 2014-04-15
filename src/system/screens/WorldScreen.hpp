@@ -25,8 +25,8 @@ protected:
     virtual void    onUpdate();
     virtual void    onRender(gfx::Renderer & renderer) const;
 
-    virtual void    onShow() {}
-    virtual void    onHide() {}
+    virtual void    onShow();
+    virtual void    onHide();
 
 };
 // class WorldScreen
