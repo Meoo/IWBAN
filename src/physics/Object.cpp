@@ -11,6 +11,10 @@
 namespace phy
 {
 
+Object::Object()
+{
+}
+
 void Object::move(const ut::Vector & delta)
 {
     _position += delta;
@@ -25,16 +29,18 @@ void Object::teleport(const ut::Vector & position)
 void Object::prepare()
 {
     _last_position = _position;
+    // TODO just_teleported = false;
 }
 
-void Object::update()
+void Object::step()
 {
     if (_behavior)
     {
-        _behavior->update(*this);
+        _behavior->step(*this);
 
+        // TODO Recursive?
         for (Object & child : _childs)
-            _behavior->updateChild(*this, child);
+            _behavior->stepChild(*this, child);
     }
 }
 
@@ -45,10 +51,16 @@ void Object::setParent(Object & parent)
 
 void Object::unsetParent()
 {
-    // TODO Unlink self from parent's child list
-    // Something really wrong, like
-    // ChildHook::unlink();
-    // Where ChildHook should be a huge typedef for boost intrusive child list hook
+    // Cast this as ChildHook and unlink it
+    impl::ChildHook::unlink();
+}
+
+ut::Rectangle Object::getBoundingBox() const
+{
+    Rectangle r = getShape().getBoundingBox();
+    r.x += _position.x;
+    r.y += _position.y;
+    return r;
 }
 
 }

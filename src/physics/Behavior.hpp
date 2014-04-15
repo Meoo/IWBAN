@@ -21,10 +21,10 @@ public:
     virtual ~Behavior() {}
 
     // TODO Virtual functions
-    virtual void update(const Object &) = 0;
+    virtual void step(const Object &) = 0;
 
     // Pre-condition : parent have been updated
-    virtual void updateChild(const Object & parent, Object & child) = 0;
+    virtual void stepChild(const Object & parent, Object & child) = 0;
 
     virtual void onCollide(const CollisionData &) = 0;
 

@@ -24,40 +24,46 @@ void Simulator::remove(const Object & object)
     _objects.erase(_objects.iterator_to(object));
 }
 
-void Simulator::prepare()
+void Simulator::step()
 {
     for (Object & obj : _objects)
     {
-        obj.prepare();
+        if (obj.isAwake())
+            obj.step();
     }
-    _objects.sort(Object::Comparator());
-}
 
-void Simulator::update()
-{
-    // Perform collisions
+    // TODO May be optimized with a bubble sort?
+    _objects.sort(Object::Comparator());
+
+    // TODO Build QuadTree
+
     for (Object & obj : _objects)
     {
         if (!obj.isAwake())
             continue;
 
-        obj.update();
+        // TODO Broad phase
 
-        // Broad phase
-        // TODO Slow because we have to compute broad phases for every object
-        // ...
+        // TODO Get objects in QuadTree near obj
 
-        // Narrow phase
-        // ...
+        for (Object & other : _objects)
         {
-            // Response
-            // ...
+            if (&obj == &other)
+                continue;
+
+            // TODO Narrow phase
+
+            // TODO Collision groups
+
+            // TODO Do not perform narrow phase if both objects do not react to collisions (no behavior controller?)
+
+            if (!ut::hasIntersection(obj.getBoundingBox(), other.getBoundingBox()))
+                continue;
+
+            // TODO Response
+
         }
     }
-}
-
-void Simulator::updateSingleObject(Object & object) const
-{
 }
 
 }

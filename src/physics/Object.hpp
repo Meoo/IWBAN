@@ -18,28 +18,47 @@ namespace phy
 {
 
 class Behavior;
+class Object;
 class Shape;
+class Simulator;
 
 namespace impl
 {
-    // Tag for boost intrusive list
+    class ObjectTag {};
+
+    typedef boost::intrusive::list_base_hook<
+        boost::intrusive::tag<ObjectTag> > ObjectHook;
+
+    typedef boost::intrusive::list<Object,
+        boost::intrusive::base_hook<ObjectHook> > ObjectList;
+
+
+    // ---- ---- ---- ----
+
     class ChildTag {};
+
+    // Child-list must support auto-unlink feature ...
+    typedef boost::intrusive::list_base_hook<
+        boost::intrusive::base_hook<ChildTag>,
+        boost::intrusive::link_mode<boost::intrusive::auto_unlink> > ChildHook;
+
+    // ... so constant size = false is required too
+    typedef boost::intrusive::list<Object,
+        boost::intrusive::base_hook<ChildHook>,
+        boost::intrusive::constant_time_size<false> > ChildList;
+
 }
 // namespace impl
 
-// Child-list support auto-unlink feature
-class Object : public boost::intrusive::list_base_hook<>
-             , public boost::intrusive::list_base_hook<
-                    boost::intrusive::tag<impl::ChildTag>,
-                    boost::intrusive::link_mode<boost::intrusive::auto_unlink> >
+// TODO Public inheritance? Seems to be required for boost
+class Object : public impl::ObjectHook,
+               public impl::ChildHook
 {
 public:
     class Comparator;
 
-    typedef boost::intrusive::list<Object>      List;
-
-    typedef boost::intrusive::list<Object,
-        boost::intrusive::tag<impl::ChildTag> > ChildList;
+    typedef impl::ObjectList    List;
+    typedef impl::ChildList     ChildList;
 
 
 private:
@@ -73,8 +92,7 @@ public:
     void    move(const ut::Vector & delta);
     void    teleport(const ut::Vector & position);
 
-    void    prepare();
-    void    update();
+    void    step();
 
     void    setParent(Object & parent);
     void    unsetParent();
@@ -83,6 +101,9 @@ public:
     // Getters / setters TODO Bad collision priority get/set name
     int     getPriority() const         { return _collision_priority; }
     void    setPriority(int priority)   { _collision_priority = priority; }
+
+    const Shape & getShape() const      { return *_shape; }
+    ut::Rectangle getBoundingBox() const;
 
     bool    isAwake() const             { return _awake; }
     void    sleep()                     { _awake = false; }

@@ -15,6 +15,16 @@ namespace phy
 
 class Object;
 
+enum Direction
+{
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
+
+};
+// enum Direction
+
 /**
  * @brief
  */
@@ -23,8 +33,10 @@ class CollisionData
 public:
     Object *    first;
     Object *    second;
-    ut::Vector  collision_point;
-    ut::Vector  push_vector;
+
+    ut::Vector  origin;
+    Direction   direction;
+    float       force;
 
 };
 // class CollisionData
