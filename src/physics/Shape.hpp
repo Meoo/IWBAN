@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <utils/Rectangle.hpp>
+
 namespace phy
 {
 
@@ -16,6 +18,9 @@ class Shape
 public:
     // Virtual destructor
     virtual ~Shape() {}
+
+    // Virtual functions
+    virtual const ut::Rectangle & getBoundingBox() const = 0;
 
 };
 // class Shape

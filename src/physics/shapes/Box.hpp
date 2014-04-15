@@ -1,10 +1,10 @@
 /**
- * @file   Circle.hpp
+ * @file   Box.hpp
  * @author Bastien Brunnenstein
  */
 
-#ifndef _IWBAN_CIRCLE_HPP_
-#define _IWBAN_CIRCLE_HPP_
+#ifndef _IWBAN_BOX_HPP_
+#define _IWBAN_BOX_HPP_
 
 #include <Global.hpp>
 
@@ -13,23 +13,18 @@
 namespace phy
 {
 
-class Circle : public Shape
+class Box : public Shape
 {
 private:
     // Data members
-    float           _radius;
     ut::Rectangle   _bbox;
 
 
 public:
     // Constructor
-    Circle(float radius)
-        : _radius(radius)
+    Box(const ut::Rectangle & box)
+        : _bbox(box)
     {
-        _bbox.x = - radius;
-        _bbox.y = - radius;
-        _bbox.w = radius * 2;
-        _bbox.h = radius * 2;
     }
 
     // Virtual functions
@@ -39,9 +34,9 @@ public:
     }
 
 };
-// class Circle
+// class Box
 
 }
 // namespace phy
 
-#endif // _IWBAN_CIRCLE_HPP_
+#endif // _IWBAN_BOX_HPP_
