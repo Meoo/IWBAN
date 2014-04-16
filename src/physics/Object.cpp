@@ -7,6 +7,7 @@
 
 #include <physics/Behavior.hpp>
 #include <physics/Object.hpp>
+#include <physics/Shape.hpp>
 
 namespace phy
 {
@@ -24,12 +25,6 @@ void Object::teleport(const ut::Vector & position)
 {
     _position = position;
     // TODO just_teleported = true;
-}
-
-void Object::prepare()
-{
-    _last_position = _position;
-    // TODO just_teleported = false;
 }
 
 void Object::step()
@@ -57,7 +52,7 @@ void Object::unsetParent()
 
 ut::Rectangle Object::getBoundingBox() const
 {
-    Rectangle r = getShape().getBoundingBox();
+    ut::Rectangle r = getShape().getBoundingBox();
     r.x += _position.x;
     r.y += _position.y;
     return r;

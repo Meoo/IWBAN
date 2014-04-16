@@ -10,6 +10,7 @@
 
 #include <physics/CollisionGroup.hpp>
 
+#include <utils/Rectangle.hpp>
 #include <utils/Vector.hpp>
 
 #include <boost/intrusive/list.hpp>

@@ -19,6 +19,7 @@ public:
 };
 // class Rectangle
 
+inline
 Rectangle intersect(const Rectangle & a, const Rectangle & b)
 {
     Rectangle ret;
@@ -46,6 +47,7 @@ Rectangle intersect(const Rectangle & a, const Rectangle & b)
     return ret;
 }
 
+inline
 bool hasIntersection(const Rectangle & a, const Rectangle & b)
 {
     // TODO Can be optimized a little.
