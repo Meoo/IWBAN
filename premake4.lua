@@ -70,11 +70,11 @@ solution "IWannaBeANinja"
   objdir   ( OBJ_DIR )
 
   flags { "ExtraWarnings", "FatalWarnings", "NoRTTI" }
-  
+
   if STDLIB_STATIC then
     flags { "StaticRuntime" }
   end
-  
+
   if GPROF then
     flags { "Symbols" }
     configuration "GMake"
@@ -108,7 +108,6 @@ project "IWBAN"
 
   use_SFML    { "graphics", "audio", "window", "system" }
   use_Boost   { "iostreams", "system", "filesystem" }
-  use_MwUtil  { }
 
   configuration "Debug"
     kind "ConsoleApp"
@@ -122,7 +121,7 @@ project "IWBAN"
 project "Packager"
   language "C++"
   location( MAKE_DIR )
-  
+
   kind "ConsoleApp"
   targetname "pmk"
 
