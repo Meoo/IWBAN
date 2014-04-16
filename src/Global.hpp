@@ -27,21 +27,51 @@
               std::fflush(stderr))
 
 /**
+ * @def IWBAN_LOG_LEVEL
+ * Log level.
+ *
+ * 0 : All logs disabled
+ * 1 : Error
+ * 2 : Warning
+ * 3 : Info
+ * 4 : Debug
+ */
+#ifdef NDEBUG
+#  define IWBAN_LOG_LEVEL 2
+#else
+#  define IWBAN_LOG_LEVEL 4
+#endif
+
+/**
  * @def IWBAN_LOG_ERROR
  * @def IWBAN_LOG_WARNING
  * @def IWBAN_LOG_INFO
  * @def IWBAN_LOG_DEBUG
  * Log functions.
  */
-#define IWBAN_LOG_ERROR(...)   _IWBAN_PRINT_ERR("ERROR: " __VA_ARGS__)
-#define IWBAN_LOG_WARNING(...) _IWBAN_PRINT_ERR("WARN : " __VA_ARGS__)
 
-#ifdef NDEBUG
-#  define IWBAN_LOG_INFO(...)  _IWBAN_DO()
-#  define IWBAN_LOG_DEBUG(...) _IWBAN_DO()
+#if IWBAN_LOG_LEVEL >= 1
+#  define IWBAN_LOG_ERROR(...)   _IWBAN_PRINT_ERR("ERROR: " __VA_ARGS__)
 #else
-#  define IWBAN_LOG_INFO(...)  _IWBAN_PRINT_ERR("Info : " __VA_ARGS__)
-#  define IWBAN_LOG_DEBUG(...) _IWBAN_PRINT_ERR("Debug: " __VA_ARGS__)
+#  define IWBAN_LOG_ERROR(...)   _IWBAN_DO()
+#endif
+
+#if IWBAN_LOG_LEVEL >= 2
+#  define IWBAN_LOG_WARNING(...) _IWBAN_PRINT_ERR("WARN : " __VA_ARGS__)
+#else
+#  define IWBAN_LOG_WARNING(...) _IWBAN_DO()
+#endif
+
+#if IWBAN_LOG_LEVEL >= 3
+#  define IWBAN_LOG_INFO(...)    _IWBAN_PRINT_ERR("Info : " __VA_ARGS__)
+#else
+#  define IWBAN_LOG_INFO(...)    _IWBAN_DO()
+#endif
+
+#if IWBAN_LOG_LEVEL >= 4
+#  define IWBAN_LOG_DEBUG(...)   _IWBAN_PRINT_ERR("Debug: " __VA_ARGS__)
+#else
+#  define IWBAN_LOG_DEBUG(...)   _IWBAN_DO()
 #endif
 
 // ---- ---- ---- ----
