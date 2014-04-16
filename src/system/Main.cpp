@@ -32,8 +32,8 @@ int main(int argc, char ** argv)
     display.open();
 
 
-    IWBAN_LOG_INFO("Initializing main projector\n");
-    sys::Projector main_projector(new sys::IntroScreen());
+    IWBAN_LOG_INFO("Initializing projector\n");
+    sys::Projector projector(new sys::IntroScreen());
 
 
     // Loop until the game is closed
@@ -44,7 +44,7 @@ int main(int argc, char ** argv)
         try
         {
             // Run the game (blocking)
-            display.run(main_projector);
+            display.run(projector);
 
             // Exit the loop if the game is closed in a clean way
             close = true;
@@ -62,24 +62,24 @@ int main(int argc, char ** argv)
             IWBAN_LOG_ERROR("%s : %s\n", exception.title(), exception.what());
 
             // IWBAN exception caught
-            main_projector.setScreen(
-                new sys::ExceptionScreen(main_projector.getCurrentScreen()));
+            projector.setScreen(
+                new sys::ExceptionScreen(projector.getCurrentScreen()));
         }
         catch (const std::exception & exception)
         {
             IWBAN_LOG_ERROR("Exception : %s\n", exception.what());
 
             // Standard exception caught
-            main_projector.setScreen(
-                new sys::ExceptionScreen(main_projector.getCurrentScreen()));
+            projector.setScreen(
+                new sys::ExceptionScreen(projector.getCurrentScreen()));
         }
         catch (...)
         {
             IWBAN_LOG_ERROR("Unknown exception caught\n");
 
             // Unknown exception caught
-            main_projector.setScreen(
-                new sys::ExceptionScreen(main_projector.getCurrentScreen()));
+            projector.setScreen(
+                new sys::ExceptionScreen(projector.getCurrentScreen()));
         }
     }
 
@@ -93,7 +93,6 @@ int main(int argc, char ** argv)
 
     IWBAN_LOG_INFO("Saving configuration\n");
     cfg::save();
-
 
     return 0;
 }

@@ -150,7 +150,10 @@ void initialize(bool enable_threading)
     threading_enabled = enable_threading;
 
     if (!enable_threading)
+    {
+        IWBAN_LOG_INFO("Threading is disabled");
         return;
+    }
 
     // Jobs
     first_job = 0;
@@ -176,6 +179,8 @@ void initialize(bool enable_threading)
 
     if (threads > WORKERS_MAX)
         threads = WORKERS_MAX;
+
+    IWBAN_LOG_INFO("Starting %u workers\n", threads);
 
     std::memset(worker_pool, 0, sizeof(worker_pool));
     for (unsigned wi = 0; wi < threads; ++wi)
