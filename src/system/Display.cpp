@@ -301,7 +301,7 @@ void Display::run(sys::Projector & projector)
         // Display FPS results every 1000 frames
         if ((++fps_counter) >= 1000)
         {
-            std::cout << "FPS : "<< (fps_counter / fps_clock.getElapsedTime().asSeconds()) << std::endl;
+            std::cout << "FPS  : "<< (fps_counter / fps_clock.getElapsedTime().asSeconds()) << std::endl;
             fps_clock.restart();
             fps_counter = 0;
         }
@@ -314,13 +314,13 @@ void Display::run(sys::Projector & projector)
     sf::Time perf_total = global_clock.getElapsedTime();
 
     std::cout << "Average FPS : " << (total_fps_counter / perf_total.asSeconds()) << std::endl
-              << "Time elapsed in the different sections (in %) :" << std::endl
+              << "  Time elapsed in the different sections (in %) :" << std::endl
               << std::setprecision(1) << std::fixed
-              << "Events  : " << (perf_event / perf_total) * 100 << std::endl
-              << "Update  : " << (perf_update / perf_total) * 100 << std::endl
-              << "Draw    : " << (perf_draw / perf_total) * 100 << std::endl
-              << "Display : " << (perf_display / perf_total) * 100 << std::endl
-              << "Other   : " << (1 - (perf_event + perf_update + perf_draw + perf_display) / perf_total) * 100 << std::endl;
+              << "  Events  : " << (perf_event / perf_total) * 100 << std::endl
+              << "  Update  : " << (perf_update / perf_total) * 100 << std::endl
+              << "  Draw    : " << (perf_draw / perf_total) * 100 << std::endl
+              << "  Display : " << (perf_display / perf_total) * 100 << std::endl
+              << "  Other   : " << (1 - (perf_event + perf_update + perf_draw + perf_display) / perf_total) * 100 << std::endl;
 #endif
 }
 // Display::run()

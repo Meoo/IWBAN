@@ -20,11 +20,13 @@
 #include <string>
 
 
-#define _IWBAN_DO(action)       do { action; } while(0)
+#define _IWBAN_DO(action)   do { action; } while(0)
 
-#define _IWBAN_PRINT_ERR(...)                       \
-    _IWBAN_DO(std::fprintf(stderr, __VA_ARGS__);    \
-              std::fflush(stderr))
+#define _IWBAN_LOG_FILE     stderr
+
+#define _IWBAN_PRINT_LOG(...)                               \
+    _IWBAN_DO(std::fprintf(_IWBAN_LOG_FILE, __VA_ARGS__);   \
+              std::fflush(_IWBAN_LOG_FILE))
 
 /**
  * @def IWBAN_LOG_LEVEL
@@ -51,25 +53,25 @@
  */
 
 #if IWBAN_LOG_LEVEL >= 1
-#  define IWBAN_LOG_ERROR(...)   _IWBAN_PRINT_ERR("ERROR: " __VA_ARGS__)
+#  define IWBAN_LOG_ERROR(...)   _IWBAN_PRINT_LOG("ERROR: " __VA_ARGS__)
 #else
 #  define IWBAN_LOG_ERROR(...)   _IWBAN_DO()
 #endif
 
 #if IWBAN_LOG_LEVEL >= 2
-#  define IWBAN_LOG_WARNING(...) _IWBAN_PRINT_ERR("WARN : " __VA_ARGS__)
+#  define IWBAN_LOG_WARNING(...) _IWBAN_PRINT_LOG("WARN : " __VA_ARGS__)
 #else
 #  define IWBAN_LOG_WARNING(...) _IWBAN_DO()
 #endif
 
 #if IWBAN_LOG_LEVEL >= 3
-#  define IWBAN_LOG_INFO(...)    _IWBAN_PRINT_ERR("Info : " __VA_ARGS__)
+#  define IWBAN_LOG_INFO(...)    _IWBAN_PRINT_LOG("Info : " __VA_ARGS__)
 #else
 #  define IWBAN_LOG_INFO(...)    _IWBAN_DO()
 #endif
 
 #if IWBAN_LOG_LEVEL >= 4
-#  define IWBAN_LOG_DEBUG(...)   _IWBAN_PRINT_ERR("Debug: " __VA_ARGS__)
+#  define IWBAN_LOG_DEBUG(...)   _IWBAN_PRINT_LOG("Debug: " __VA_ARGS__)
 #else
 #  define IWBAN_LOG_DEBUG(...)   _IWBAN_DO()
 #endif
