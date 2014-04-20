@@ -1,16 +1,18 @@
 /**
- * @file   EntityHandle.cpp
+ * @file   Entity.cpp
  * @author Bastien Brunnenstein
  */
 
 #include <Global.hpp>
 
-#include <game/EntityHandle.hpp>
+#include <game/Entity.hpp>
 
 #include <game/World.hpp>
 
 namespace game
 {
+
+// ---- ---- ---- ----
 
 void EntityHandle::reset(Entity * entity)
 {
