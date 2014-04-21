@@ -20,6 +20,9 @@ enum CollisionGroup
     TRAP        = 0x10,
     TRIGGER     = 0x20,
     SPECIAL     = 0x40,
+
+    NONE        = 0x00,
+    ALL         = 0xFF,
 };
 // enum CollisionGroup
 

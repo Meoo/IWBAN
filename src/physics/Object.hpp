@@ -64,15 +64,15 @@ public:
 
 private:
     // Data members
-    Shape *         _shape;
+    const Shape *   _shape;
 
     ChildList       _childs;
 
-    ut::Vector      _position;
-    ut::Vector      _last_position;
-
     Behavior *      _behavior;
     void *          _user_data;
+
+    ut::Vector      _position;
+    ut::Vector      _last_position;
 
     CollisionGroup  _solidity;
     CollisionGroup  _collides_with;
@@ -87,23 +87,33 @@ private:
 
 public:
     // Constructor
-            Object();
+    explicit Object(const Shape * shape, Behavior * behavior = 0);
 
     // Functions
     void    move(const ut::Vector & delta);
-    void    teleport(const ut::Vector & position);
 
     void    step();
+
+    void    collideWith(Object & other);
 
     void    setParent(Object & parent);
     void    unsetParent();
     // TODO getParent()? not required?
 
-    // Getters / setters TODO Bad collision priority get/set name
+    // Getters / setters
+    const Shape * getShape() const              { return _shape; }
+    void          setShape(const Shape * shape) { BOOST_ASSERT(shape); _shape = shape; }
+
+    Behavior * getBehavior() const              { return _behavior; }
+    void       setBehavior(Behavior * behavior) { _behavior = behavior; }
+
+    const ut::Vector &  getPosition() const     { return _position; }
+    void                setPosition(const ut::Vector & position);
+
+    // TODO Bad collision priority get/set name
     int     getPriority() const         { return _collision_priority; }
     void    setPriority(int priority)   { _collision_priority = priority; }
 
-    const Shape & getShape() const      { return *_shape; }
     ut::Rectangle getBoundingBox() const;
 
     bool    isAwake() const             { return _awake; }

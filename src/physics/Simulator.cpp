@@ -5,6 +5,8 @@
 
 #include <Global.hpp>
 
+#include <physics/CollisionData.hpp>
+#include <physics/Shape.hpp>
 #include <physics/Simulator.hpp>
 
 namespace phy
@@ -51,17 +53,8 @@ void Simulator::step()
             if (&obj == &other)
                 continue;
 
-            // TODO Narrow phase
-
-            // TODO Collision groups
-
-            // TODO Do not perform narrow phase if both objects do not react to collisions (no behavior controller?)
-
-            if (!ut::hasIntersection(obj.getBoundingBox(), other.getBoundingBox()))
-                continue;
-
-            // TODO Response
-
+            // Narrow phase
+            obj.collideWith(other);
         }
     }
 }

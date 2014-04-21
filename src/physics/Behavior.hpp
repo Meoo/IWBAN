@@ -24,9 +24,10 @@ public:
     virtual void step(const Object &) = 0;
 
     // Pre-condition : parent have been updated
-    virtual void stepChild(const Object & parent, Object & child) = 0;
+    virtual void stepChild(const Object & object, Object & child) = 0;
 
-    virtual void onCollide(const CollisionData &) = 0;
+    virtual void onCollide(Object & object, Object & other,
+                           const CollisionData & data) = 0;
 
     // Callbacks used when an Object starts and stop using this Behavior
     // Used to setup and free user_data pointer

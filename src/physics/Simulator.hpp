@@ -29,7 +29,6 @@ public:
     void step();
 
     // TODO updateSingleObject ?
-    void updateSingleObject(Object & object) const;
 
 };
 // class Simulator
