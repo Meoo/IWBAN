@@ -8,6 +8,7 @@
 #include <config/Config.hpp>
 
 #include <system/Display.hpp>
+#include <system/Projector.hpp>
 #include <system/exceptions/RestartApp.hpp>
 
 #include <resources/File.hpp>
@@ -15,14 +16,14 @@
 #include <SFML/OpenGL.hpp>
 
 // Manually enable perf. monitoring
-//#define DISPLAY_PERF
+//#define PERF_MONITORING
 
 // Always enabled in Debug mode
 #ifndef NDEBUG
-#   define DISPLAY_PERF
+#   define PERF_MONITORING
 #endif
 
-#ifdef DISPLAY_PERF
+#ifdef PERF_MONITORING
 #   include <iostream>
 #   include <iomanip> // setprecision
 #endif
@@ -33,30 +34,30 @@ namespace sys
 Display::Display()
     : bg_mesh(sf::Quads, 4)
 {
-    IWBAN_DEBUG(ready = false);
+    IWBAN_DEBUG(_ready = false);
 }
 
 // ---- ---- ---- ----
 
 void Display::open()
 {
-    BOOST_ASSERT(!ready);
+    BOOST_ASSERT(!_ready);
 
     if (cfg::fullscreen)
         // Fullscreen
-        win.create(sf::VideoMode::getFullscreenModes().at(0),
-                   IWBAN_GAME_NAME, sf::Style::Fullscreen);
+        _window.create(sf::VideoMode::getFullscreenModes().at(0),
+                IWBAN_GAME_NAME, sf::Style::Fullscreen);
 
     else
         // Windowed
-        win.create(sf::VideoMode(cfg::window_width, cfg::window_height),
-                   IWBAN_GAME_NAME, sf::Style::Default);
+        _window.create(sf::VideoMode(cfg::window_width, cfg::window_height),
+                IWBAN_GAME_NAME, sf::Style::Default);
 
     // Window properties
-    win.setFramerateLimit(cfg::framerate);
-    win.setVerticalSyncEnabled(cfg::vsync);
-    win.setMouseCursorVisible(false);
-    win.setKeyRepeatEnabled(false);
+    _window.setFramerateLimit(cfg::framerate);
+    _window.setVerticalSyncEnabled(cfg::vsync);
+    _window.setMouseCursorVisible(false);
+    _window.setKeyRepeatEnabled(false);
 
     // Window icon
     if (win_icon.getSize().x <= 0)
@@ -64,7 +65,7 @@ void Display::open()
         res::File icon_file = res::openFile("system/icon.png");
         win_icon.loadFromMemory(icon_file.getData(), icon_file.getSize());
     }
-    win.setIcon(win_icon.getSize().x, win_icon.getSize().y,
+    _window.setIcon(win_icon.getSize().x, win_icon.getSize().y,
                 win_icon.getPixelsPtr());
 
     // Background data
@@ -84,7 +85,7 @@ void Display::open()
         bg_view.setSize(1, 1);
     }
 
-    IWBAN_DEBUG(ready = true);
+    IWBAN_DEBUG(_ready = true);
 }
 // Display::open()
 
@@ -92,27 +93,27 @@ void Display::open()
 
 void Display::close()
 {
-    BOOST_ASSERT(ready);
+    BOOST_ASSERT(_ready);
 
-    win.close();
+    _window.close();
 
-    IWBAN_DEBUG(ready = false);
+    IWBAN_DEBUG(_ready = false);
 }
 
 // ---- ---- ---- ----
 
 void Display::run(sys::Projector & projector)
 {
-    BOOST_ASSERT(ready);
+    BOOST_ASSERT(_ready);
 
     updateSceneView();
 
     // Scene data
-    gfx::Renderer   renderer(win);
+    gfx::Renderer   renderer(_window);
     sf::Clock       global_clock;
     sf::Time        next_update(sf::seconds(IWBAN_UPDATE_TIME));
 
-#ifdef DISPLAY_PERF
+#ifdef PERF_MONITORING
     // FPS counter
     sf::Clock       fps_clock;
     unsigned        fps_counter = 0;
@@ -123,6 +124,13 @@ void Display::run(sys::Projector & projector)
     sf::Time        perf_update;
     sf::Time        perf_draw;
     sf::Time        perf_display;
+
+#   define PERF_BEGIN(type) perf_ ## type -= global_clock.getElapsedTime()
+#   define PERF_END(type)   perf_ ## type += global_clock.getElapsedTime()
+
+#else
+#   define PERF_BEGIN(type)
+#   define PERF_END(type)
 #endif
 
 #ifndef NDEBUG
@@ -134,30 +142,28 @@ void Display::run(sys::Projector & projector)
     // ---- ---- ---- ----
 
     // Main loop
-    while(win.isOpen())
+    while(_window.isOpen())
     {
-#ifdef DISPLAY_PERF
-        perf_event -= global_clock.getElapsedTime();
-#endif
+        PERF_BEGIN(event);
 
         // Event polling
         sf::Event event;
-        while (win.pollEvent(event))
+        while (_window.pollEvent(event))
         {
             switch(event.type)
             {
             case sf::Event::Closed:
-                win.close();
+                _window.close();
                 break;
 
             case sf::Event::Resized:
                 IWBAN_LOG_DEBUG("Window resized\n");
-                if (win.getSize().x < IWBAN_FRAME_WIDTH ||
-                    win.getSize().y < IWBAN_FRAME_HEIGHT)
+                if (_window.getSize().x < IWBAN_FRAME_WIDTH ||
+                    _window.getSize().y < IWBAN_FRAME_HEIGHT)
                 {
-                    win.setSize(sf::Vector2u(
-                        std::max(win.getSize().x, (unsigned) IWBAN_FRAME_WIDTH),
-                        std::max(win.getSize().y, (unsigned) IWBAN_FRAME_HEIGHT)));
+                    _window.setSize(sf::Vector2u(
+                        std::max(_window.getSize().x, (unsigned) IWBAN_FRAME_WIDTH),
+                        std::max(_window.getSize().y, (unsigned) IWBAN_FRAME_HEIGHT)));
                     break;
                 }
 
@@ -198,10 +204,8 @@ void Display::run(sys::Projector & projector)
             }
         }
 
-#ifdef DISPLAY_PERF
-        perf_event += global_clock.getElapsedTime();
-        perf_update -= global_clock.getElapsedTime();
-#endif
+        PERF_END(event);
+        PERF_BEGIN(update);
 
 #ifndef NDEBUG
         // DEBUG : Allow the game to be paused by pressing Insert key
@@ -224,45 +228,43 @@ void Display::run(sys::Projector & projector)
         {
 #endif
 
-        // Update rate is always IWBAN_UPDATE_RATE
-        int update_count = 0;
-        while (global_clock.getElapsedTime() > next_update)
-        {
-            // Scene update
-            projector.update();
-
-            next_update += sf::seconds(IWBAN_UPDATE_TIME);
-
-            // Prevent game lock by limiting consecutive updates
-            if (++update_count >= IWBAN_MAX_UPDATES_FRAME)
+            // Update rate is always IWBAN_UPDATE_RATE
+            int update_count = 0;
+            while (global_clock.getElapsedTime() > next_update)
             {
-                // Issue a warning when the game is slowing down,
-                // and reset next_update timer to prevent
-                // update burst after a lag spike
-                if (global_clock.getElapsedTime() > next_update)
-                {
-                    next_update = global_clock.getElapsedTime()
-                                + sf::seconds(IWBAN_UPDATE_TIME);
-                    IWBAN_LOG_WARNING("Game is slowing down!\n");
-                }
+                // Scene update
+                projector.update();
 
-                break;
+                next_update += sf::seconds(IWBAN_UPDATE_TIME);
+
+                // Prevent game lock by limiting consecutive updates
+                if (++update_count >= IWBAN_MAX_UPDATES_FRAME)
+                {
+                    // Issue a warning when the game is slowing down,
+                    // and reset next_update timer to prevent
+                    // update burst after a lag spike
+                    if (global_clock.getElapsedTime() > next_update)
+                    {
+                        next_update = global_clock.getElapsedTime()
+                                    + sf::seconds(IWBAN_UPDATE_TIME);
+                        IWBAN_LOG_WARNING("Game is slowing down!\n");
+                    }
+
+                    break;
+                }
             }
-        }
 
 #ifndef NDEBUG
         } // else if (pause)
 #endif
 
-#ifdef DISPLAY_PERF
-        perf_update += global_clock.getElapsedTime();
-        perf_draw -= global_clock.getElapsedTime();
-#endif
+        PERF_END(update);
+        PERF_BEGIN(draw);
 
         // Background rendering
         if (marginX > 0 || marginY > 0)
         {
-            win.setView(bg_view);
+            _window.setView(bg_view);
 
             float t = global_clock.getElapsedTime().asSeconds();
             float t2 = - t/2;
@@ -277,27 +279,25 @@ void Display::run(sys::Projector & projector)
             bg_mesh[2].texCoords.y = winH2 + t2;
             bg_mesh[3].texCoords.y = winH2 + t2;
 
-            win.draw(bg_mesh, &bg_tex);
+            _window.draw(bg_mesh, &bg_tex);
         }
 
         // Scene rendering
-        win.setView(render_view);
+        _window.setView(render_view);
 
         renderer.begin();
         projector.render(renderer);
         renderer.end();
 
-#ifdef DISPLAY_PERF
-        perf_draw += global_clock.getElapsedTime();
-        perf_display -= global_clock.getElapsedTime();
-#endif
+        PERF_END(draw);
+        PERF_BEGIN(display);
 
         // Display on screen
-        win.display();
+        _window.display();
 
-#ifdef DISPLAY_PERF
-        perf_display += global_clock.getElapsedTime();
+        PERF_END(display);
 
+#ifdef PERF_MONITORING
         // Display FPS results every 1000 frames
         if ((++fps_counter) >= 1000)
         {
@@ -310,9 +310,10 @@ void Display::run(sys::Projector & projector)
 
     } // while(win.isOpen())
 
-#ifdef DISPLAY_PERF
+#ifdef PERF_MONITORING
     sf::Time perf_total = global_clock.getElapsedTime();
 
+    // Dump performance monitoring results to standard output
     std::cout << "Average FPS : " << (total_fps_counter / perf_total.asSeconds()) << std::endl
               << "  Time elapsed in the different sections (in %) :" << std::endl
               << std::setprecision(1) << std::fixed
@@ -329,16 +330,16 @@ void Display::run(sys::Projector & projector)
 
 void Display::updateSceneView()
 {
-    zoom = std::min(win.getSize().x / (float) IWBAN_FRAME_WIDTH,
-                    win.getSize().y / (float) IWBAN_FRAME_HEIGHT);
+    zoom = std::min(_window.getSize().x / (float) IWBAN_FRAME_WIDTH,
+                    _window.getSize().y / (float) IWBAN_FRAME_HEIGHT);
     if (cfg::zoom_multiplier)
         zoom = zoom - std::fmod(zoom + 0.00001f, cfg::zoom_multiplier);
-    winW2 = win.getSize().x / 2;
-    winH2 = win.getSize().y / 2;
+    winW2 = _window.getSize().x / 2;
+    winH2 = _window.getSize().y / 2;
     sceneW = IWBAN_FRAME_WIDTH * zoom;
     sceneH = IWBAN_FRAME_HEIGHT * zoom;
-    marginX = (win.getSize().x - sceneW) / 2;
-    marginY = (win.getSize().y - sceneH) / 2;
+    marginX = (_window.getSize().x - sceneW) / 2;
+    marginY = (_window.getSize().y - sceneH) / 2;
     render_view.setCenter(IWBAN_FRAME_WIDTH / 2, IWBAN_FRAME_HEIGHT / 2);
     render_view.setSize(IWBAN_FRAME_WIDTH + marginX * 2 / zoom,
                         IWBAN_FRAME_HEIGHT + marginY * 2 / zoom);

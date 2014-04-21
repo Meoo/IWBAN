@@ -8,12 +8,12 @@
 
 #include <Global.hpp>
 
-#include <system/Projector.hpp>
-
 #include <SFML/Graphics.hpp>
 
 namespace sys
 {
+
+class Projector;
 
 class Display
 {
@@ -21,7 +21,7 @@ private:
     // TODO Rename data members
     // Data members
     // Render window
-    sf::RenderWindow    win;
+    sf::RenderWindow    _window;
 
     // Icon and background data
     sf::Image           win_icon;
@@ -40,7 +40,7 @@ private:
     sf::View            render_view;
 
     // Debug variable
-    IWBAN_DEBUG(bool    ready);
+    IWBAN_DEBUG(bool    _ready);
 
 
 public:
@@ -52,7 +52,7 @@ public:
 
     void close();
 
-    void run(sys::Projector & projector);
+    void run(Projector & projector);
 
 
 private:
