@@ -6,6 +6,8 @@
 #ifndef _IWBAN_RECTANGLE_HPP_
 #define _IWBAN_RECTANGLE_HPP_
 
+#include <Global.hpp>
+
 namespace ut
 {
 
@@ -16,6 +18,11 @@ public:
     float y;
     float w;
     float h;
+
+    bool isEmpty()
+    {
+        return w <= 0 || h <= 0;
+    }
 };
 // class Rectangle
 
@@ -50,9 +57,8 @@ Rectangle intersect(const Rectangle & a, const Rectangle & b)
 inline
 bool hasIntersection(const Rectangle & a, const Rectangle & b)
 {
-    // TODO Can be optimized a little.
-    Rectangle i = intersect(a, b);
-    return i.w > 0 && i.h > 0;
+    // TODO Can be optimized a little ?
+    return !intersect(a, b).isEmpty();
 }
 
 }
