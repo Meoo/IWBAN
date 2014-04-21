@@ -10,6 +10,10 @@
 
 #include <physics/Object.hpp>
 
+#ifndef NDEBUG
+#  include <graphics/contexts/DrawContext.hpp>
+#endif
+
 namespace phy
 {
 
@@ -29,6 +33,10 @@ public:
     void step();
 
     // TODO updateSingleObject ?
+
+#ifndef NDEBUG
+    void drawDebug(gfx::DrawContext & debug_context) const;
+#endif
 
 };
 // class Simulator

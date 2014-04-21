@@ -13,6 +13,11 @@
 
 #include <utils/Rectangle.hpp>
 
+#ifndef NDEBUG
+#  include <graphics/contexts/DrawContext.hpp>
+#  include <utils/Vector.hpp>
+#endif
+
 namespace phy
 {
 
@@ -24,6 +29,11 @@ public:
 
     // Virtual functions
     virtual const ut::Rectangle & getBoundingBox() const = 0;
+
+#ifndef NDEBUG
+    virtual void drawDebug(gfx::DrawContext & debug_context,
+                           const ut::Vector & origin, const sf::Color & color) const = 0;
+#endif
 
 };
 // class Shape

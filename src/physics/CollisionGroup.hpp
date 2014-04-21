@@ -8,6 +8,10 @@
 
 #include <Global.hpp>
 
+#ifndef NDEBUG
+#  include <SFML/Graphics.hpp>
+#endif
+
 namespace phy
 {
 
@@ -25,6 +29,29 @@ enum CollisionGroup
     ALL         = 0xFF,
 };
 // enum CollisionGroup
+
+#ifndef NDEBUG
+inline
+sf::Color getColorFromCollisionGroup(CollisionGroup group)
+{
+    if (group & WORLD)
+        return sf::Color::Blue;
+
+    if (group & PLAYER)
+        return sf::Color::Green;
+
+    if (group & SPECIAL)
+        return sf::Color::Cyan;
+
+    if (group & (ENEMY | TRAP))
+        return sf::Color::Red;
+
+    if (group & TRIGGER)
+        return sf::Color::Magenta;
+
+    return sf::Color::Yellow;
+}
+#endif
 
 }
 // namespace phy

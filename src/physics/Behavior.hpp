@@ -21,7 +21,7 @@ public:
     virtual ~Behavior() {}
 
     // TODO Virtual functions
-    virtual void step(const Object &) = 0;
+    virtual void step(Object & object) = 0;
 
     // Pre-condition : parent have been updated
     virtual void stepChild(const Object & object, Object & child) = 0;

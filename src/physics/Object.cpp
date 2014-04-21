@@ -21,6 +21,7 @@ Object::Object(const Shape * shape, Behavior * behavior)
 void Object::move(const ut::Vector & delta)
 {
     _position += delta;
+    wake();
 }
 
 void Object::step()
@@ -33,6 +34,8 @@ void Object::step()
         for (Object & child : _childs)
             _behavior->stepChild(*this, child);
     }
+    else
+        sleep();
 }
 
 void Object::collideWith(Object & other)
@@ -41,10 +44,10 @@ void Object::collideWith(Object & other)
     if (!getBehavior() && !other.getBehavior())
         return;
 
-    // Collision groups
-    if (!(_solidity & other._collides_with)
+    // TODO Collision groups
+    /*if (!(_solidity & other._collides_with)
      || !(other._solidity & _collides_with))
-        return;
+        return;*/
 
     // Check intersection between objects (before a more precise computation)
     if (!ut::hasIntersection(getBoundingBox(), other.getBoundingBox()))
@@ -79,6 +82,7 @@ void Object::setPosition(const ut::Vector & position)
 {
     _position = position;
     // TODO just_teleported = true;
+    wake();
 }
 
 ut::Rectangle Object::getBoundingBox() const
@@ -88,6 +92,18 @@ ut::Rectangle Object::getBoundingBox() const
     r.y += _position.y;
     return r;
 }
+
+#ifndef NDEBUG
+void Object::drawDebug(gfx::DrawContext & debug_context) const
+{
+    sf::Color col = getColorFromCollisionGroup(_solidity);
+
+    if (!isAwake())
+        col *= sf::Color(128, 128, 128);
+
+    getShape()->drawDebug(debug_context, getPosition(), col);
+}
+#endif
 
 }
 // namespace phy

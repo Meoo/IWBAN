@@ -59,5 +59,13 @@ void Simulator::step()
     }
 }
 
+#ifndef NDEBUG
+void Simulator::drawDebug(gfx::DrawContext & debug_context) const
+{
+    for (const Object & obj : _objects)
+        obj.drawDebug(debug_context);
+}
+#endif
+
 }
 // namespace phy

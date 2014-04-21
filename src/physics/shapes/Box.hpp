@@ -33,6 +33,22 @@ public:
         return _bbox;
     }
 
+#ifndef NDEBUG
+    virtual void drawDebug(gfx::DrawContext & debug_context,
+                           const ut::Vector & origin, const sf::Color & color) const
+    {
+        sf::RectangleShape shape(sf::Vector2f(_bbox.w, _bbox.h));
+
+        shape.setFillColor(sf::Color::Transparent);
+        shape.setOutlineThickness(-1);
+        shape.setOutlineColor(color);
+
+        shape.setPosition(origin.x + _bbox.x, origin.y + _bbox.y);
+
+        debug_context.draw(shape);
+    }
+#endif
+
 };
 // class Box
 

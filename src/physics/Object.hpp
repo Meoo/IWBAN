@@ -15,6 +15,10 @@
 
 #include <boost/intrusive/list.hpp>
 
+#ifndef NDEBUG
+#  include <graphics/contexts/DrawContext.hpp>
+#endif
+
 namespace phy
 {
 
@@ -74,6 +78,8 @@ private:
     ut::Vector      _position;
     ut::Vector      _last_position;
 
+    ut::Vector      _velocity;
+
     CollisionGroup  _solidity;
     CollisionGroup  _collides_with;
 
@@ -110,6 +116,9 @@ public:
     const ut::Vector &  getPosition() const     { return _position; }
     void                setPosition(const ut::Vector & position);
 
+    const ut::Vector &  getVelocity() const                         { return _velocity; }
+    void                setVelocity(const ut::Vector & velocity)    { _velocity = velocity; }
+
     // TODO Bad collision priority get/set name
     int     getPriority() const         { return _collision_priority; }
     void    setPriority(int priority)   { _collision_priority = priority; }
@@ -119,6 +128,11 @@ public:
     bool    isAwake() const             { return _awake; }
     void    sleep()                     { _awake = false; }
     void    wake()                      { _awake = true; }
+
+
+#ifndef NDEBUG
+    void drawDebug(gfx::DrawContext & debug_context) const;
+#endif
 
 
     class Comparator
