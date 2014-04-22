@@ -83,7 +83,8 @@ private:
 
 // ---- ---- ---- ----
 
-inline World & getWorld()
+inline
+World & getWorld()
 {
     static World s_world;
     return s_world;

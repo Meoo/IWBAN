@@ -83,7 +83,8 @@ protected:
     {
         const float spd = 3.f;
 
-        ut::Vector d;
+        ut::Vector d = obj->getVelocity();
+        d.x = 0;
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
             d.x = spd;
@@ -91,10 +92,10 @@ protected:
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
             d.x = - spd;
 
-        obj->move(d);
-
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-            obj->setVelocity(ut::Vector(0, -6));
+            d.y = - 6;
+
+        obj->setVelocity(d);
 
         sim.step();
     }

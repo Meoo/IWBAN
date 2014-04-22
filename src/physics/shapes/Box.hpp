@@ -25,6 +25,7 @@ public:
     Box(const ut::Rectangle & box)
         : _bbox(box)
     {
+        BOOST_ASSERT(box.w > 0 && box.h > 0);
     }
 
     // Virtual functions

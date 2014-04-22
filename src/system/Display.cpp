@@ -13,8 +13,6 @@
 
 #include <resources/File.hpp>
 
-#include <SFML/OpenGL.hpp>
-
 // Manually enable perf. monitoring
 //#define PERF_MONITORING
 
