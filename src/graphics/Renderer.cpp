@@ -14,16 +14,6 @@
 
 #include <resources/File.hpp>
 
-namespace
-{
-
-#ifndef NDEBUG
-const sf::Clock debug_bg_block;
-#endif
-
-}
-// namespace
-
 namespace gfx
 {
 

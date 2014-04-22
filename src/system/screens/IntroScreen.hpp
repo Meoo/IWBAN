@@ -10,59 +10,10 @@
 
 #include <system/Screen.hpp>
 
-#include <physics/Behavior.hpp>
+#include <physics/behaviors/PhysicsBehavior.hpp>
 #include <physics/Simulator.hpp>
 #include <physics/Object.hpp>
 #include <physics/shapes/Box.hpp>
-
-class TestBehavior : public phy::Behavior
-{
-public:
-    virtual void step(phy::Object & object)
-    {
-        ut::Vector vel = object.getVelocity();
-
-        vel.y += 0.3f;
-        object.setVelocity(vel);
-        object.move(vel);
-    }
-
-    virtual void stepChild(const phy::Object & object, phy::Object & child)
-    {
-        child.move(object.getVelocity());
-        child.wake();
-    }
-
-    virtual void onCollide(phy::Object & object, phy::Object & other, const phy::CollisionData & data)
-    {
-        ut::Vector delta_vel = other.getVelocity() - object.getVelocity();
-
-        if (std::abs(data.intersect.x - delta_vel.x)
-          > std::abs(data.intersect.y - delta_vel.y))
-        {
-            object.move(ut::Vector(0, data.intersect.y));
-
-            ut::Vector vel = object.getVelocity();
-            vel.y = 0;
-            object.setVelocity(vel);
-        }
-        else
-        {
-            object.move(ut::Vector(data.intersect.x, 0));
-
-            ut::Vector vel = object.getVelocity();
-            vel.x = 0;
-            object.setVelocity(vel);
-        }
-    }
-
-    virtual void prepare(phy::Object &)
-    {
-    }
-    virtual void free(phy::Object &)
-    {
-    }
-};
 
 namespace sys
 {
@@ -76,7 +27,7 @@ protected:
     phy::Object * obj3;
     phy::Box * box;
     phy::Box * box2;
-    TestBehavior behavior;
+    phy::PhysicsBehavior behavior;
 
     // Callbacks
     virtual void    onUpdate()
@@ -102,12 +53,12 @@ protected:
 
     virtual void    onRender(gfx::Renderer & renderer) const
     {
-        // Color
-        gfx::DrawContext & draw = renderer.openDrawContext();
+        // Debug
+        gfx::DrawContext & debug = renderer.openDebugContext();
 
-        sim.drawDebug(draw);
+        sim.drawDebug(debug);
 
-        draw.close();
+        debug.close();
     }
 
     virtual void    onShow()
