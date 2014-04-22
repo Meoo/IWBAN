@@ -8,7 +8,7 @@
 
 #include <Global.hpp>
 
-#include <boost/property_tree/ptree.hpp>
+//#include <boost/property_tree/ptree.hpp>
 
 #include <SFML/System.hpp>
 
@@ -19,10 +19,10 @@ class Locale
 {
 private:
     // TODO wstring instead of sf:String? and remove include?
-    typedef boost::property_tree::basic_ptree<std::string, sf::String> Dictionnary;
+    //typedef boost::property_tree::basic_ptree<std::string, sf::String> Dictionnary;
 
     // Data members
-    Dictionnary _dict;
+    //Dictionnary _dict;
 
 
 public:
