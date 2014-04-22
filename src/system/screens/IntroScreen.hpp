@@ -25,6 +25,7 @@ protected:
     phy::Object * obj;
     phy::Object * obj2;
     phy::Object * obj3;
+    phy::Object * obj4;
     phy::Box * box;
     phy::Box * box2;
     phy::PhysicsBehavior behavior;
@@ -56,6 +57,7 @@ protected:
         // Debug
         gfx::DrawContext & debug = renderer.openDebugContext();
 
+        debug.fill(sf::Color(5,25,50));
         sim.drawDebug(debug);
 
         debug.close();
@@ -83,20 +85,25 @@ protected:
         obj->wake();
 
         obj2 = new phy::Object(box2);
-        obj2->setPosition(ut::Vector(200, 250));
+        obj2->setPosition(ut::Vector(150, 250));
 
         obj3 = new phy::Object(box2);
         obj3->setPosition(ut::Vector(450, 250));
 
+        obj4 = new phy::Object(box2);
+        obj4->setPosition(ut::Vector(300, 400));
+
         sim.add(*obj);
         sim.add(*obj2);
         sim.add(*obj3);
+        sim.add(*obj4);
     }
     virtual void    onHide()
     {
         sim.remove(*obj);
         sim.remove(*obj2);
         sim.remove(*obj3);
+        sim.remove(*obj4);
 
         delete box;
         delete box2;
