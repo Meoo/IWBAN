@@ -64,6 +64,12 @@ void Object::collideWith(Object & other)
 
         if (getBehavior())
             getBehavior()->onCollide(*this, other, data);
+
+        if (other.getBehavior())
+        {
+            data.revert();
+            other.getBehavior()->onCollide(other, *this, data);
+        }
     }
 }
 

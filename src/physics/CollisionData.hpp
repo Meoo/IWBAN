@@ -19,6 +19,12 @@ public:
     ut::Vector  origin;
     ut::Vector  intersect;
 
+    void revert()
+    {
+        intersect.x = - intersect.x;
+        intersect.y = - intersect.y;
+    }
+
 };
 // class CollisionData
 
