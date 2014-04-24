@@ -18,6 +18,7 @@ Simulator::Simulator()
 
 void Simulator::add(Object & object)
 {
+    object.updateLastPosition();
     _objects.push_back(object);
 }
 
@@ -57,6 +58,10 @@ void Simulator::step()
             obj.collideWith(other);
         }
     }
+
+    // Finish frame by saving last position
+    for (Object & obj : _objects)
+        obj.updateLastPosition();
 }
 
 #ifndef NDEBUG

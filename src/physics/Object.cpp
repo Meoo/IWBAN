@@ -73,6 +73,18 @@ void Object::collideWith(Object & other)
     }
 }
 
+bool Object::hasParent() const
+{
+    // Cast this as ChildHook and check if linked
+    return impl::ChildHook::is_linked();
+}
+
+const Object & Object::getParent() const
+{
+    BOOST_ASSERT(hasParent());
+    return *_parent;
+}
+
 void Object::setParent(Object & parent)
 {
     parent._childs.push_back(*this);

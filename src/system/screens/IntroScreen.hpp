@@ -11,6 +11,7 @@
 #include <system/Screen.hpp>
 
 #include <physics/behaviors/PhysicsBehavior.hpp>
+#include <physics/behaviors/MovingBehavior.hpp>
 #include <physics/Simulator.hpp>
 #include <physics/Object.hpp>
 #include <physics/shapes/Box.hpp>
@@ -22,14 +23,21 @@ class IntroScreen : public Screen
 {
 protected:
     phy::Simulator sim;
+
     phy::Object * pl1;
     phy::Object * pl2;
+
+    phy::Object * obj1;
     phy::Object * obj2;
     phy::Object * obj3;
     phy::Object * obj4;
+
     phy::Box * box;
     phy::Box * box2;
-    phy::PhysicsBehavior behavior;
+    phy::Box * box3;
+
+    phy::PhysicsBehavior phys;
+    phy::MovingBehavior mov;
 
     unsigned ticks;
 
@@ -110,31 +118,42 @@ protected:
         rec2.w = 128;
         rec2.h = 32;
 
+        ut::Rectangle rec3;
+        rec3.x = 0;
+        rec3.y = -32;
+        rec3.w = 640;
+        rec3.h = 32;
+
         box = new phy::Box(rec);
         box2 = new phy::Box(rec2);
+        box3 = new phy::Box(rec3);
 
-        pl1 = new phy::Object(box, &behavior);
+        pl1 = new phy::Object(box, &phys);
         pl1->setPosition(ut::Vector(150, 100));
         pl1->setMass(10.f);
         pl1->wake();
 
-        pl2 = new phy::Object(box, &behavior);
+        pl2 = new phy::Object(box, &phys);
         pl2->setPosition(ut::Vector(450, 100));
         pl2->setMass(3.f);
         pl2->wake();
 
+        obj1 = new phy::Object(box3);
+        obj1->setPosition(ut::Vector(0, 480));
+
         obj2 = new phy::Object(box2);
         obj2->setPosition(ut::Vector(150, 250));
 
-        obj3 = new phy::Object(box2);
+        obj3 = new phy::Object(box2, &mov);
         obj3->setPosition(ut::Vector(400, 250));
 
-        obj4 = new phy::Object(box2);
+        obj4 = new phy::Object(box2, &mov);
         obj4->setPosition(ut::Vector(300, 400));
 
         sim.add(*pl1);
         sim.add(*pl2);
 
+        sim.add(*obj1);
         sim.add(*obj2);
         sim.add(*obj3);
         sim.add(*obj4);
@@ -145,16 +164,19 @@ protected:
         sim.remove(*pl1);
         sim.remove(*pl2);
 
+        sim.remove(*obj1);
         sim.remove(*obj2);
         sim.remove(*obj3);
         sim.remove(*obj4);
 
         delete box;
         delete box2;
+        delete box3;
 
         delete pl1;
         delete pl2;
 
+        delete obj1;
         delete obj2;
         delete obj3;
         delete obj4;

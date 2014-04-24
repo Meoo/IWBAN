@@ -70,6 +70,7 @@ private:
     // Data members
     const Shape *   _shape;
 
+    Object *        _parent;
     ChildList       _childs;
 
     Behavior *      _behavior;
@@ -104,6 +105,8 @@ public:
 
     void    collideWith(Object & other);
 
+    bool    hasParent() const;
+    const Object & getParent() const;
     void    setParent(Object & parent);
     void    unsetParent();
     // TODO getParent()? not required?
@@ -117,6 +120,9 @@ public:
 
     const ut::Vector &  getPosition() const     { return _position; }
     void                setPosition(const ut::Vector & position);
+
+    const ut::Vector &  getLastPosition() const { return _last_position; }
+    void                updateLastPosition()    { _last_position = _position; }
 
     const ut::Vector &  getVelocity() const                         { return _velocity; }
     void                setVelocity(const ut::Vector & velocity)    { _velocity = velocity; }

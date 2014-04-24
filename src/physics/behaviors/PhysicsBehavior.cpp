@@ -16,6 +16,9 @@ PhysicsBehavior::PhysicsBehavior()
 {
     _gravity = ut::Vector(0, 0.3f);
     _speed_clamp = ut::Vector(8, 8);
+
+    BOOST_ASSERT_MSG(_gravity.x == 0 || _gravity.y == 0,
+                     "Only one direction should be used for gravity");
 }
 
 void PhysicsBehavior::step(Object & object)
@@ -47,6 +50,8 @@ void PhysicsBehavior::stepChild(const Object & object, Object & child)
 
 void PhysicsBehavior::onCollide(Object & object, Object & other, const CollisionData & data)
 {
+    object.unsetParent();
+
     float mass_factor;
 
     if (object.getMass() <= 0)
@@ -72,6 +77,10 @@ void PhysicsBehavior::onCollide(Object & object, Object & other, const Collision
         if ((data.intersect.y > 0) == (delta_vel.y > 0))
         {
             ut::Vector vel = object.getVelocity();
+
+            if ((vel.y > 0) == (_gravity.y > 0))
+                object.setParent(other);
+
             vel.y = 0;
             object.setVelocity(vel);
         }
@@ -86,6 +95,10 @@ void PhysicsBehavior::onCollide(Object & object, Object & other, const Collision
         if ((data.intersect.x > 0) == (delta_vel.x > 0))
         {
             ut::Vector vel = object.getVelocity();
+
+            if ((vel.x > 0) == (_gravity.x > 0))
+                object.setParent(other);
+
             vel.x = 0;
             object.setVelocity(vel);
         }
