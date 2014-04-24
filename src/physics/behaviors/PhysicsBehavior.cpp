@@ -18,7 +18,7 @@ PhysicsBehavior::PhysicsBehavior()
     _speed_clamp = ut::Vector(8, 8);
 }
 
-void PhysicsBehavior::step(phy::Object & object)
+void PhysicsBehavior::step(Object & object)
 {
     ut::Vector vel = object.getVelocity();
 
@@ -40,13 +40,24 @@ void PhysicsBehavior::step(phy::Object & object)
     object.move(vel);
 }
 
-void PhysicsBehavior::stepChild(const phy::Object & object, phy::Object & child)
+void PhysicsBehavior::stepChild(const Object & object, Object & child)
 {
     child.move(object.getVelocity());
 }
 
-void PhysicsBehavior::onCollide(phy::Object & object, phy::Object & other, const phy::CollisionData & data)
+void PhysicsBehavior::onCollide(Object & object, Object & other, const CollisionData & data)
 {
+    float mass_factor;
+
+    if (object.getMass() <= 0)
+        mass_factor = 0;
+
+    else if (other.getMass() <= 0)
+        mass_factor = 1;
+
+    else
+        mass_factor = object.getMass() / (object.getMass() + other.getMass());
+
     ut::Vector delta_vel = other.getVelocity() - object.getVelocity();
 
     // Split horizontally or vertically?
@@ -54,7 +65,8 @@ void PhysicsBehavior::onCollide(phy::Object & object, phy::Object & other, const
       > std::abs(data.intersect.y - delta_vel.y))
     {
         // Vertical
-        object.move(ut::Vector(0, data.intersect.y));
+        if (mass_factor > 0)
+            object.move(ut::Vector(0, data.intersect.y * mass_factor));
 
         // Stop the object if it collides something
         if ((data.intersect.y > 0) == (delta_vel.y > 0))
@@ -67,7 +79,8 @@ void PhysicsBehavior::onCollide(phy::Object & object, phy::Object & other, const
     else
     {
         // Horizontal
-        object.move(ut::Vector(data.intersect.x, 0));
+        if (mass_factor > 0)
+            object.move(ut::Vector(data.intersect.x * mass_factor, 0));
 
         // Stop the object if it collides something
         if ((data.intersect.x > 0) == (delta_vel.x > 0))

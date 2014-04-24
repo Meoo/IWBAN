@@ -31,6 +31,7 @@ public:
 
     // Callbacks used when an Object starts and stop using this Behavior
     // Used to setup and free user_data pointer
+    // TODO onAttach onDetach ?
     virtual void prepare(Object &) = 0;
     virtual void free(Object &) = 0;
 

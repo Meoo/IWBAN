@@ -80,6 +80,8 @@ private:
 
     ut::Vector      _velocity;
 
+    float           _mass;
+
     CollisionGroup  _solidity;
     CollisionGroup  _collides_with;
 
@@ -118,6 +120,9 @@ public:
 
     const ut::Vector &  getVelocity() const                         { return _velocity; }
     void                setVelocity(const ut::Vector & velocity)    { _velocity = velocity; }
+
+    float   getMass() const     { return _mass; }
+    void    setMass(float mass) { _mass = mass; }
 
     // TODO Bad collision priority get/set name
     int     getPriority() const         { return _collision_priority; }

@@ -13,7 +13,7 @@ namespace phy
 {
 
 Object::Object(const Shape * shape, Behavior * behavior)
-    : _shape(shape), _behavior(behavior)
+    : _shape(shape), _behavior(behavior), _mass(0)
 {
     BOOST_ASSERT(shape);
 }

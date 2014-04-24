@@ -115,17 +115,19 @@ protected:
 
         pl1 = new phy::Object(box, &behavior);
         pl1->setPosition(ut::Vector(150, 100));
+        pl1->setMass(10.f);
         pl1->wake();
 
         pl2 = new phy::Object(box, &behavior);
         pl2->setPosition(ut::Vector(450, 100));
+        pl2->setMass(3.f);
         pl2->wake();
 
         obj2 = new phy::Object(box2);
         obj2->setPosition(ut::Vector(150, 250));
 
         obj3 = new phy::Object(box2);
-        obj3->setPosition(ut::Vector(450, 250));
+        obj3->setPosition(ut::Vector(400, 250));
 
         obj4 = new phy::Object(box2);
         obj4->setPosition(ut::Vector(300, 400));
