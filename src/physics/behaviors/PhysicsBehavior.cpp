@@ -25,6 +25,15 @@ void PhysicsBehavior::step(Object & object)
 {
     ut::Vector vel = object.getVelocity();
 
+    if (vel.x == 0 && vel.y == 0
+        && object.hasParent()
+        && object.getPosition().x == object.getLastPosition().x
+        && object.getPosition().y == object.getLastPosition().y)
+    {
+        object.sleep();
+        return;
+    }
+
     // Gravity
     vel += _gravity;
 
@@ -78,7 +87,7 @@ void PhysicsBehavior::onCollide(Object & object, Object & other, const Collision
         {
             ut::Vector vel = object.getVelocity();
 
-            if ((vel.y > 0) == (_gravity.y > 0))
+            if ((_gravity.y != 0) && ((vel.y > 0) == (_gravity.y > 0)))
                 object.setParent(other);
 
             vel.y = 0;
@@ -96,7 +105,7 @@ void PhysicsBehavior::onCollide(Object & object, Object & other, const Collision
         {
             ut::Vector vel = object.getVelocity();
 
-            if ((vel.x > 0) == (_gravity.x > 0))
+            if ((_gravity.x != 0) && ((vel.x > 0) == (_gravity.x > 0)))
                 object.setParent(other);
 
             vel.x = 0;

@@ -125,7 +125,7 @@ public:
     void                updateLastPosition()    { _last_position = _position; }
 
     const ut::Vector &  getVelocity() const                         { return _velocity; }
-    void                setVelocity(const ut::Vector & velocity)    { _velocity = velocity; }
+    void                setVelocity(const ut::Vector & velocity);
 
     float   getMass() const     { return _mass; }
     void    setMass(float mass) { _mass = mass; }

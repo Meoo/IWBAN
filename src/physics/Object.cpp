@@ -110,6 +110,13 @@ ut::Rectangle Object::getBoundingBox() const
     r.y += _position.y;
     return r;
 }
+void Object::setVelocity(const ut::Vector & velocity)
+{
+    _velocity = velocity;
+
+    if (velocity.x != 0 || velocity.y != 0)
+        wake();
+}
 
 #ifndef NDEBUG
 void Object::drawDebug(gfx::DrawContext & debug_context) const
