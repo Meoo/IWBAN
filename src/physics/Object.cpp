@@ -24,18 +24,30 @@ void Object::move(const ut::Vector & delta)
     wake();
 }
 
+void Object::prepare()
+{
+    _updated = false;
+}
+
 void Object::step()
 {
-    if (_behavior)
-    {
-        _behavior->step(*this);
+    if (_updated) return;
 
-        // TODO Recursive?
-        for (Object & child : _childs)
-            _behavior->stepChild(*this, child);
+    if (hasParent())
+        getParent().step();
+
+    if (isAwake())
+    {
+        if (_behavior)
+        {
+            _behavior->step(*this);
+            stepChilds(*this, _behavior);
+        }
+        else
+            sleep();
     }
-    else
-        sleep();
+
+    _updated = true;
 }
 
 void Object::collideWith(Object & other)
@@ -79,6 +91,12 @@ bool Object::hasParent() const
     return impl::ChildHook::is_linked();
 }
 
+Object & Object::getParent()
+{
+    BOOST_ASSERT(hasParent());
+    return *_parent;
+}
+
 const Object & Object::getParent() const
 {
     BOOST_ASSERT(hasParent());
@@ -87,13 +105,27 @@ const Object & Object::getParent() const
 
 void Object::setParent(Object & parent)
 {
+    BOOST_ASSERT(!hasParent());
+
     parent._childs.push_back(*this);
+    _parent = &parent;
+
+#ifndef NDEBUG
+    // This piece of code is horrible, but works as intended
+    const Object * p = &parent;
+    while (p->hasParent())
+    {
+        BOOST_ASSERT_MSG(p != this, "Circular parenting detected!");
+        p = &(p->getParent());
+    }
+#endif
 }
 
 void Object::unsetParent()
 {
     // Cast this as ChildHook and unlink it
     impl::ChildHook::unlink();
+    _parent = 0;
 }
 
 void Object::setPosition(const ut::Vector & position)
@@ -113,9 +145,7 @@ ut::Rectangle Object::getBoundingBox() const
 void Object::setVelocity(const ut::Vector & velocity)
 {
     _velocity = velocity;
-
-    if (velocity.x != 0 || velocity.y != 0)
-        wake();
+    wake();
 }
 
 #ifndef NDEBUG
@@ -129,6 +159,15 @@ void Object::drawDebug(gfx::DrawContext & debug_context) const
     getShape()->drawDebug(debug_context, getPosition(), col);
 }
 #endif
+
+void Object::stepChilds(Object & parent, Behavior * behavior)
+{
+    for (Object & child : _childs)
+    {
+        behavior->stepChild(parent, child);
+        child.stepChilds(parent, behavior);
+    }
+}
 
 }
 // namespace phy

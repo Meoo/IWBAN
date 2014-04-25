@@ -23,10 +23,11 @@ PhysicsBehavior::PhysicsBehavior()
 
 void PhysicsBehavior::step(Object & object)
 {
+    object.unsetParent();
+
     ut::Vector vel = object.getVelocity();
 
-    if (vel.x == 0 && vel.y == 0
-        && object.hasParent()
+    if (object.hasParent()
         && object.getPosition().x == object.getLastPosition().x
         && object.getPosition().y == object.getLastPosition().y)
     {
@@ -59,8 +60,6 @@ void PhysicsBehavior::stepChild(const Object & object, Object & child)
 
 void PhysicsBehavior::onCollide(Object & object, Object & other, const CollisionData & data)
 {
-    object.unsetParent();
-
     float mass_factor;
 
     if (object.getMass() <= 0)
@@ -87,10 +86,15 @@ void PhysicsBehavior::onCollide(Object & object, Object & other, const Collision
         {
             ut::Vector vel = object.getVelocity();
 
-            if ((_gravity.y != 0) && ((vel.y > 0) == (_gravity.y > 0)))
-                object.setParent(other);
+            if ((_gravity.y != 0 && vel.y != 0) && ((_gravity.y > 0) != (data.intersect.y > 0)))
+            {
+                if (!object.hasParent())
+                    object.setParent(other);
+            }
 
-            vel.y = 0;
+            if (vel.y != 0 && ((vel.y > 0) != (data.intersect.y > 0)))
+                vel.y = 0;
+
             object.setVelocity(vel);
         }
     }
@@ -105,10 +109,15 @@ void PhysicsBehavior::onCollide(Object & object, Object & other, const Collision
         {
             ut::Vector vel = object.getVelocity();
 
-            if ((_gravity.x != 0) && ((vel.x > 0) == (_gravity.x > 0)))
-                object.setParent(other);
+            if ((_gravity.x != 0 && vel.x != 0) && ((_gravity.x > 0) != (data.intersect.x > 0)))
+            {
+                if (!object.hasParent())
+                    object.setParent(other);
+            }
 
-            vel.x = 0;
+            if (vel.x != 0 && ((vel.x > 0) != (data.intersect.x > 0)))
+                vel.x = 0;
+
             object.setVelocity(vel);
         }
     }

@@ -16,27 +16,24 @@ Simulator::Simulator()
 {
 }
 
-void Simulator::add(Object & object)
+void Simulator::add(Object * object)
 {
-    object.updateLastPosition();
-    _objects.push_back(object);
+    object->updateLastPosition();
+    _objects.push_back(*object);
 }
 
-void Simulator::remove(const Object & object)
+void Simulator::remove(const Object * object)
 {
-    _objects.erase(_objects.iterator_to(object));
+    _objects.erase(_objects.iterator_to(*object));
 }
 
 void Simulator::step()
 {
     for (Object & obj : _objects)
-    {
-        if (obj.isAwake())
-            obj.step();
-    }
+        obj.prepare();
 
-    // TODO May be optimized with a bubble sort?
-    _objects.sort(Object::Comparator());
+    for (Object & obj : _objects)
+        obj.step();
 
     // TODO Build QuadTree
 

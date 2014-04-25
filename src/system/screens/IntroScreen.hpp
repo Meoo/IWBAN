@@ -25,7 +25,9 @@ protected:
     phy::Simulator sim;
 
     phy::Object * pl1;
+    bool          pl1_j;
     phy::Object * pl2;
+    bool          pl2_j;
 
     phy::Object * obj1;
     phy::Object * obj2;
@@ -55,8 +57,14 @@ protected:
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
             d.x = - spd;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-            d.y = - 6;
+        if (pl1->hasParent())
+            pl1_j = true;
+
+        if (pl1_j && sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            d.y = - 7;
+            pl1_j = false;
+        }
 
         pl1->setVelocity(d);
 
@@ -69,8 +77,14 @@ protected:
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
             d.x = - spd;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
-            d.y = - 6;
+        if (pl2->hasParent())
+            pl2_j = true;
+
+        if (pl2_j && sf::Keyboard::isKeyPressed(sf::Keyboard::I))
+        {
+            d.y = - 7;
+            pl2_j = false;
+        }
 
         pl2->setVelocity(d);
 
@@ -83,7 +97,7 @@ protected:
         {
             obj3->move(ut::Vector(-1, 0));
             obj4->move(ut::Vector(0, 1));
-            if (ticks == 200) ticks = 0;
+            if (ticks == 198) ticks = 0;
         }
 
         sim.step();
@@ -104,6 +118,9 @@ protected:
 
     virtual void    onShow()
     {
+        pl1_j = false;
+        pl2_j = false;
+
         ticks = 0;
 
         ut::Rectangle rec;
@@ -150,24 +167,24 @@ protected:
         obj4 = new phy::Object(box2, &mov);
         obj4->setPosition(ut::Vector(300, 400));
 
-        sim.add(*pl1);
-        sim.add(*pl2);
+        sim.add(pl1);
+        sim.add(pl2);
 
-        sim.add(*obj1);
-        sim.add(*obj2);
-        sim.add(*obj3);
-        sim.add(*obj4);
+        sim.add(obj1);
+        sim.add(obj2);
+        sim.add(obj3);
+        sim.add(obj4);
     }
 
     virtual void    onHide()
     {
-        sim.remove(*pl1);
-        sim.remove(*pl2);
+        sim.remove(pl1);
+        sim.remove(pl2);
 
-        sim.remove(*obj1);
-        sim.remove(*obj2);
-        sim.remove(*obj3);
-        sim.remove(*obj4);
+        sim.remove(obj1);
+        sim.remove(obj2);
+        sim.remove(obj3);
+        sim.remove(obj4);
 
         delete box;
         delete box2;

@@ -27,8 +27,8 @@ public:
          Simulator();
 
     // Functions
-    void add(Object & object);
-    void remove(const Object & object);
+    void add(Object * object);
+    void remove(const Object * object);
 
     void step();
 

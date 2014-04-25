@@ -60,8 +60,6 @@ class Object : public impl::ObjectHook,
                public impl::ChildHook
 {
 public:
-    class Comparator;
-
     typedef impl::ObjectList    List;
     typedef impl::ChildList     ChildList;
 
@@ -86,7 +84,7 @@ private:
     CollisionGroup  _solidity;
     CollisionGroup  _collides_with;
 
-    int             _collision_priority;
+    bool            _updated;
     bool            _awake;
 
     // TODO Object additional states
@@ -101,11 +99,13 @@ public:
     // Functions
     void    move(const ut::Vector & delta);
 
+    void    prepare();
     void    step();
 
     void    collideWith(Object & other);
 
     bool    hasParent() const;
+    Object & getParent();
     const Object & getParent() const;
     void    setParent(Object & parent);
     void    unsetParent();
@@ -130,10 +130,6 @@ public:
     float   getMass() const     { return _mass; }
     void    setMass(float mass) { _mass = mass; }
 
-    // TODO Bad collision priority get/set name
-    int     getPriority() const         { return _collision_priority; }
-    void    setPriority(int priority)   { _collision_priority = priority; }
-
     ut::Rectangle getBoundingBox() const;
 
     bool    isAwake() const             { return _awake; }
@@ -146,13 +142,8 @@ public:
 #endif
 
 
-    class Comparator
-    {
-    public:
-        bool operator () (const Object & a, const Object & b) const
-            { return a.getPriority() < b.getPriority(); }
-    };
-    // class Comparator
+protected:
+    void    stepChilds(Object & parent, Behavior * behavior);
 
 };
 // class Object
