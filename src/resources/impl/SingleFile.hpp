@@ -20,9 +20,6 @@ namespace res
 namespace impl
 {
 
-/**
- * @brief
- */
 class SingleFile : public FileImpl
 {
 private:
@@ -61,6 +58,31 @@ public:
 
 };
 // class SingleFile
+
+// ---- ---- ---- ----
+
+class SingleFileHandle : public FileHandleImpl
+{
+private:
+    // Data members
+    const std::string _filename;
+
+
+public:
+    // Constructor
+    explicit SingleFileHandle(const std::string & filename)
+        : _filename(filename)
+    {
+    }
+
+    // Virtual functions
+    virtual FileImpl * open()
+    {
+        return new SingleFile(_filename);
+    }
+
+};
+// class SingleFileHandle
 
 }
 // namespace impl

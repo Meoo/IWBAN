@@ -54,12 +54,17 @@ public:
     // TODO Close files on destruction..?
                 ~Package();
 
-    // Accessor
-    FileImpl *  findFile(const std::string & filename);
+    // Functions
+    FileImpl *  openFile(const std::string & filename);
+    FileImpl *  openFileUnlocalized(const std::string & filename);
+    FileImpl *  openFileLocalized(const std::string & filename);
 
-    FileImpl *  findFileUnlocalized(const std::string & filename);
+    FileHandleImpl *  findFile(const std::string & filename);
+    FileHandleImpl *  findFileUnlocalized(const std::string & filename);
+    FileHandleImpl *  findFileLocalized(const std::string & filename);
 
-    FileImpl *  findFileLocalized(const std::string & filename);
+    MappedFile &    getLocalizedSource()    { return _loc_file; }
+    MappedFile &    getUnlocalizedSource()  { return _base_file; }
 
 };
 // class Package

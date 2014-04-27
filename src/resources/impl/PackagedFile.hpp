@@ -21,9 +21,6 @@ namespace res
 namespace impl
 {
 
-/**
- * @brief
- */
 class PackagedFile : public FileImpl
 {
 private:
@@ -56,6 +53,38 @@ public:
 
 };
 // class PackagedFile
+
+// ---- ---- ---- ----
+
+class PackagedFileHandle : public FileHandleImpl
+{
+private:
+    // Data members
+    Package *       _package;
+    pkg::IndexEntry _index_entry;
+    bool            _localized;
+
+
+public:
+    // Constructor
+    explicit PackagedFileHandle(Package * package,
+                                const pkg::IndexEntry & index_entry,
+                                bool localized)
+        : _package(package), _index_entry(index_entry), _localized(localized)
+    {
+    }
+
+    // Virtual functions
+    virtual FileImpl * open()
+    {
+        if (_localized)
+            return new PackagedFile(_package->getLocalizedSource(), _index_entry);
+        else
+            return new PackagedFile(_package->getUnlocalizedSource(), _index_entry);
+    }
+
+};
+// class SingleFileHandle
 
 }
 // namespace impl

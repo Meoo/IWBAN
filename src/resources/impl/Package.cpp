@@ -59,16 +59,16 @@ Package::Package(const std::string & package_name,
         throw sys::FileCorrupted((_package_name + PKG_EXTENSION).c_str());
 }
 
-FileImpl * Package::findFile(const std::string & filename)
+FileImpl * Package::openFile(const std::string & filename)
 {
-    FileImpl * file = findFileLocalized(filename);
+    FileImpl * file = openFileLocalized(filename);
     if (file)
         return file;
 
-    return findFileUnlocalized(filename);
+    return openFileUnlocalized(filename);
 }
 
-FileImpl * Package::findFileUnlocalized(const std::string & filename)
+FileImpl * Package::openFileUnlocalized(const std::string & filename)
 {
     // Unlocalized
     pkg::IndexMap::iterator it = _base_index.find(filename);
@@ -78,7 +78,7 @@ FileImpl * Package::findFileUnlocalized(const std::string & filename)
     return 0;
 }
 
-FileImpl * Package::findFileLocalized(const std::string & filename)
+FileImpl * Package::openFileLocalized(const std::string & filename)
 {
     // Localized
     if (_has_loc)
@@ -87,6 +87,35 @@ FileImpl * Package::findFileLocalized(const std::string & filename)
         if (it != _loc_index.end())
             return new PackagedFile(_loc_file, it->second);
     }
+
+    return 0;
+}
+
+FileHandleImpl * Package::findFile(const std::string& filename)
+{
+    FileHandleImpl * file = findFileLocalized(filename);
+    if (file)
+        return file;
+
+    return findFileUnlocalized(filename);
+}
+
+FileHandleImpl * Package::findFileUnlocalized(const std::string& filename)
+{
+    // Unlocalized
+    pkg::IndexMap::iterator it = _base_index.find(filename);
+    if (it != _base_index.end())
+        return new PackagedFileHandle(this, it->second, true);
+
+    return 0;
+}
+
+FileHandleImpl * Package::findFileLocalized(const std::string& filename)
+{
+    // Localized
+    pkg::IndexMap::iterator it = _loc_index.find(filename);
+    if (it != _loc_index.end())
+        return new PackagedFileHandle(this, it->second, false);
 
     return 0;
 }
