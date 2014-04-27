@@ -23,8 +23,8 @@ int main(int argc, char ** argv)
     cfg::parse_args(argc, argv);
 
 
-    IWBAN_LOG_INFO("Initializing threads\n");
-    res::async::initialize(cfg::threading);
+    /*IWBAN_LOG_INFO("Initializing threads\n");
+    res::async::initialize(cfg::threading);*/
 
 
     IWBAN_LOG_INFO("Opening display\n");
@@ -87,8 +87,8 @@ int main(int argc, char ** argv)
     display.close();
 
 
-    IWBAN_LOG_INFO("Terminating threads\n");
-    res::async::terminate();
+    /*IWBAN_LOG_INFO("Terminating threads\n");
+    res::async::terminate();*/
 
 
     IWBAN_LOG_INFO("Saving configuration\n");
