@@ -17,45 +17,33 @@ namespace ut
 class Vector
 {
 public:
-    Vector() : x(0), y(0) {}
-    Vector(float x, float y) : x(x), y(y) {}
+    constexpr Vector() : x(0), y(0) {}
+    constexpr Vector(float x, float y) : x(x), y(y) {}
 
     float x;
     float y;
 };
 
-inline Vector operator+(const Vector & a, const Vector & b)
+constexpr Vector operator+(const Vector & a, const Vector & b)
 {
-    Vector v;
-    v.x = a.x + b.x;
-    v.y = a.y + b.y;
-    return v;
+    return Vector(a.x + b.x, a.y + b.y);
 }
 
-inline Vector operator-(const Vector & a, const Vector & b)
+constexpr Vector operator-(const Vector & a, const Vector & b)
 {
-    Vector v;
-    v.x = a.x - b.x;
-    v.y = a.y - b.y;
-    return v;
+    return Vector(a.x - b.x, a.y - b.y);
 }
 
 template<typename T>
-inline Vector operator*(const Vector & a, const T & b)
+constexpr Vector operator*(const Vector & a, const T & b)
 {
-    Vector v;
-    v.x = a.x * b;
-    v.y = a.y * b;
-    return v;
+    return Vector(a.x * b, a.y * b);
 }
 
 template<typename T>
-inline Vector operator/(const Vector & a, const T & b)
+constexpr Vector operator/(const Vector & a, const T & b)
 {
-    Vector v;
-    v.x = a.x / b;
-    v.y = a.y / b;
-    return v;
+    return Vector(a.x / b, a.y / b);
 }
 
 inline Vector & operator+=(Vector & a, const Vector & b)
