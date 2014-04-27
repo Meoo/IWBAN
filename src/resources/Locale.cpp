@@ -15,22 +15,23 @@
 namespace res
 {
 
-/*const sf::String & getString(const char * id) const
+sf::String Locale::getString(const std::string & id) const
 {
-    return _dict.get(id);
+    Dictionnary::const_iterator it = _dict.find(id);
+    if (it == _dict.end())
+        return sf::String(IWBAN_MISSING_STRING);
+
+    return sf::String::fromUtf8(it->second.begin(), it->second.end());
 }
 
-void loadFile(const std::string & filename)
+void Locale::loadFile(const std::string & filename)
 {
+    IWBAN_LOG_INFO("Loading dictionnary from '%s'\n", filename.c_str());
+
     File file = openFile(filename);
 
-    // Create stream
-    std::istringstream stream;
-    loc_st.rdbuf()->pubsetbuf(
-        const_cast<char*>(file.getData()), file.getSize());
-
-    boost::property_tree::info_parser::read_info(stream, _dict);
-}*/
+    // TODO Locale::loadFile
+}
 
 }
 // namespace res

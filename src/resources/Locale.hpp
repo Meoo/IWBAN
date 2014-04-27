@@ -8,9 +8,9 @@
 
 #include <Global.hpp>
 
-//#include <boost/property_tree/ptree.hpp>
-
 #include <SFML/System.hpp>
+
+#include <map>
 
 namespace res
 {
@@ -18,17 +18,16 @@ namespace res
 class Locale
 {
 private:
-    // TODO wstring instead of sf:String? and remove include?
-    //typedef boost::property_tree::basic_ptree<std::string, sf::String> Dictionnary;
+    typedef std::map<std::string, std::string> Dictionnary;
 
     // Data members
-    //Dictionnary _dict;
+    Dictionnary _dict;
 
 
 public:
 
     // Functions
-    const sf::String & getString(const char * id) const;
+    sf::String getString(const std::string & id) const;
 
     void loadFile(const std::string & filename);
 
