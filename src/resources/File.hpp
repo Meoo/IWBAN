@@ -98,7 +98,6 @@ private:
     // Private constructor
     explicit File(impl::FileImpl * implementation);
 
-
 };
 // class File
 
@@ -176,7 +175,6 @@ private:
     // Private constructor
     FileHandle(impl::FileHandleImpl * localized,
                impl::FileHandleImpl * unlocalized);
-
 
 };
 // class FileHandle

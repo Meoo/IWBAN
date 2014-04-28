@@ -10,6 +10,7 @@
 
 #include <config/Config.hpp>
 
+#include <resources/FileStream.hpp>
 #include <resources/impl/Package.hpp>
 #include <resources/impl/PackagedFile.hpp>
 
@@ -17,8 +18,6 @@
 
 #include <packager/PackagerConfig.hpp>
 #include <packager/ReadIndex.hpp>
-
-#include <sstream>
 
 namespace res
 {
@@ -39,9 +38,7 @@ Package::Package(const std::string & package_name,
     if (_has_loc)
     {
         // Create stream
-        std::istringstream loc_st;
-        loc_st.rdbuf()->pubsetbuf(
-                const_cast<char*>(_loc_file.data()), _loc_file.size());
+        FileStream loc_st(_loc_file.data(), _loc_file.size());
 
         // Read index
         if (!pkg::readIndex(loc_st, _loc_index))

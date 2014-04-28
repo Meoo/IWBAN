@@ -25,9 +25,11 @@ private:
 
 
 public:
+    // Constructor
+    Locale();
 
     // Functions
-    sf::String getString(const std::string & id) const;
+    sf::String getString(const std::string & key) const;
 
     void loadFile(const std::string & filename);
 

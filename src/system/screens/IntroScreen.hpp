@@ -16,6 +16,8 @@
 #include <physics/Object.hpp>
 #include <physics/shapes/Box.hpp>
 
+#include <resources/Locale.hpp>
+
 namespace sys
 {
 
@@ -118,6 +120,11 @@ protected:
 
     virtual void    onShow()
     {
+        res::getLocale().loadFile("system/language.txt");
+
+        //std::wstring t = res::getLocale().getString("test");
+        //std::wcout << t << std::endl;
+
         pl1_j = false;
         pl2_j = false;
 
