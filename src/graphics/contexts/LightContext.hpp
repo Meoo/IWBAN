@@ -19,6 +19,7 @@ class Renderer;
 
 class LightContext : public Context
 {
+public:
     friend class Renderer;
 
 

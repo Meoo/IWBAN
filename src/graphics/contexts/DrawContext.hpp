@@ -19,6 +19,7 @@ class Renderer;
 
 class DrawContext : public Context
 {
+public:
     friend class Renderer;
 
 

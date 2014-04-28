@@ -58,10 +58,12 @@ public:
  */
 class File : public boost::noncopyable
 {
-private:
+public:
     friend File res::openFile(const std::string & filename);
     friend class res::FileHandle;
 
+
+private:
     // Implementation
     impl::FileImpl * _impl;
 
@@ -106,10 +108,12 @@ private:
 // TODO Should be copyable?
 class FileHandle : public boost::noncopyable
 {
-private:
+public:
     friend FileHandle findFile(const std::string & filename);
     friend std::vector<FileHandle> findFiles(const std::string & file_pattern);
 
+
+private:
     // Data members
     const std::string       _filename;
 

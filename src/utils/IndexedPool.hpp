@@ -17,9 +17,11 @@ class IndexedPool
 public:
     class Node
     {
-    private:
+    public:
         friend class IndexedPool;
 
+
+    private:
         // Must be the same offset / order than in EmptyNode
         Node *      prev;
         Node *      next;
