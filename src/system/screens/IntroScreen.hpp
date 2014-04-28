@@ -16,6 +16,7 @@
 #include <physics/Object.hpp>
 #include <physics/shapes/Box.hpp>
 
+#include <resources/File.hpp>
 #include <resources/Locale.hpp>
 
 namespace sys
@@ -42,6 +43,10 @@ protected:
 
     phy::PhysicsBehavior phys;
     phy::MovingBehavior mov;
+
+    sf::Font font;
+
+    res::File font_file;
 
     unsigned ticks;
 
@@ -115,6 +120,12 @@ protected:
         debug.fill(sf::Color(5,25,50));
         sim.drawDebug(debug);
 
+        sf::String testext(res::getLocale().getString("test"));
+        sf::Text text(testext, font, 24);
+        text.setPosition(20, 20);
+        text.setColor(sf::Color::Green);
+        debug.draw(text);
+
         debug.close();
     }
 
@@ -122,8 +133,10 @@ protected:
     {
         res::getLocale().loadFile("system/language.txt");
 
-        //std::wstring t = res::getLocale().getString("test");
-        //std::wcout << t << std::endl;
+        font_file = res::openFile("system/poetsen_one.ttf");
+        bool A = font.loadFromMemory(font_file.getData(), font_file.getSize());
+        if (!A)
+            IWBAN_LOG_ERROR("FONT LOADING FAILED\n");
 
         pl1_j = false;
         pl2_j = false;
