@@ -26,7 +26,7 @@ bool        vsync           = false;
 
 std::string language        = "fr";
 
-bool        pixelated       = true;
+bool        pixelated       = false;
 
 bool        light_smooth    = true;
 bool        light_quality   = true;
