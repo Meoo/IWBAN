@@ -5,6 +5,8 @@
 
 #include <Global.hpp>
 
+#include <config/Config.hpp>
+
 #include <graphics/contexts/DrawContext.hpp>
 
 namespace
@@ -25,8 +27,8 @@ DrawContext::DrawContext()
 {
     _render_scene.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
 
-    // TODO Smooth enabled by default?
-    //_render_scene.setSmooth(true);
+    if (!cfg::pixelated)
+        _render_scene.setSmooth(true);
 }
 
 void DrawContext::draw(const sf::Drawable & drawable,

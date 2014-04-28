@@ -5,6 +5,8 @@
 
 #include <Global.hpp>
 
+#include <config/Config.hpp>
+
 #include <graphics/contexts/impl/SmoothLightContext.hpp>
 
 #include <resources/File.hpp>
@@ -43,6 +45,9 @@ SmoothLightContext::SmoothLightContext()
 
     _render_light.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
     _render_light_inter.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
+
+    if (!cfg::pixelated)
+        _render_light.setSmooth(true);
 }
 
 void SmoothLightContext::draw(const sf::Drawable & drawable)

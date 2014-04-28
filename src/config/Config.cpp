@@ -26,6 +26,8 @@ bool        vsync           = false;
 
 std::string language        = "fr";
 
+bool        pixelated       = true;
+
 bool        light_smooth    = true;
 bool        light_quality   = true;
 unsigned    particles       = 2;
@@ -55,6 +57,7 @@ void save()
     SAVE(framerate);
     SAVE(vsync);
     SAVE(language);
+    SAVE(pixelated);
     SAVE(light_smooth);
     SAVE(light_quality);
     SAVE(particles);
@@ -89,6 +92,7 @@ void load()
         LOAD(framerate);
         LOAD(vsync);
         LOAD(language);
+        LOAD(pixelated);
         LOAD(light_smooth);
         LOAD(light_quality);
         LOAD(particles);

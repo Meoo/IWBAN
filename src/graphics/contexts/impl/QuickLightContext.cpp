@@ -5,6 +5,8 @@
 
 #include <Global.hpp>
 
+#include <config/Config.hpp>
+
 #include <graphics/contexts/impl/QuickLightContext.hpp>
 
 namespace gfx
@@ -17,6 +19,9 @@ QuickLightContext::QuickLightContext()
     : _open(false)
 {
     _render_light.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
+
+    if (!cfg::pixelated)
+        _render_light.setSmooth(true);
 }
 
 void QuickLightContext::draw(const sf::Drawable & drawable)
