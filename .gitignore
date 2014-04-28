@@ -25,3 +25,6 @@ Makefile
 
 # IWBAN settings
 iwban.cfg
+
+# Log files
+*.log
