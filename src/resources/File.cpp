@@ -35,6 +35,14 @@ File::~File()
 {
     delete _impl;
 }
+
+File & File::operator = (File && other)
+{
+    _impl = other._impl;
+    other._impl = 0;
+    return *this;
+}
+
 File::File(impl::FileImpl * implementation)
     : _impl(implementation)
 {
@@ -60,6 +68,15 @@ FileHandle::~FileHandle()
 {
     delete _localized;
     delete _unlocalized;
+}
+
+FileHandle & FileHandle::operator = (FileHandle && other)
+{
+    _localized = other._localized;
+    _unlocalized = other._unlocalized;
+    other._localized = 0;
+    other._unlocalized = 0;
+    return *this;
 }
 
 FileHandle::FileHandle(impl::FileHandleImpl* localized,

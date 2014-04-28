@@ -77,6 +77,9 @@ public:
     // Destructor
     ~File();
 
+    // Assignment move
+    File & operator = (File && other);
+
     // Functions
     const void * getData() const
     {
@@ -129,6 +132,9 @@ public:
 
     // Destructor
     ~FileHandle();
+
+    // Assignment move
+    FileHandle & operator = (FileHandle && other);
 
     // Functions
     // Check if the file can be opened
