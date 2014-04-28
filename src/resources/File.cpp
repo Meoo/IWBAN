@@ -38,6 +38,7 @@ File::~File()
 
 File & File::operator = (File && other)
 {
+    delete _impl;
     _impl = other._impl;
     other._impl = 0;
     return *this;
@@ -72,6 +73,8 @@ FileHandle::~FileHandle()
 
 FileHandle & FileHandle::operator = (FileHandle && other)
 {
+    delete _localized;
+    delete _unlocalized;
     _localized = other._localized;
     _unlocalized = other._unlocalized;
     other._localized = 0;
