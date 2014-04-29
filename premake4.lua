@@ -86,7 +86,7 @@ solution "IWannaBeANinja"
     buildoptions { "-std=c++11" }
 
   configuration "Debug"
-    flags { "Symbols" }
+    flags   { "Symbols" }
 
   configuration "Release"
     flags   { "Optimize" }
@@ -111,6 +111,10 @@ project "IWBAN"
 
   configuration "Debug"
     kind "ConsoleApp"
+
+  -- Force WindowedApp on MacOSX to workaround XCode bug
+  configuration { "Debug", "MacOSX" }
+    kind "WindowedApp"
 
   configuration "Release"
     kind "WindowedApp"
