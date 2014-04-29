@@ -28,8 +28,7 @@ void PhysicsBehavior::step(Object & object)
     ut::Vector vel = object.getVelocity();
 
     if (object.hasParent()
-        && object.getPosition().x == object.getLastPosition().x
-        && object.getPosition().y == object.getLastPosition().y)
+        && vel.x == 0 && vel.y == 0)
     {
         object.sleep();
         return;
@@ -60,6 +59,9 @@ void PhysicsBehavior::stepChild(const Object & object, Object & child)
 
 void PhysicsBehavior::onCollide(Object & object, Object & other, const CollisionData & data)
 {
+    if (other.hasParent() && &(other.getParent()) == &object)
+        return;
+
     float mass_factor;
 
     if (object.getMass() <= 0)

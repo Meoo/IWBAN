@@ -175,14 +175,14 @@ protected:
 
         pl1 = new phy::Object(box, &phys);
         pl1->setSolidityGroup(phy::PLAYER);
-        pl1->setCollisionMask(phy::WORLD);
+        pl1->setCollisionMask(phy::ALL);
         pl1->setPosition(ut::Vector(150, 100));
         pl1->setMass(10.f);
         pl1->wake();
 
         pl2 = new phy::Object(box, &phys);
         pl2->setSolidityGroup(phy::ENEMY);
-        pl2->setCollisionMask(phy::WORLD);
+        pl2->setCollisionMask(phy::ALL);
         pl2->setPosition(ut::Vector(450, 100));
         pl2->setMass(3.f);
         pl2->wake();
