@@ -8,31 +8,33 @@
 
 #include <Global.hpp>
 
-#include <boost/container/vector.hpp>
-#include <boost/intrusive/set.hpp>
+#include <utils/Rectangle.hpp>
+#include <utils/Vector.hpp>
+
+#include <vector>
 
 namespace gfx
 {
 
-class ShadowVolume : public boost::intrusive::set_base_hook<>
+class ShadowVolume
 {
 public:
-    typedef boost::intrusive::set<Drawable> List;
-
     struct Line
     {
-        Vector2 first;
-        Vector2 second;
+        Vector first;
+        Vector second;
     };
     // struct Line
 
 
 private:
     // Data members
-    boost::container::vector<Line> _lines;
+    std::vector<Line> _lines;
 
 
 public:
+    // Functions
+    ut::Rectangle getBoundingBox() const;
 
 };
 // class ShadowVolume

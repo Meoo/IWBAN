@@ -19,13 +19,15 @@
 #include <packager/PackagerConfig.hpp>
 #include <packager/ReadIndex.hpp>
 
+#include <map>
+
 namespace res
 {
 
 namespace impl
 {
 
-typedef boost::container::map<std::string, Package *> PackageMap;
+typedef std::map<std::string, Package *> PackageMap;
 
 // ---- ---- ---- ----
 

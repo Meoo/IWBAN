@@ -121,7 +121,7 @@ protected:
 
         sf::String testext(res::getLocale().getString("test"));
         sf::Text text(testext, font, 24);
-        text.setPosition(20, 20);
+        text.setPosition(25, 25);
         text.setColor(sf::Color::Black);
         draw.draw(text);
 
@@ -130,7 +130,7 @@ protected:
 #ifndef NDEBUG
         gfx::DebugContext & debug = renderer.openDebugContext();
         sim.drawDebug(debug);
-        text.setPosition(30, 30);
+        text.setPosition(20, 20);
         text.setColor(sf::Color::Red);
         debug.draw(text);
         debug.close();

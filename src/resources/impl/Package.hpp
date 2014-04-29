@@ -12,7 +12,6 @@
 
 #include <packager/Index.hpp>
 
-#include <boost/container/map.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
 
 namespace res
