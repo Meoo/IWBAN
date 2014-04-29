@@ -81,8 +81,8 @@ private:
 
     float           _mass;
 
-    CollisionGroup  _solidity;
-    CollisionGroup  _collides_with;
+    CollisionGroup  _solidity_group;
+    CollisionGroup  _collision_mask;
 
     bool            _updated;
     bool            _awake;
@@ -124,17 +124,23 @@ public:
     const ut::Vector &  getLastPosition() const { return _last_position; }
     void                updateLastPosition()    { _last_position = _position; }
 
-    const ut::Vector &  getVelocity() const                         { return _velocity; }
+    const ut::Vector &  getVelocity() const     { return _velocity; }
     void                setVelocity(const ut::Vector & velocity);
 
     float   getMass() const     { return _mass; }
     void    setMass(float mass) { _mass = mass; }
 
+    CollisionGroup getSolidityGroup() const     { return _solidity_group; }
+    void setSolidityGroup(CollisionGroup group) { _solidity_group = group; }
+
+    CollisionGroup getCollisionMask() const     { return _collision_mask; }
+    void setCollisionMask(CollisionGroup mask)  { _collision_mask = mask; }
+
     ut::Rectangle getBoundingBox() const;
 
-    bool    isAwake() const             { return _awake; }
-    void    sleep()                     { _awake = false; }
-    void    wake()                      { _awake = true; }
+    bool    isAwake() const     { return _awake; }
+    void    sleep()             { _awake = false; }
+    void    wake()              { _awake = true; }
 
 
 #ifndef NDEBUG

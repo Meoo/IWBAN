@@ -15,20 +15,19 @@
 namespace phy
 {
 
-enum CollisionGroup
-{
-    WORLD       = 0x01,
-    PLAYER      = 0x02,
-    ENEMY       = 0x04,
+typedef unsigned int CollisionGroup;
 
-    TRAP        = 0x10,
-    TRIGGER     = 0x20,
-    SPECIAL     = 0x40,
+const CollisionGroup WORLD      = 0x01;
+const CollisionGroup PLAYER     = 0x02;
+const CollisionGroup ENEMY      = 0x04;
 
-    NONE        = 0x00,
-    ALL         = 0xFF,
-};
-// enum CollisionGroup
+const CollisionGroup TRAP       = 0x10;
+const CollisionGroup TRIGGER    = 0x20;
+const CollisionGroup SPECIAL    = 0x40;
+
+const CollisionGroup NONE       = 0x00;
+const CollisionGroup ALL        = 0xFF;
+
 
 #ifndef NDEBUG
 inline

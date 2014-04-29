@@ -174,25 +174,33 @@ protected:
         box3 = new phy::Box(rec3);
 
         pl1 = new phy::Object(box, &phys);
+        pl1->setSolidityGroup(phy::PLAYER);
+        pl1->setCollisionMask(phy::WORLD);
         pl1->setPosition(ut::Vector(150, 100));
         pl1->setMass(10.f);
         pl1->wake();
 
         pl2 = new phy::Object(box, &phys);
+        pl2->setSolidityGroup(phy::ENEMY);
+        pl2->setCollisionMask(phy::WORLD);
         pl2->setPosition(ut::Vector(450, 100));
         pl2->setMass(3.f);
         pl2->wake();
 
         obj1 = new phy::Object(box3);
+        obj1->setSolidityGroup(phy::WORLD);
         obj1->setPosition(ut::Vector(0, 480));
 
         obj2 = new phy::Object(box2);
+        obj2->setSolidityGroup(phy::WORLD);
         obj2->setPosition(ut::Vector(150, 250));
 
         obj3 = new phy::Object(box2, &mov);
+        obj3->setSolidityGroup(phy::WORLD);
         obj3->setPosition(ut::Vector(400, 250));
 
         obj4 = new phy::Object(box2, &mov);
+        obj4->setSolidityGroup(phy::WORLD);
         obj4->setPosition(ut::Vector(300, 400));
 
         sim.add(pl1);

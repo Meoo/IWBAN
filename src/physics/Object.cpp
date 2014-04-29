@@ -13,7 +13,8 @@ namespace phy
 {
 
 Object::Object(const Shape * shape, Behavior * behavior)
-    : _shape(shape), _behavior(behavior), _mass(0)
+    : _shape(shape), _behavior(behavior), _mass(0),
+    _solidity_group(phy::NONE), _collision_mask(phy::NONE)
 {
     BOOST_ASSERT(shape);
 }
@@ -56,10 +57,12 @@ void Object::collideWith(Object & other)
     if (!getBehavior() && !other.getBehavior())
         return;
 
-    // TODO Collision groups
-    /*if (!(_solidity & other._collides_with)
-     || !(other._solidity & _collides_with))
-        return;*/
+    // Collision groups
+    CollisionGroup my_mask = other.getSolidityGroup() & getCollisionMask();
+    CollisionGroup his_mask  = getSolidityGroup() & other.getCollisionMask();
+
+    if (my_mask == NONE && his_mask == NONE)
+        return;
 
     // Check intersection between objects (before a more precise computation)
     if (!ut::hasIntersection(getBoundingBox(), other.getBoundingBox()))
@@ -74,10 +77,12 @@ void Object::collideWith(Object & other)
         // TODO Response
         data.origin += getPosition();
 
-        if (getBehavior())
+        if (getBehavior() && (my_mask != NONE))
+        {
             getBehavior()->onCollide(*this, other, data);
+        }
 
-        if (other.getBehavior())
+        if (other.getBehavior() && (his_mask != NONE))
         {
             data.revert();
             other.getBehavior()->onCollide(other, *this, data);
@@ -151,7 +156,7 @@ void Object::setVelocity(const ut::Vector & velocity)
 #ifndef NDEBUG
 void Object::drawDebug(gfx::DebugContext & debug_context) const
 {
-    sf::Color col = getColorFromCollisionGroup(_solidity);
+    sf::Color col = getColorFromCollisionGroup(getSolidityGroup());
 
     if (!isAwake())
         col *= sf::Color(128, 128, 128);
