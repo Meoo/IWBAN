@@ -115,18 +115,26 @@ protected:
     virtual void    onRender(gfx::Renderer & renderer) const
     {
         // Debug
-        gfx::DrawContext & debug = renderer.openDebugContext();
+        gfx::DrawContext & draw = renderer.openDrawContext();
 
-        debug.fill(sf::Color(5,25,50));
-        sim.drawDebug(debug);
+        draw.fill(sf::Color(5,25,50));
 
         sf::String testext(res::getLocale().getString("test"));
         sf::Text text(testext, font, 24);
         text.setPosition(20, 20);
-        text.setColor(sf::Color::Green);
-        debug.draw(text);
+        text.setColor(sf::Color::Black);
+        draw.draw(text);
 
+        draw.close();
+
+#ifndef NDEBUG
+        gfx::DebugContext & debug = renderer.openDebugContext();
+        sim.drawDebug(debug);
+        text.setPosition(30, 30);
+        text.setColor(sf::Color::Red);
+        debug.draw(text);
         debug.close();
+#endif
     }
 
     virtual void    onShow()

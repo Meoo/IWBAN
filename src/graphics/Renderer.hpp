@@ -11,6 +11,10 @@
 #include <graphics/contexts/DrawContext.hpp>
 #include <graphics/contexts/LightContext.hpp>
 
+#ifndef NDEBUG
+#  include <graphics/contexts/debug/DebugContext.hpp>
+#endif
+
 #include <SFML/Graphics.hpp>
 
 namespace gfx
@@ -31,7 +35,7 @@ private:
     bool                _light_enabled;
 
 #ifndef NDEBUG
-    DrawContext *       _debug_context;
+    DebugContext *      _debug_context;
     bool                _debug_enabled;
 #endif
 
@@ -50,7 +54,7 @@ public:
     LightContext & openLightContext(const sf::Color & ambient_light);
 
 #ifndef NDEBUG
-    DrawContext & openDebugContext();
+    DebugContext & openDebugContext();
 #endif
 
     void reloadConfiguration();

@@ -18,12 +18,12 @@
 
 // Always enabled in Debug mode
 #ifndef NDEBUG
-#   define PERF_MONITORING
+#  define PERF_MONITORING
 #endif
 
 #ifdef PERF_MONITORING
-#   include <iostream>
-#   include <iomanip> // setprecision
+#  include <iostream>
+#  include <iomanip> // setprecision
 #endif
 
 namespace sys

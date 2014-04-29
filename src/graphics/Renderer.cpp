@@ -6,7 +6,6 @@
 #include <Global.hpp>
 
 #include <graphics/Renderer.hpp>
-#include <graphics/contexts/DrawContext.hpp>
 #include <graphics/contexts/impl/QuickLightContext.hpp>
 #include <graphics/contexts/impl/SmoothLightContext.hpp>
 
@@ -67,7 +66,7 @@ LightContext & Renderer::openLightContext(const sf::Color & ambient_light)
 }
 
 #ifndef NDEBUG
-DrawContext & Renderer::openDebugContext()
+DebugContext & Renderer::openDebugContext()
 {
     BOOST_ASSERT_MSG(_active, "Cannot open a context while the Renderer is inactive");
     BOOST_ASSERT_MSG(!_debug_enabled, "Cannot open a context twice in a frame");
@@ -96,7 +95,7 @@ void Renderer::reloadConfiguration()
     else
         _light_context = new impl::QuickLightContext();
 
-    IWBAN_DEBUG(_debug_context = new DrawContext());
+    IWBAN_DEBUG(_debug_context = new DebugContext());
 }
 
 void Renderer::begin()

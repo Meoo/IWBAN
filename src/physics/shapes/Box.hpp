@@ -35,7 +35,7 @@ public:
     }
 
 #ifndef NDEBUG
-    virtual void drawDebug(gfx::DrawContext & debug_context,
+    virtual void drawDebug(gfx::DebugContext & debug_context,
                            const ut::Vector & origin, const sf::Color & color) const
     {
         sf::RectangleShape shape(sf::Vector2f(_bbox.w, _bbox.h));

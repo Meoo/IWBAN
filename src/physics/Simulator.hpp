@@ -11,7 +11,7 @@
 #include <physics/Object.hpp>
 
 #ifndef NDEBUG
-#  include <graphics/contexts/DrawContext.hpp>
+#  include <graphics/contexts/debug/DebugContext.hpp>
 #endif
 
 namespace phy
@@ -35,7 +35,7 @@ public:
     // TODO updateSingleObject ?
 
 #ifndef NDEBUG
-    void drawDebug(gfx::DrawContext & debug_context) const;
+    void drawDebug(gfx::DebugContext & debug_context) const;
 #endif
 
 };

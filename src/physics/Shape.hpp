@@ -14,7 +14,7 @@
 #include <utils/Rectangle.hpp>
 
 #ifndef NDEBUG
-#  include <graphics/contexts/DrawContext.hpp>
+#  include <graphics/contexts/debug/DebugContext.hpp>
 #  include <utils/Vector.hpp>
 #endif
 
@@ -31,7 +31,7 @@ public:
     virtual const ut::Rectangle & getBoundingBox() const = 0;
 
 #ifndef NDEBUG
-    virtual void drawDebug(gfx::DrawContext & debug_context,
+    virtual void drawDebug(gfx::DebugContext & debug_context,
                            const ut::Vector & origin, const sf::Color & color) const = 0;
 #endif
 

@@ -16,7 +16,7 @@
 #include <boost/intrusive/list.hpp>
 
 #ifndef NDEBUG
-#  include <graphics/contexts/DrawContext.hpp>
+#  include <graphics/contexts/debug/DebugContext.hpp>
 #endif
 
 namespace phy
@@ -138,7 +138,7 @@ public:
 
 
 #ifndef NDEBUG
-    void drawDebug(gfx::DrawContext & debug_context) const;
+    void drawDebug(gfx::DebugContext & debug_context) const;
 #endif
 
 

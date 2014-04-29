@@ -149,7 +149,7 @@ void Object::setVelocity(const ut::Vector & velocity)
 }
 
 #ifndef NDEBUG
-void Object::drawDebug(gfx::DrawContext & debug_context) const
+void Object::drawDebug(gfx::DebugContext & debug_context) const
 {
     sf::Color col = getColorFromCollisionGroup(_solidity);
 
