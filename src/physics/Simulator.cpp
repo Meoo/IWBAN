@@ -58,7 +58,7 @@ void Simulator::step()
 
     // Finish frame by saving last position
     for (Object & obj : _objects)
-        obj.updateLastPosition();
+        obj.finish();
 }
 
 #ifndef NDEBUG

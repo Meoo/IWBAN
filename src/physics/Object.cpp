@@ -13,7 +13,8 @@ namespace phy
 {
 
 Object::Object(const Shape * shape, Behavior * behavior)
-    : _shape(shape), _behavior(behavior), _mass(0),
+    : _shape(shape), _behavior(behavior),
+    _user_data(0), _mass(0),
     _solidity_group(phy::NONE), _collision_mask(phy::NONE)
 {
     BOOST_ASSERT(shape);
@@ -25,9 +26,18 @@ void Object::move(const ut::Vector & delta)
     wake();
 }
 
+void Object::moveTo(const ut::Vector & position)
+{
+    _position = position;
+    wake();
+}
+
 void Object::prepare()
 {
     _updated = false;
+
+    if (_behavior)
+        _behavior->prepare(*this);
 }
 
 void Object::step()
@@ -49,6 +59,14 @@ void Object::step()
     }
 
     _updated = true;
+}
+
+void Object::finish()
+{
+    updateLastPosition();
+
+    if (_behavior)
+        _behavior->finish(*this);
 }
 
 void Object::collideWith(Object & other)
@@ -147,6 +165,7 @@ ut::Rectangle Object::getBoundingBox() const
     r.y += _position.y;
     return r;
 }
+
 void Object::setVelocity(const ut::Vector & velocity)
 {
     _velocity = velocity;

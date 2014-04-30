@@ -95,15 +95,17 @@ protected:
 
         pl2->setVelocity(d);
 
+        const float pspd = 3.0f;
+
         if (ticks < 100)
         {
-            obj3->move(ut::Vector(1, 0));
-            obj4->move(ut::Vector(0, -1));
+            obj3->move(ut::Vector(pspd, 0));
+            obj4->move(ut::Vector(0, -pspd));
         }
         else
         {
-            obj3->move(ut::Vector(-1, 0));
-            obj4->move(ut::Vector(0, 1));
+            obj3->move(ut::Vector(-pspd, 0));
+            obj4->move(ut::Vector(0, pspd));
             if (ticks == 198) ticks = 0;
         }
 
@@ -117,7 +119,7 @@ protected:
         // Debug
         gfx::DrawContext & draw = renderer.openDrawContext();
 
-        draw.fill(sf::Color(5,25,50));
+        draw.fill(sf::Color(20,40,10));
 
         sf::String testext(res::getLocale().getString("test"));
         sf::Text text(testext, font, 24);

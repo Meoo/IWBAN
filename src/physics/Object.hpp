@@ -98,9 +98,11 @@ public:
 
     // Functions
     void    move(const ut::Vector & delta);
+    void    moveTo(const ut::Vector & position);
 
     void    prepare();
     void    step();
+    void    finish();
 
     void    collideWith(Object & other);
 
@@ -117,6 +119,9 @@ public:
 
     Behavior * getBehavior() const              { return _behavior; }
     void       setBehavior(Behavior * behavior) { _behavior = behavior; }
+
+    void *      getUserData() const             { return _user_data; }
+    void        setUserData(void * user_data)   { _user_data = user_data; }
 
     const ut::Vector &  getPosition() const     { return _position; }
     void                setPosition(const ut::Vector & position);

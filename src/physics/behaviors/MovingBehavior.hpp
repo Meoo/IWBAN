@@ -25,10 +25,6 @@ public:
 
     virtual void    onCollide(Object & object, Object & other, const CollisionData & data) {}
 
-    virtual void    prepare(Object &) {}
-
-    virtual void    free(Object &) {}
-
 };
 // class MovingBehavior
 

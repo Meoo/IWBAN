@@ -21,7 +21,12 @@ public:
     virtual ~Behavior() {}
 
     // TODO Virtual functions
+    virtual void prepare(Object & object) {}
+
+    // Pre-condition : parent have been updated
     virtual void step(Object & object) = 0;
+
+    virtual void finish(Object & object) {}
 
     // Pre-condition : parent have been updated
     virtual void stepChild(const Object & object, Object & child) = 0;
@@ -32,8 +37,8 @@ public:
     // Callbacks used when an Object starts and stop using this Behavior
     // Used to setup and free user_data pointer
     // TODO onAttach onDetach ?
-    virtual void prepare(Object &) = 0;
-    virtual void free(Object &) = 0;
+    //virtual void init(Object &)     {}
+    //virtual void free(Object &)     {}
 
 };
 // class Behavior

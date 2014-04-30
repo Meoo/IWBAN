@@ -28,15 +28,15 @@ public:
                     PhysicsBehavior();
 
     // Virtual functions
+    virtual void    prepare(Object & object);
+
     virtual void    step(Object & object);
+
+    virtual void    finish(Object & object);
 
     virtual void    stepChild(const Object & object, Object & child);
 
     virtual void    onCollide(Object & object, Object & other, const CollisionData & data);
-
-    virtual void    prepare(Object &) {}
-
-    virtual void    free(Object &) {}
 
 };
 // class PhysicsBehavior
