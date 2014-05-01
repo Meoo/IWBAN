@@ -226,9 +226,9 @@ void Display::run(sys::Projector & projector)
         {
 #endif
 
-            // Update rate is always IWBAN_UPDATE_RATE
+            // Inflict a penalty on any update after the first one to increase consistency
             int update_count = 0;
-            while (global_clock.getElapsedTime() > next_update)
+            while (global_clock.getElapsedTime() > (update_count == 0 ? next_update : next_update + sf::seconds(IWBAN_UPDATE_TIME / 4)))
             {
                 // Scene update
                 projector.update();
