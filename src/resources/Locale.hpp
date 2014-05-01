@@ -8,6 +8,9 @@
 
 #include <Global.hpp>
 
+#include <resources/File.hpp>
+
+#include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
 #include <map>
@@ -23,13 +26,21 @@ private:
     // Data members
     Dictionnary _dict;
 
+    // Font file must be kept open
+    File        _default_font_file;
+    sf::Font    _default_font;
+
 
 public:
     // Constructor
     Locale();
 
     // Functions
+    const sf::Font & getFont() const { return _default_font; }
+
     sf::String getString(const std::string & key) const;
+
+    void loadFont(const std::string & filename);
 
     void loadFile(const std::string & filename);
 

@@ -44,10 +44,6 @@ protected:
     phy::PhysicsBehavior phys;
     phy::MovingBehavior mov;
 
-    sf::Font font;
-
-    res::File font_file;
-
     unsigned ticks;
 
     // Callbacks
@@ -122,7 +118,7 @@ protected:
         draw.fill(sf::Color(20,40,10));
 
         sf::String testext(res::getLocale().getString("test"));
-        sf::Text text(testext, font, 24);
+        sf::Text text(testext, res::getLocale().getFont(), 24);
         text.setPosition(25, 25);
         text.setColor(sf::Color::Black);
         draw.draw(text);
@@ -142,11 +138,7 @@ protected:
     virtual void    onShow()
     {
         res::getLocale().loadFile("system/language.txt");
-
-        font_file = res::openFile("system/poetsen_one.ttf");
-        bool A = font.loadFromMemory(font_file.getData(), font_file.getSize());
-        if (!A)
-            IWBAN_LOG_ERROR("FONT LOADING FAILED\n");
+        res::getLocale().loadFont("system/poetsen_one.ttf");
 
         pl1_j = false;
         pl2_j = false;

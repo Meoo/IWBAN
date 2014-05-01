@@ -5,7 +5,6 @@
 
 #include <Global.hpp>
 
-#include <resources/File.hpp>
 #include <resources/FileStream.hpp>
 #include <resources/Locale.hpp>
 
@@ -30,6 +29,16 @@ sf::String Locale::getString(const std::string & key) const
     }
 
     return sf::String::fromUtf8(it->second.begin(), it->second.end());
+}
+
+void Locale::loadFont(const std::string & filename)
+{
+    _default_font_file = openFile(filename);
+    if (!_default_font.loadFromMemory(_default_font_file.getData(),
+                                      _default_font_file.getSize()))
+    {
+        IWBAN_LOG_ERROR("Unable to load font '%s'\n", filename.c_str());
+    }
 }
 
 void Locale::loadFile(const std::string & filename)
