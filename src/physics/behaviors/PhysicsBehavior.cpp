@@ -61,18 +61,12 @@ void PhysicsBehavior::stepChild(const Object & object, Object & child)
 
 void PhysicsBehavior::onCollide(Object & object, Object & other, const CollisionData & data)
 {
-    // Do not collide with childrens
-    if (other.hasParent() && &(other.getParent()) == &object)
-        return;
-
     float mass_factor;
 
     if (object.getMass() <= 0)
         mass_factor = 0;
 
-    else if (other.getMass() <= 0
-            // If the collision is with the parent, ignore mass
-            || (object.hasParent() && (&object.getParent() == &other)))
+    else if (other.getMass() <= 0)
         mass_factor = 1;
 
     else
@@ -93,8 +87,10 @@ void PhysicsBehavior::onCollide(Object & object, Object & other, const Collision
         {
             ut::Vector vel = object.getVelocity();
 
-            if (vel.y != 0 && ((vel.y > 0) != (data.intersect.y > 0)))
-                vel.y = 0;
+            if (vel.y != 0 && ((vel.y > 0) != (data.intersect.y > 0))
+                // Do not stop the object if it collides with a children
+                && !(other.hasParent() && &(other.getParent()) == &object))
+                    vel.y = 0;
 
             object.setVelocity(vel);
         }
@@ -120,8 +116,10 @@ void PhysicsBehavior::onCollide(Object & object, Object & other, const Collision
         {
             ut::Vector vel = object.getVelocity();
 
-            if (vel.x != 0 && ((vel.x > 0) != (data.intersect.x > 0)))
-                vel.x = 0;
+            if (vel.x != 0 && ((vel.x > 0) != (data.intersect.x > 0))
+                // Do not stop the object if it collides with a children
+                && !(other.hasParent() && &(other.getParent()) == &object))
+                    vel.x = 0;
 
             object.setVelocity(vel);
         }
