@@ -54,16 +54,13 @@ local BIN_DIR       = _OPTIONS["output_directory"]
 local OBJ_DIR       = BIN_DIR .."/obj"
 local MAKE_DIR      = BIN_DIR .."/make"
 
--- Enable profiling with gprof on GNU GCC
-local GPROF         = bool_default(_OPTIONS["gprof"], false)
-
 -- Enable static linking of stdlib
 local STDLIB_STATIC = bool_default(_OPTIONS["stdlib_static"], false)
 
 -- ///////////////////////////////////////////////////// --
 
 solution "IWannaBeANinja"
-  configurations { "Debug", "Release" }
+  configurations { "Debug", "Release", "Profile" }
   platforms { "native", "x32", "x64" }
 
   targetdir( BIN_DIR )
@@ -73,13 +70,6 @@ solution "IWannaBeANinja"
 
   if STDLIB_STATIC then
     flags { "StaticRuntime" }
-  end
-
-  if GPROF then
-    flags { "Symbols" }
-    configuration "GMake"
-      buildoptions { "-pg" }
-      linkoptions  { "-pg" }
   end
 
   configuration "GMake"
@@ -92,11 +82,21 @@ solution "IWannaBeANinja"
     flags   { "Optimize" }
     defines { "NDEBUG" }
 
+  configuration "Profile"
+    flags   { "Optimize", "Symbols" }
+    defines { "NDEBUG" }
+
+  configuration { "Profile", "GMake" }
+    buildoptions { "-pg" }
+    linkoptions  { "-pg" }
+
 -- ///////////////////////////////////////////////////// --
 
 project "IWBAN"
   language "C++"
   location( MAKE_DIR )
+
+  kind "WindowedApp"
 
   includedirs { "src", "tools" }
 
@@ -109,16 +109,9 @@ project "IWBAN"
   use_SFML    { "graphics", "audio", "window", "system" }
   use_Boost   { "iostreams", "system", "filesystem" }
 
-  configuration "Debug"
-    kind "ConsoleApp"
-
   -- Force WindowedApp on MacOSX to workaround XCode bug
-  configuration { "Debug", "MacOSX" }
-    kind "WindowedApp"
-
-  configuration "Release"
-    kind "WindowedApp"
-
+  configuration { "Debug", "not MacOSX" }
+    kind "ConsoleApp"
 
 -- ///////////////////////////////////////////////////// --
 
@@ -127,7 +120,7 @@ project "Packager"
   location( MAKE_DIR )
 
   kind "ConsoleApp"
-  targetname "pmk"
+  targetname "pkgtool"
 
   includedirs { "tools" }
 

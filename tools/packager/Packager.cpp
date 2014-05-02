@@ -22,10 +22,10 @@ using pkg::IndexEntry;
 void print_help()
 {
     std::cout << "===== IWBAN Packager Tool =====" << std::endl
-              << "pmk folder [folders]...   - package folders" << std::endl
-              << "pmk -h                    - show this message" << std::endl
-              << "pmk -l package            - list files in package" << std::endl
-              << "pmx -x filename package   - extract file from package" << std::endl;
+              << "pkgtool folder [folders]...   - package folders" << std::endl
+              << "pkgtool -h                    - show this message" << std::endl
+              << "pkgtool -l package            - list files in package" << std::endl
+              << "pkgtool -x filename package   - extract file from package" << std::endl;
 }
 
 // ---- ---- ---- ----
