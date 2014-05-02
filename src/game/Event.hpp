@@ -15,18 +15,18 @@ class Entity;
 
 enum EventId
 {
-    EVENT_DAMAGE,
-    EVENT_KILL,
+    EVT_DAMAGE,
+    EVT_KILL,
 
-    EVENT_ENABLE,
-    EVENT_DISABLE,
+    EVT_ENABLE,
+    EVT_DISABLE,
 
-    EVENT_TOUCH,
+    EVT_TOUCH,
 
-    EVENT_ACTION1,
-    EVENT_ACTION2,
-    EVENT_ACTION3,
-    EVENT_ACTION4,
+    EVT_ACTION1,
+    EVT_ACTION2,
+    EVT_ACTION3,
+    EVT_ACTION4,
 
 };
 // enum EventId
