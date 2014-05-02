@@ -15,7 +15,7 @@ namespace phy
 Object::Object(const Shape * shape, Behavior * behavior)
     : _shape(shape), _behavior(behavior),
     _user_data(0), _mass(0),
-    _solidity_group(phy::NONE), _collision_mask(phy::NONE)
+    _solidity_group(COL_NONE), _collision_mask(COL_NONE)
 {
     BOOST_ASSERT(shape);
 }
@@ -79,7 +79,7 @@ void Object::collideWith(Object & other)
     CollisionGroup my_mask = other.getSolidityGroup() & getCollisionMask();
     CollisionGroup his_mask  = getSolidityGroup() & other.getCollisionMask();
 
-    if (my_mask == NONE && his_mask == NONE)
+    if (my_mask == COL_NONE && his_mask == COL_NONE)
         return;
 
     // Check intersection between objects (before a more precise computation)
@@ -95,12 +95,12 @@ void Object::collideWith(Object & other)
         // TODO Response
         data.origin += getPosition();
 
-        if (getBehavior() && (my_mask != NONE))
+        if (getBehavior() && (my_mask != COL_NONE))
         {
             getBehavior()->onCollide(*this, other, data);
         }
 
-        if (other.getBehavior() && (his_mask != NONE))
+        if (other.getBehavior() && (his_mask != COL_NONE))
         {
             data.revert();
             other.getBehavior()->onCollide(other, *this, data);
