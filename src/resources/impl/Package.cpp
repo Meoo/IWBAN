@@ -123,11 +123,11 @@ FileHandleImpl * Package::findFileLocalized(const std::string& filename)
 
 Package * getPackage(const std::string & package)
 {
-    static PackageMap s_packageMap;
+    static PackageMap s_package_map;
 
-    PackageMap::iterator it = s_packageMap.find(package);
+    PackageMap::iterator it = s_package_map.find(package);
 
-    if (it != s_packageMap.end())
+    if (it != s_package_map.end())
         return it->second;
 
     else
@@ -144,7 +144,7 @@ Package * getPackage(const std::string & package)
         {
             // No package found
             IWBAN_LOG_INFO("Package '%s' not found\n", package.c_str());
-            s_packageMap[package] = 0;
+            s_package_map[package] = 0;
             return 0;
         }
 
@@ -158,7 +158,7 @@ Package * getPackage(const std::string & package)
 
         // Finally, create package
         Package * p = new Package(package, loc, base);
-        s_packageMap[package] = p;
+        s_package_map[package] = p;
 
         IWBAN_LOG_INFO("Package '%s' found (%s '%s' localization)\n",
                 package.c_str(), loc.is_open() ? "with" : "without",

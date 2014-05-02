@@ -1,5 +1,5 @@
 /**
- * @file   SFMLMain.cpp
+ * @file   Main.cpp
  * @author Bastien Brunnenstein
  */
 
@@ -7,7 +7,7 @@
 
 #include <config/Config.hpp>
 
-#include <resources/Async.hpp>
+//#include <resources/Async.hpp>
 
 #include <system/Display.hpp>
 #include <system/Exception.hpp>

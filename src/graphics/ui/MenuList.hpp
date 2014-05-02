@@ -19,6 +19,7 @@ namespace gfx
 
 class MenuElement;
 
+// A menu organized as a vertical list
 class MenuList
 {
 private:
