@@ -60,7 +60,7 @@ protected:
         if (getControls().getAction(ACT_LEFT).isActive())
             d.x = - spd;
 
-        if (pl1->hasParent() && getControls().getAction(ACT_JUMP).isJustActivated())
+        if (pl1->hasParent() && getControls().getAction(ACT_UP).isJustActivated())
         {
             d.y = - 7;
         }

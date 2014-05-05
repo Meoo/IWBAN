@@ -16,15 +16,14 @@ namespace sys
 enum ActionId
 {
     ACT_JUMP = 0,
-    ACT_ATTACK,
+    ACT_FIRE,
+    ACT_MENU,
+    ACT_RETRY,
 
     ACT_UP,
     ACT_DOWN,
     ACT_LEFT,
     ACT_RIGHT,
-
-    ACT_RETRY,
-    ACT_MENU,
 
     // Number of actions, keep last
     ACT_COUNT,

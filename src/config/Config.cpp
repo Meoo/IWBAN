@@ -7,6 +7,8 @@
 
 #include <config/Config.hpp>
 
+#include <system/inputs/Keyboard.hpp>
+
 #include <cctype>   // isalpha()
 #include <fstream>
 
@@ -42,6 +44,9 @@ void parse_args(int argc, char ** argv)
 
 void save()
 {
+    // Get keyboard reference for SAVE macro
+    sys::Keyboard & keyboard = sys::getKeyboard();
+
     std::ofstream f(IWBAN_CONFIG_FILE);
     if (!f.is_open())
     {
@@ -61,6 +66,7 @@ void save()
     SAVE(light_smooth);
     SAVE(light_quality);
     SAVE(particles);
+    SAVE(keyboard);
 
     f.flush();
     f.close();
@@ -72,6 +78,9 @@ void save()
 
 void load()
 {
+    // Get keyboard reference for SAVE macro
+    sys::Keyboard & keyboard = sys::getKeyboard();
+
     std::ifstream f(IWBAN_CONFIG_FILE);
     if (!f.is_open())
     {
@@ -96,6 +105,7 @@ void load()
         LOAD(light_smooth);
         LOAD(light_quality);
         LOAD(particles);
+        LOAD(keyboard);
 
         f >> std::ws;
     }
