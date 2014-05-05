@@ -25,7 +25,7 @@ sf::String Locale::getString(const std::string & key) const
     if (it == _dict.end())
     {
         IWBAN_LOG_ERROR("Missing key '%s' from dictionnary\n", key.c_str());
-        return sf::String(IWBAN_MISSING_STRING);
+        return sf::String(std::string("###") + key + "###");
     }
 
     return sf::String::fromUtf8(it->second.begin(), it->second.end());

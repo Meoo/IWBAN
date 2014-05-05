@@ -34,8 +34,5 @@
 // If framerate goes under _UPDATE_RATE / _MAX_UPDATES_FRAME, the game will slow down
 #define IWBAN_MAX_UPDATES_FRAME 3
 
-// String used by locale when a value is not avaiable
-#define IWBAN_MISSING_STRING    "#-MISSING-#"
-
 
 #endif // _IWBAN_STATICCONFIG_HPP_
