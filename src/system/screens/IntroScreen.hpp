@@ -8,6 +8,7 @@
 
 #include <Global.hpp>
 
+#include <system/Controls.hpp>
 #include <system/Screen.hpp>
 
 #include <physics/behaviors/PhysicsBehavior.hpp>
@@ -28,7 +29,6 @@ protected:
     phy::Simulator sim;
 
     phy::Object * pl1;
-    bool          pl1_j;
     phy::Object * pl2;
     bool          pl2_j;
 
@@ -54,19 +54,15 @@ protected:
         ut::Vector d = pl1->getVelocity();
         d.x = 0;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        if (getControls().getAction(ACT_RIGHT).isActive())
             d.x = spd;
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        if (getControls().getAction(ACT_LEFT).isActive())
             d.x = - spd;
 
-        if (pl1->hasParent())
-            pl1_j = true;
-
-        if (pl1_j && sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        if (pl1->hasParent() && getControls().getAction(ACT_JUMP).isJustActivated())
         {
             d.y = - 7;
-            pl1_j = false;
         }
 
         pl1->setVelocity(d);
@@ -140,7 +136,6 @@ protected:
         res::getLocale().loadFile("system/language.txt");
         res::getLocale().loadFont("system/poetsen_one.ttf");
 
-        pl1_j = false;
         pl2_j = false;
 
         ticks = 0;

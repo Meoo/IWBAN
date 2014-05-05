@@ -23,62 +23,72 @@ enum ActionId
     ACT_LEFT,
     ACT_RIGHT,
 
+    ACT_RETRY,
     ACT_MENU,
 
-    // Keep last
-    ACT_MAX
+    // Number of actions, keep last
+    ACT_COUNT,
 
 };
 // enum ActionId
 
 // ---- ---- ---- ----
 
-class Action
-{
-private:
-    // Data members
-    bool        _active;
-    unsigned    _time; // uptime / downtime in updates
-
-
-public:
-    // Constructor
-                Action() : _active(false), _time(0) {}
-
-    // Accessors
-    bool        isActive() const            { return _active; }
-
-    sf::Time    getTime() const             { return sf::seconds(_time * IWBAN_UPDATE_TIME); }
-
-    bool        isJustActivated() const     { return _active && _time == 0; }
-    bool        isJustDeactivated() const   { return !_active && _time == 0; }
-
-    // Functions
-    void        activate();
-    void        deactivate();
-
-    // Force deactivation
-    void        reset();
-
-};
-// class Action
-
-// ---- ---- ---- ----
-
 class Controls
 {
+public:
+    class Action
+    {
+    private:
+        // Data members
+        unsigned    _activity;
+
+        unsigned    _uptime;    // in updates
+        unsigned    _downtime;  // in updates
+
+
+    public:
+        // Constructor
+                    Action() : _activity(0), _uptime(0), _downtime(0) {}
+
+        // Accessors
+        bool        isActive() const            { return _activity > 0; }
+
+        sf::Time    getUptime() const           { return sf::seconds(_uptime * IWBAN_UPDATE_TIME); }
+        sf::Time    getDowntime() const         { return sf::seconds(_downtime * IWBAN_UPDATE_TIME); }
+
+        bool        isJustActivated() const     { return isActive() && _uptime == 0; }
+        bool        isJustDeactivated() const   { return !isActive() && _downtime == 0; }
+
+        // Functions
+        void        activate();
+        void        deactivate();
+
+        // Call this every update to increase logic up/down time
+        void        update();
+
+        // Force deactivation
+        void        reset();
+
+    };
+    // class Action
+
+
 private:
     // Data members
-    Action _actions[ACT_MAX];
+    Action  _actions[ACT_COUNT];
 
 
 public:
     // Functions
-    const Action & getAction(ActionId action) const { return _actions[action]; }
+    Action & getAction(ActionId action) { return _actions[action]; }
+
+    // Call this every update
+    void    update();
 
     // Deactivate all actions
     // Use this when the focus is lost to prevent inconsistent state
-    void reset();
+    void    reset();
 
 };
 // class Controls

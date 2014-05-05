@@ -7,9 +7,11 @@
 
 #include <config/Config.hpp>
 
+#include <system/Controls.hpp>
 #include <system/Display.hpp>
 #include <system/Projector.hpp>
 #include <system/exceptions/RestartApp.hpp>
+#include <system/inputs/Keyboard.hpp>
 
 #include <resources/File.hpp>
 
@@ -187,6 +189,11 @@ void Display::run(sys::Projector & projector)
                 if (event.key.code == sf::Keyboard::PageDown)
                     play_next_frame = true;
 #endif
+                getKeyboard().onKeyPressed(event.key.code);
+                break;
+
+            case sf::Event::KeyReleased:
+                getKeyboard().onKeyReleased(event.key.code);
                 break;
 
             case sf::Event::GainedFocus:
@@ -194,6 +201,7 @@ void Display::run(sys::Projector & projector)
                 break;
 
             case sf::Event::LostFocus:
+                getControls().reset();
                 IWBAN_LOG_DEBUG("Focus lost\n");
                 break;
 

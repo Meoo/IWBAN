@@ -5,8 +5,8 @@
 
 #include <Global.hpp>
 
+#include <system/Controls.hpp>
 #include <system/Projector.hpp>
-
 #include <system/Screen.hpp>
 
 namespace sys
@@ -39,8 +39,12 @@ void Projector::setScreen(Screen * screen)
 
 void Projector::update()
 {
+    // TODO Update controls after updating the screen?
+    getControls().update();
+
     _current_screen->onUpdate();
 
+    // Check if we should change screen
     Screen * next_screen = _current_screen->getNextScreen();
     if (next_screen)
     {
