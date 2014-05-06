@@ -8,9 +8,7 @@
 
 #include <Global.hpp>
 
-#include <graphics/contexts/DrawContext.hpp>
-
-#include <utils/Vector.hpp>
+#include <gui/Element.hpp>
 
 #include <vector>
 
@@ -18,36 +16,8 @@ namespace gui
 {
 
 // A menu organized as a vertical list
-class Menu
+class Menu : public Element
 {
-public:
-    class Element
-    {
-    private:
-        // Data members
-        ut::Vector  _size;
-        bool        _selected;
-
-
-    public:
-        // Virtual destructor
-        virtual ~Element() {}
-
-        // Functions
-        virtual void draw(gfx::DrawContext & context, const ut::Vector & origin) = 0;
-
-        const ut::Vector & getSize() const  { return _size; }
-
-        virtual bool isSelectable() const;
-
-        void select()           { _selected = true; }
-        void deselect()         { _selected = false; }
-        bool isSelected() const { return _selected; }
-
-    };
-    // class Element
-
-
 private:
     // Data members
     ut::Vector      _position;
@@ -72,6 +42,8 @@ public:
     const ut::Vector & getSize() const      { return _size; }
 
     void setCentered(bool centered)         { _centered = centered; }
+
+    virtual void dispatchAction(sys::ActionId action);
 
 };
 // class Menu
