@@ -25,10 +25,12 @@ void Menu::draw(gfx::DrawContext & context)
         if (_centered)
         {
             int x = (getSize().x - elem->getSize().x) / 2;
-            elem->draw(context, getPosition() + ut::Vector(x, y));
+            elem->setPosition(getPosition() + ut::Vector(x, y));
         }
         else
-            elem->draw(context, getPosition() + ut::Vector(0, y));
+            elem->setPosition(getPosition() + ut::Vector(0, y));
+
+        elem->draw(context);
 
         if (_spacing)
         {

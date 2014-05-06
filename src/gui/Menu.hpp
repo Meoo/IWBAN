@@ -39,11 +39,9 @@ public:
     void add(Element * element);
 
     const ut::Vector & getPosition() const  { return _position; }
-    const ut::Vector & getSize() const      { return _size; }
+    ut::Vector getSize() const              { return _size; }
 
     void setCentered(bool centered)         { _centered = centered; }
-
-    virtual void dispatchAction(sys::ActionId action);
 
 };
 // class Menu
