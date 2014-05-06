@@ -38,6 +38,8 @@ class Controls
 public:
     class Action
     {
+        friend class Controls;
+
     private:
         // Data members
         unsigned    _activity;
@@ -63,6 +65,8 @@ public:
         void        activate();
         void        deactivate();
 
+    private:
+        // Private functions for Controls
         // Call this every update to increase logic up/down time
         void        update();
 

@@ -33,6 +33,8 @@ public:
     void mapKeyToAction(sf::Keyboard::Key key, ActionId action);
     void unmapKey(sf::Keyboard::Key key);
 
+    void reloadDefaults();
+
     sf::Keyboard::Key getKeyFromAction(ActionId action);
 
     void onKeyPressed(sf::Keyboard::Key key);

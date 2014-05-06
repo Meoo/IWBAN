@@ -11,6 +11,7 @@
 #include <system/Display.hpp>
 #include <system/Projector.hpp>
 #include <system/exceptions/RestartApp.hpp>
+#include <system/inputs/Gamepad.hpp>
 #include <system/inputs/Keyboard.hpp>
 
 #include <resources/File.hpp>
@@ -194,6 +195,18 @@ void Display::run(sys::Projector & projector)
 
             case sf::Event::KeyReleased:
                 getKeyboard().onKeyReleased(event.key.code);
+                break;
+
+            case sf::Event::JoystickButtonPressed:
+                getGamepad().onButtonPressed(event.joystickButton.button);
+                break;
+
+            case sf::Event::JoystickButtonReleased:
+                getGamepad().onButtonReleased(event.joystickButton.button);
+                break;
+
+            case sf::Event::JoystickMoved:
+                getGamepad().onAxisMoved(event.joystickMove.axis, event.joystickMove.position);
                 break;
 
             case sf::Event::GainedFocus:

@@ -23,30 +23,32 @@ Keyboard::Keyboard(Controls & controls)
     for (std::size_t i = 0; i < ACT_COUNT; ++i)
         _action_bindings[i] = sf::Keyboard::KeyCount;
 
-    // Static configuration : Cannot be changed
-    _key_to_action[IWBAN_KEYBOARD_JUMP]     = ACT_JUMP;
-    _key_to_action[IWBAN_KEYBOARD_FIRE]     = ACT_FIRE;
-    _key_to_action[IWBAN_KEYBOARD_MENU]     = ACT_MENU;
-    _key_to_action[IWBAN_KEYBOARD_RETRY]    = ACT_RETRY;
-
-    _key_to_action[IWBAN_KEYBOARD_UP]       = ACT_UP;
-    _key_to_action[IWBAN_KEYBOARD_DOWN]     = ACT_DOWN;
-    _key_to_action[IWBAN_KEYBOARD_LEFT]     = ACT_LEFT;
-    _key_to_action[IWBAN_KEYBOARD_RIGHT]    = ACT_RIGHT;
+    reloadDefaults();
 }
 
 void Keyboard::mapKeyToAction(sf::Keyboard::Key key, ActionId action)
 {
     BOOST_ASSERT(key < sf::Keyboard::KeyCount && action < ACT_COUNT);
 
-    if (_key_to_action[key] != ACT_COUNT)
-        IWBAN_LOG_WARNING("Trying to map a key which is already bound\n");
+    // For keyboard, we do not really care whatever happens to previous
+    // configuration since we have static keys
+    if (_action_bindings[action] != sf::Keyboard::KeyCount)
+        unmapKey(_action_bindings[action]);
 
-    else
+    if (_key_to_action[key] != ACT_COUNT)
     {
-        _key_to_action[key] = action;
-        _action_bindings[action] = key;
+        // Do not override static configuration whatsoever
+        if (_action_bindings[_key_to_action[key]] == sf::Keyboard::KeyCount)
+        {
+            IWBAN_LOG_WARNING("Trying to override static keyboard configuration\n");
+            return;
+        }
+
+        unmapKey(key);
     }
+
+    _key_to_action[key] = action;
+    _action_bindings[action] = key;
 }
 
 void Keyboard::unmapKey(sf::Keyboard::Key key)
@@ -61,6 +63,30 @@ void Keyboard::unmapKey(sf::Keyboard::Key key)
 
     // Remove from key mapping
     _key_to_action[key] = ACT_COUNT;
+}
+
+void Keyboard::reloadDefaults()
+{
+    // Clean first
+    for (std::size_t i = 0; i < ACT_COUNT; ++i)
+    {
+        if (_action_bindings[i] != sf::Keyboard::KeyCount)
+        {
+            _key_to_action[_action_bindings[i]] = ACT_COUNT;
+            _action_bindings[i] = sf::Keyboard::KeyCount;
+        }
+    }
+
+    // Static configuration : Cannot be changed
+    _key_to_action[IWBAN_KEYBOARD_JUMP]     = ACT_JUMP;
+    _key_to_action[IWBAN_KEYBOARD_FIRE]     = ACT_FIRE;
+    _key_to_action[IWBAN_KEYBOARD_MENU]     = ACT_MENU;
+    _key_to_action[IWBAN_KEYBOARD_RETRY]    = ACT_RETRY;
+
+    _key_to_action[IWBAN_KEYBOARD_UP]       = ACT_UP;
+    _key_to_action[IWBAN_KEYBOARD_DOWN]     = ACT_DOWN;
+    _key_to_action[IWBAN_KEYBOARD_LEFT]     = ACT_LEFT;
+    _key_to_action[IWBAN_KEYBOARD_RIGHT]    = ACT_RIGHT;
 }
 
 sf::Keyboard::Key Keyboard::getKeyFromAction(ActionId action)
@@ -110,6 +136,8 @@ std::ostream & operator << (std::ostream & ostr, Keyboard & keyboard)
 
 std::istream & operator >> (std::istream & istr, Keyboard & keyboard)
 {
+    keyboard.reloadDefaults();
+
     istr >> std::ws;
     if (istr.peek() != '{')
     {

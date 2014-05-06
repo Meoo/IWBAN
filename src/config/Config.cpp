@@ -7,6 +7,7 @@
 
 #include <config/Config.hpp>
 
+#include <system/inputs/Gamepad.hpp>
 #include <system/inputs/Keyboard.hpp>
 
 #include <cctype>   // isalpha()
@@ -46,6 +47,7 @@ void save()
 {
     // Get keyboard reference for SAVE macro
     sys::Keyboard & keyboard = sys::getKeyboard();
+    sys::Gamepad & gamepad = sys::getGamepad();
 
     std::ofstream f(IWBAN_CONFIG_FILE);
     if (!f.is_open())
@@ -67,6 +69,7 @@ void save()
     SAVE(light_quality);
     SAVE(particles);
     SAVE(keyboard);
+    SAVE(gamepad);
 
     f.flush();
     f.close();
@@ -80,6 +83,7 @@ void load()
 {
     // Get keyboard reference for SAVE macro
     sys::Keyboard & keyboard = sys::getKeyboard();
+    sys::Gamepad & gamepad = sys::getGamepad();
 
     std::ifstream f(IWBAN_CONFIG_FILE);
     if (!f.is_open())
@@ -106,6 +110,7 @@ void load()
         LOAD(light_quality);
         LOAD(particles);
         LOAD(keyboard);
+        LOAD(gamepad);
 
         f >> std::ws;
     }
