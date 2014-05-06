@@ -1,26 +1,26 @@
 /**
- * @file   MenuList.cpp
+ * @file   Menu.cpp
  * @author Bastien Brunnenstein
  */
 
 #include <Global.hpp>
 
-#include <graphics/ui/MenuElement.hpp>
-#include <graphics/ui/MenuList.hpp>
+#include <gui/Menu.hpp>
 
-namespace gfx
+namespace gui
 {
 
-void MenuList::draw(DrawContext & context)
+void Menu::draw(gfx::DrawContext & context)
 {
     int y = 0;
 
     for (std::size_t i = _first_visible; i < _elements.size(); ++i)
     {
-        MenuElement * elem = _elements[i];
+        Element * elem = _elements[i];
 
         y += elem->getSize().y;
-        if (y > getSize().y) break;
+        if (y > getSize().y)
+            break;
 
         if (_centered)
         {
@@ -29,13 +29,22 @@ void MenuList::draw(DrawContext & context)
         }
         else
             elem->draw(context, getPosition() + ut::Vector(0, y));
+
+        if (_spacing)
+        {
+            y += _spacing;
+            if (y > getSize().y)
+                break;
+        }
     }
 }
 
-void MenuList::add(MenuElement * element)
+void Menu::add(Element * element)
 {
+    BOOST_ASSERT(element);
+
     _elements.push_back(element);
 }
 
 }
-// namespace gfx
+// namespace gui
