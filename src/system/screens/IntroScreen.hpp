@@ -146,28 +146,16 @@ protected:
     virtual void    onShow()
     {
         res::getLocale().loadFile("system/language.txt");
+        res::getLocale().loadFile("system/menu.txt");
         res::getLocale().loadFont("system/poetsen_one.ttf");
 
-        gui::Choice * c;
-
-        menu.setPosition(ut::Vector(100, 100));
-        menu.setSize(ut::Vector(300, 200));
+        menu.setPosition(ut::Vector(0, 240));
+        menu.setSize(ut::Vector(640, 240));
         menu.setCentered(true);
-        menu.add(new gui::Label("truc"));
-        menu.add(new gui::Choice("bonjour"));
-        menu.add(new gui::Frame(ut::Vector(300, 50), new gui::Choice("caca")));
-        menu.add(new gui::Frame(ut::Vector(300, 50), new gui::Choice("truc")));
-        menu.add(c = new gui::Choice("caca"));
-        menu.add(new gui::Choice("caca"));
-        menu.add(new gui::Label("bonjour"));
-        menu.add(new gui::Label("truc"));
-
-        c->setAction(
-            [c]()
-            {
-                std::cout << "Surprise!" << std::endl;
-                c->setTextColor(sf::Color::Yellow);
-            });
+        menu.add(new gui::Frame(ut::Vector(300, 40), new gui::Choice("menu.newgame")));
+        menu.add(new gui::Frame(ut::Vector(300, 40), new gui::Choice("menu.continue")));
+        menu.add(new gui::Frame(ut::Vector(300, 40), new gui::Choice("menu.options")));
+        menu.add(new gui::Frame(ut::Vector(300, 40), new gui::Choice("menu.quit")));
 
         pl2_j = false;
 

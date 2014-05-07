@@ -1,0 +1,4 @@
+menu.newgame    "New Game"
+menu.continue   "Continue"
+menu.options    "Settings"
+menu.quit       "Quit"
