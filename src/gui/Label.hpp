@@ -44,7 +44,7 @@ public:
     void setCharacterSize(unsigned size) { _text.setCharacterSize(size); }
 
 };
-// class Choice
+// class Label
 
 }
 // namespace gui

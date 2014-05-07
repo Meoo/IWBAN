@@ -22,6 +22,7 @@
 
 #include <gui/Menu.hpp>
 #include <gui/Choice.hpp>
+#include <gui/Frame.hpp>
 
 namespace sys
 {
@@ -154,8 +155,8 @@ protected:
         menu.setCentered(true);
         menu.add(new gui::Label("truc"));
         menu.add(new gui::Choice("bonjour"));
-        menu.add(new gui::Choice("caca"));
-        menu.add(new gui::Choice("truc"));
+        menu.add(new gui::Frame(ut::Vector(300, 50), new gui::Choice("caca")));
+        menu.add(new gui::Frame(ut::Vector(300, 50), new gui::Choice("truc")));
         menu.add(c = new gui::Choice("caca"));
         menu.add(new gui::Choice("caca"));
         menu.add(new gui::Label("bonjour"));

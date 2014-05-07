@@ -50,8 +50,6 @@ void Menu::updateChilds()
 
     for (Element * elem : _elements)
     {
-        y += elem->getSize().y;
-
         // Update element position
         if (_centered)
         {
@@ -60,6 +58,8 @@ void Menu::updateChilds()
         }
         else
             elem->setPosition(getPosition() + ut::Vector(0, y));
+
+        y += elem->getSize().y;
 
         if (_spacing)
         {
