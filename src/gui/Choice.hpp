@@ -10,6 +10,8 @@
 
 #include <gui/Label.hpp>
 
+#include <functional>
+
 namespace gui
 {
 
@@ -18,6 +20,8 @@ class Choice : public Label
 {
 private:
     // Data members
+    bool                    _enabled = true;
+    std::function<void()>   _action;
 
 
 public:
@@ -30,10 +34,18 @@ public:
 
     bool isEnabled() const  { return _enabled; }
 
-    virtual void select()   { Label::select(); setTextColor(sf::Color::Blue); }
+    virtual void select()   { Label::select(); setTextColor(sf::Color::Green); }
     virtual void deselect() { Label::deselect(); setTextColor(sf::Color::White); }
 
     virtual bool isSelectable() const { return isEnabled(); }
+
+    void setAction(const std::function<void()> & func) { _action = func; }
+
+    virtual void dispatchAction(sys::ActionId action)
+    {
+        if (action == sys::ACT_JUMP && _action)
+            _action();
+    }
 
 };
 // class Choice

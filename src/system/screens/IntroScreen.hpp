@@ -20,6 +20,9 @@
 #include <resources/File.hpp>
 #include <resources/Locale.hpp>
 
+#include <gui/Menu.hpp>
+#include <gui/Choice.hpp>
+
 namespace sys
 {
 
@@ -43,6 +46,8 @@ protected:
 
     phy::PhysicsBehavior phys;
     phy::MovingBehavior mov;
+
+    gui::Menu menu;
 
     unsigned ticks;
 
@@ -103,6 +108,10 @@ protected:
 
         sim.step();
 
+        for (unsigned i = 0; i < ACT_COUNT; ++i)
+            if (getControls().getAction((ActionId) i).isJustActivated())
+                menu.dispatchAction((ActionId) i);
+
         ++ticks;
     }
 
@@ -111,13 +120,15 @@ protected:
         // Debug
         gfx::DrawContext & draw = renderer.openDrawContext();
 
-        draw.fill(sf::Color(20,40,10));
+        draw.fill(sf::Color(28,61,12));
 
         sf::String testext(res::getLocale().getString("test"));
         sf::Text text(testext, res::getLocale().getFont(), 24);
         text.setPosition(25, 25);
         text.setColor(sf::Color::Black);
         draw.draw(text);
+
+        menu.draw(draw);
 
         draw.close();
 
@@ -135,6 +146,27 @@ protected:
     {
         res::getLocale().loadFile("system/language.txt");
         res::getLocale().loadFont("system/poetsen_one.ttf");
+
+        gui::Choice * c;
+
+        menu.setPosition(ut::Vector(100, 100));
+        menu.setSize(ut::Vector(300, 200));
+        menu.setCentered(true);
+        menu.add(new gui::Label("truc"));
+        menu.add(new gui::Choice("bonjour"));
+        menu.add(new gui::Choice("caca"));
+        menu.add(new gui::Choice("truc"));
+        menu.add(c = new gui::Choice("caca"));
+        menu.add(new gui::Choice("caca"));
+        menu.add(new gui::Label("bonjour"));
+        menu.add(new gui::Label("truc"));
+
+        c->setAction(
+            [c]()
+            {
+                std::cout << "Surprise!" << std::endl;
+                c->setTextColor(sf::Color::Yellow);
+            });
 
         pl2_j = false;
 

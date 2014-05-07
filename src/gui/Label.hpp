@@ -18,9 +18,12 @@ class Label : public Element
 {
 private:
     // Data members
-    sf::Text _text;
+    sf::Text            _text;
 
-    ut::Vector _margin;
+    bool                _shadow = false;
+
+    ut::Vector          _position;
+    ut::Vector          _margin;
 
 
 public:
@@ -28,11 +31,17 @@ public:
     explicit Label(const std::string & string_key);
 
     // Functions
-    virtual void draw(gfx::DrawContext & context, const ut::Vector & origin);
+    virtual void draw(gfx::DrawContext & context) const;
+
+    void setShadow(bool shadow) { _shadow = shadow; }
 
     virtual ut::Vector getSize() const;
 
+    virtual void setPosition(const ut::Vector & position) { _position = position; }
+
     void setTextColor(const sf::Color & color) { _text.setColor(color); }
+
+    void setCharacterSize(unsigned size) { _text.setCharacterSize(size); }
 
 };
 // class Choice

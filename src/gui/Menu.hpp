@@ -25,23 +25,40 @@ private:
 
     std::vector<Element *> _elements;
 
-    std::size_t     _first_visible;
-    std::size_t     _selected;
+    std::size_t     _selected   = -1u;
 
-    bool            _centered;
-    unsigned        _spacing;
+    bool            _centered   = false;
+    unsigned        _spacing    = 0;
 
 
 public:
-    // Functions
-    void draw(gfx::DrawContext & context);
+    // Constructor
+    Menu();
 
+    // Virtual destructor
+    virtual ~Menu();
+
+    // Functions
+    virtual void draw(gfx::DrawContext & context) const;
+
+    // Elements added to a Menu are owned, and will be deleted when
+    // the menu is released.
     void add(Element * element);
 
     const ut::Vector & getPosition() const  { return _position; }
-    ut::Vector getSize() const              { return _size; }
+    virtual void setPosition(const ut::Vector & position) { _position = position; }
 
-    void setCentered(bool centered)         { _centered = centered; }
+    ut::Vector getSize() const              { return _size; }
+    void setSize(const ut::Vector & size)   { _size = size; }
+
+    void setCentered(bool centered)         { _centered = centered; updateChilds(); }
+
+    virtual void dispatchAction(sys::ActionId action);
+
+
+private:
+    // Private function
+    void updateChilds();
 
 };
 // class Menu

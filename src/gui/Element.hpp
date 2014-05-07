@@ -21,7 +21,7 @@ class Element
 {
 private:
     // Data members
-    bool    _selected;
+    bool    _selected = false;
 
 
 public:
@@ -29,7 +29,7 @@ public:
     virtual ~Element() {}
 
     // Functions
-    virtual void    draw(gfx::DrawContext & context) = 0;
+    virtual void    draw(gfx::DrawContext & context) const = 0;
 
     virtual ut::Vector getSize() const = 0;
 
