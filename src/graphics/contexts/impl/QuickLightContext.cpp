@@ -18,7 +18,7 @@ namespace impl
 QuickLightContext::QuickLightContext()
     : _open(false)
 {
-    _render_light.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
+    _render_light.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT, true);
 
     if (!cfg::pixelated)
         _render_light.setSmooth(true);

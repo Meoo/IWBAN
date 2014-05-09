@@ -21,9 +21,9 @@ public:
 
 private:
     // Data members
-    bool    _cast_shadows;
+    bool        _cast_shadows;
 
-    Vector2 _origin;
+    ut::Vector  _origin;
 
 
 public:

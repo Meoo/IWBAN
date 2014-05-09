@@ -46,6 +46,9 @@ protected:
 
     virtual const sf::Texture & getTexture() const;
 
+    // Used internally to build shadow mask
+    virtual sf::RenderTexture & getRenderTexture() { return _render_light; }
+
 };
 // class SmoothLightContext
 
