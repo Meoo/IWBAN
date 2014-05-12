@@ -13,36 +13,7 @@ namespace
 {
 
 // TODO Use a constant in config file instead
-const float SHADOW_FAR_DISTANCE = 2048;
-
-inline
-bool addVertex(sf::VertexArray & array,
-               const ut::Vector & vertex,
-               const ut::Vector & delta)
-{
-    float delta_len = std::abs(delta.x) + std::abs(delta.y);
-
-    // Do not add a vertex if it's too close from origin
-    if (delta_len < 1)
-        return false;
-
-    ut::Vector far_vertex = delta * (SHADOW_FAR_DISTANCE / delta_len) + vertex;
-
-    array.append(sf::Vertex(sf::Vector2f(vertex.x, vertex.y)));
-    array.append(sf::Vertex(sf::Vector2f(far_vertex.x, far_vertex.y)));
-
-    return true;
-}
-
-inline
-void popVertices(sf::VertexArray & array,
-                 sf::RenderTarget & target)
-{
-    if (array.getVertexCount() > 2)
-        target.draw(array);
-
-    array.clear();
-}
+const float SHADOW_FAR_DISTANCE = 32768;
 
 }
 // namespace
@@ -67,7 +38,7 @@ void LightContext::buildShadowMask(const ut::Vector & origin,
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // Keep the vertex array here to avoid many memory allocations
-    static sf::VertexArray vertices(sf::TrianglesStrip);
+    static sf::VertexArray vertices(sf::Quads);
 
     // Draw the mask we want to use
     for (const ShadowVolume * shadow : list)
@@ -79,38 +50,49 @@ void LightContext::buildShadowMask(const ut::Vector & origin,
             continue;
         }
 
-        // TODO May be optimized by reducing the amount of calls to draw...
-        // ... instead we could draw elements as Quads, and add one quad
-        // for every valid shadow line, and then pushing everything to the GPU.
-        ut::Vector last_delta = shadow->getVertex(0) - origin;
-        ::addVertex(vertices, shadow->getVertex(0), last_delta);
+        bool       last_valid = false;
+        ut::Vector last_vert;
+        ut::Vector last_delta;
+        ut::Vector last_far;
 
-        for (std::size_t i = 1; i < shadow->getVertexCount(); ++i)
+        for (std::size_t i = 0; i < shadow->getVertexCount(); ++i)
         {
+            bool       valid = false;
             ut::Vector vert = shadow->getVertex(i);
             ut::Vector delta = vert - origin;
+            ut::Vector far_; // "far" is used as a macro somewhere...
+
+            {
+                float delta_len = std::abs(delta.x) + std::abs(delta.y);
+
+                // Do not add a vertex if it's too close from origin
+                if (delta_len >= 1)
+                {
+                    far_ = delta * (SHADOW_FAR_DISTANCE / delta_len) + vert;
+                    valid = true;
+                }
+            }
 
             // Check winding
-            // Do a dot product between delta and the
-            if (delta.x * - last_delta.y + delta.y * last_delta.x < 0)
+            // Do a dot product between delta and the last delta rotated by 90 degrees
+            if (last_valid && valid
+                && delta.x * - last_delta.y + delta.y * last_delta.x < 0)
             {
-                if (!::addVertex(vertices, vert, delta))
-
-                    // Pop previous vertices if adding one fails
-                    // It's a very rare case
-                    ::popVertices(vertices, getRenderTexture());
-            }
-            else
-            {
-                ::popVertices(vertices, getRenderTexture());
-                ::addVertex(vertices, vert, delta);
+                vertices.append(sf::Vector2f(last_vert.x, last_vert.y));
+                vertices.append(sf::Vector2f(last_far.x, last_far.y));
+                vertices.append(sf::Vector2f(far_.x, far_.y));
+                vertices.append(sf::Vector2f(vert.x, vert.y));
             }
 
+            last_valid = valid;
+            last_vert = vert;
             last_delta = delta;
+            last_far = far_;
         }
-
-        ::popVertices(vertices, getRenderTexture());
     }
+
+    getRenderTexture().draw(vertices);
+    vertices.clear();
 
     // Disable writing on the depth buffer and activate the mask
     glDepthFunc(GL_NOTEQUAL);
