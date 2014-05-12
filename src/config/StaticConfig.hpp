@@ -9,10 +9,10 @@
 
 #define IWBAN_GAME_NAME         "I Wanna Be The Ninja Master"
 
-#define IWBAN_FRAME_WIDTH       640
-#define IWBAN_FRAME_HEIGHT      480
+#define IWBAN_FRAME_WIDTH       640 // px
+#define IWBAN_FRAME_HEIGHT      480 // px
 
-#define IWBAN_FRAMERATE         60
+#define IWBAN_FRAME_RATE        60 // Hz
 
 
 #define IWBAN_DATA_FOLDER       "data"
@@ -27,12 +27,15 @@
 #define IWBAN_MAX_ENTITIES      (IWBAN_ENTS_BLK_SIZE * IWBAN_ENTS_BLK_COUNT)
 
 
-#define IWBAN_UPDATE_RATE       60
-#define IWBAN_UPDATE_TIME       (1.f/IWBAN_UPDATE_RATE)
+#define IWBAN_UPDATE_RATE       60 // Hz
+#define IWBAN_UPDATE_TIME       (1.f/IWBAN_UPDATE_RATE) // s
 
 // Maximum number of updates in a single frame
 // If framerate goes under _UPDATE_RATE / _MAX_UPDATES_FRAME, the game will slow down
 #define IWBAN_MAX_UPDATES_FRAME 3
+
+
+#define IWBAN_SPLASH_DURATION   4 // s
 
 
 #endif // _IWBAN_STATICCONFIG_HPP_

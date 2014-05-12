@@ -34,12 +34,11 @@ void Projector::setScreen(Screen * screen)
     _current_screen->onHide();
     _current_screen = screen;
     _current_screen->onShow();
-    _current_screen->setNextScreen(0);
 }
 
 void Projector::update()
 {
-    // TODO Update controls after updating the screen?
+    // Update controls right before updating the screen
     getControls().update();
 
     _current_screen->onUpdate();
@@ -50,12 +49,16 @@ void Projector::update()
     {
         BOOST_ASSERT(next_screen != _current_screen);
 
+        IWBAN_LOG_INFO("Changing screen\n");
+
         Screen * current = _current_screen;
 
         setScreen(next_screen);
 
         if (current->isDisposable())
             delete current;
+        else
+            current->resetNextScreen();
     }
 }
 

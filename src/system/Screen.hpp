@@ -69,6 +69,7 @@ protected:
 
 private:
     // Functions for Projector
+    void        resetNextScreen()       { _next_screen = 0; }
     Screen *    getNextScreen() const   { return _next_screen; }
     bool        isDisposable() const    { return _disposable; }
 

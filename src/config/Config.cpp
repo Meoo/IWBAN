@@ -24,7 +24,7 @@ float       zoom_multiplier = 0.f;
 unsigned    window_width    = IWBAN_FRAME_WIDTH;
 unsigned    window_height   = IWBAN_FRAME_HEIGHT;
 
-unsigned    framerate       = IWBAN_FRAMERATE;
+unsigned    framerate       = IWBAN_FRAME_RATE;
 bool        vsync           = false;
 
 std::string language        = "fr";
