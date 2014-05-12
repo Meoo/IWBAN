@@ -43,7 +43,7 @@ public:
 
     virtual void dispatchAction(sys::ActionId action)
     {
-        if (action == sys::ACT_JUMP && _action)
+        if (action == sys::ACT_ACCEPT && _action)
             _action();
     }
 

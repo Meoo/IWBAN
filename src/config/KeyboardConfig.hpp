@@ -9,10 +9,15 @@
 
 #include <SFML/Window.hpp>
 
+// Default configuration
 #define IWBAN_KEYBOARD_JUMP     sf::Keyboard::X
 #define IWBAN_KEYBOARD_FIRE     sf::Keyboard::C
-#define IWBAN_KEYBOARD_MENU     sf::Keyboard::Escape
 #define IWBAN_KEYBOARD_RETRY    sf::Keyboard::R
+
+// Fixed configuration
+#define IWBAN_KEYBOARD_ACCEPT   sf::Keyboard::Return
+#define IWBAN_KEYBOARD_CANCEL   sf::Keyboard::BackSpace
+#define IWBAN_KEYBOARD_MENU     sf::Keyboard::Escape
 
 #define IWBAN_KEYBOARD_UP       sf::Keyboard::Up
 #define IWBAN_KEYBOARD_DOWN     sf::Keyboard::Down

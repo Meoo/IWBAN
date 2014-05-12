@@ -15,11 +15,17 @@ namespace sys
 
 enum ActionId
 {
+    // Game actions
     ACT_JUMP = 0,
     ACT_FIRE,
-    ACT_MENU,
     ACT_RETRY,
 
+    // Menu actions
+    ACT_ACCEPT,
+    ACT_CANCEL,
+    ACT_MENU,
+
+    // Navigation actions
     ACT_UP,
     ACT_DOWN,
     ACT_LEFT,

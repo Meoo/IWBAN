@@ -77,16 +77,20 @@ void Keyboard::reloadDefaults()
         }
     }
 
-    // Static configuration : Cannot be changed
-    _key_to_action[IWBAN_KEYBOARD_JUMP]     = ACT_JUMP;
-    _key_to_action[IWBAN_KEYBOARD_FIRE]     = ACT_FIRE;
+    // Fixed configuration : Cannot be changed
+    _key_to_action[IWBAN_KEYBOARD_ACCEPT]   = ACT_ACCEPT;
+    _key_to_action[IWBAN_KEYBOARD_CANCEL]   = ACT_CANCEL;
     _key_to_action[IWBAN_KEYBOARD_MENU]     = ACT_MENU;
-    _key_to_action[IWBAN_KEYBOARD_RETRY]    = ACT_RETRY;
 
     _key_to_action[IWBAN_KEYBOARD_UP]       = ACT_UP;
     _key_to_action[IWBAN_KEYBOARD_DOWN]     = ACT_DOWN;
     _key_to_action[IWBAN_KEYBOARD_LEFT]     = ACT_LEFT;
     _key_to_action[IWBAN_KEYBOARD_RIGHT]    = ACT_RIGHT;
+
+    // Dynamic configuration
+    mapKeyToAction(IWBAN_KEYBOARD_JUMP, ACT_JUMP);
+    mapKeyToAction(IWBAN_KEYBOARD_FIRE, ACT_FIRE);
+    mapKeyToAction(IWBAN_KEYBOARD_RETRY, ACT_RETRY);
 }
 
 sf::Keyboard::Key Keyboard::getKeyFromAction(ActionId action)
@@ -102,6 +106,21 @@ void Keyboard::onKeyPressed(sf::Keyboard::Key key)
 
     ActionId id = _key_to_action[key];
 
+    // On keyboard, Jump = Accept and Fire = Cancel
+    switch (id)
+    {
+    case ACT_JUMP:
+        _controls.getAction(ACT_ACCEPT).activate();
+        break;
+
+    case ACT_FIRE:
+        _controls.getAction(ACT_CANCEL).activate();
+        break;
+
+    default:
+        break;
+    }
+
     if (id != ACT_COUNT)
         _controls.getAction(id).activate();
 }
@@ -111,6 +130,21 @@ void Keyboard::onKeyReleased(sf::Keyboard::Key key)
     BOOST_ASSERT(key < sf::Keyboard::KeyCount);
 
     ActionId id = _key_to_action[key];
+
+    // On keyboard, Jump = Accept and Fire = Cancel
+    switch (id)
+    {
+    case ACT_JUMP:
+        _controls.getAction(ACT_ACCEPT).activate();
+        break;
+
+    case ACT_FIRE:
+        _controls.getAction(ACT_CANCEL).activate();
+        break;
+
+    default:
+        break;
+    }
 
     if (id != ACT_COUNT)
         _controls.getAction(id).deactivate();

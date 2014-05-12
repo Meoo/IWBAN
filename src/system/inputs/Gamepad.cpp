@@ -31,6 +31,10 @@ void Gamepad::mapButtonToAction(unsigned button, ActionId action)
 {
     BOOST_ASSERT(button < sf::Joystick::ButtonCount && action < ACT_COUNT);
 
+    // Ignore fixed actions
+    if (action == ACT_ACCEPT || action == ACT_CANCEL || action == ACT_MENU)
+        return;
+
     // On gamepad, we need to make sure that actions are bound to something
     if (_action_bindings[action] != sf::Joystick::ButtonCount)
     {
@@ -85,9 +89,9 @@ void Gamepad::reloadDefaults()
         }
     }
 
+    // Dynamic configuration
     mapButtonToAction(IWBAN_GAMEPAD_JUMP, ACT_JUMP);
     mapButtonToAction(IWBAN_GAMEPAD_FIRE, ACT_FIRE);
-    mapButtonToAction(IWBAN_GAMEPAD_MENU, ACT_MENU);
     mapButtonToAction(IWBAN_GAMEPAD_RETRY, ACT_RETRY);
 }
 
@@ -102,6 +106,26 @@ void Gamepad::onButtonPressed(unsigned button)
 {
     BOOST_ASSERT(button < sf::Joystick::ButtonCount);
 
+    // Fixed configuration
+    switch (button)
+    {
+    case IWBAN_GAMEPAD_ACCEPT:
+        _controls.getAction(ACT_ACCEPT).activate();
+        break;
+
+    case IWBAN_GAMEPAD_CANCEL:
+        _controls.getAction(ACT_CANCEL).activate();
+        break;
+
+    case IWBAN_GAMEPAD_MENU:
+        _controls.getAction(ACT_MENU).activate();
+        break;
+
+    default:
+        break;
+    }
+
+    // Dynamic configuration
     ActionId id = _button_to_action[button];
 
     if (id != ACT_COUNT)
@@ -112,6 +136,26 @@ void Gamepad::onButtonReleased(unsigned button)
 {
     BOOST_ASSERT(button < sf::Joystick::ButtonCount);
 
+    // Fixed configuration
+    switch (button)
+    {
+    case IWBAN_GAMEPAD_ACCEPT:
+        _controls.getAction(ACT_ACCEPT).deactivate();
+        break;
+
+    case IWBAN_GAMEPAD_CANCEL:
+        _controls.getAction(ACT_CANCEL).deactivate();
+        break;
+
+    case IWBAN_GAMEPAD_MENU:
+        _controls.getAction(ACT_MENU).deactivate();
+        break;
+
+    default:
+        break;
+    }
+
+    // Dynamic configuration
     ActionId id = _button_to_action[button];
 
     if (id != ACT_COUNT)
