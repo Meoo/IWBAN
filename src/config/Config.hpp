@@ -27,7 +27,6 @@ extern std::string  language;
 extern bool         pixelated;
 
 extern bool         light_smooth;
-extern bool         light_quality; // TODO Not in use
 extern unsigned     particles;
 
 // ---- ---- ---- ----
