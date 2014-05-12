@@ -24,16 +24,6 @@ Frame::~Frame()
 
 void Frame::draw(gfx::DrawContext & context) const
 {
-    /* TODO Debug code
-    sf::RectangleShape s(sf::Vector2f(_size.x, _size.y));
-    s.setFillColor(sf::Color::Transparent);
-    s.setOutlineColor(sf::Color::Red);
-    s.setOutlineThickness(-1);
-    s.setOrigin(0, 0);
-    s.setPosition(_position.x, _position.y);
-    context.draw(s);
-    */
-
     _content->draw(context);
 }
 

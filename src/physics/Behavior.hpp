@@ -20,7 +20,7 @@ public:
     // Virtual destructor
     virtual ~Behavior() {}
 
-    // TODO Virtual functions
+    // Virtual functions
     virtual void prepare(Object & object) {}
 
     // Pre-condition : parent have been updated

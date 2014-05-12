@@ -117,7 +117,6 @@ void Renderer::end()
     BOOST_ASSERT_MSG(!_current_context || !_current_context->isOpen(),
                      "You must close the current context in order to finish rendering");
 
-    // TODO Lighting
     if (_draw_enabled)
     {
         sf::RenderStates state(sf::BlendNone);
@@ -125,6 +124,7 @@ void Renderer::end()
         sf::RectangleShape sprite(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT));
         sprite.setTexture(&_draw_context->getTexture());
 
+        // Lighting
         if (_light_enabled)
         {
             _light_mix.setParameter("light_map", _light_context->getTexture());

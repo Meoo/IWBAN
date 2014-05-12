@@ -55,7 +55,7 @@ namespace impl
 }
 // namespace impl
 
-// TODO Public inheritance? Seems to be required for boost
+// Boost's hooks must use public inheritance
 class Object : public impl::ObjectHook,
                public impl::ChildHook
 {
