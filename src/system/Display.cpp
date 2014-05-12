@@ -7,6 +7,7 @@
 
 #include <config/Config.hpp>
 
+#include <system/Clock.hpp>
 #include <system/Controls.hpp>
 #include <system/Display.hpp>
 #include <system/Projector.hpp>
@@ -111,7 +112,6 @@ void Display::run(sys::Projector & projector)
 
     // Scene data
     gfx::Renderer   renderer(_window);
-    sf::Clock       global_clock;
     sf::Time        next_update(sf::seconds(IWBAN_UPDATE_TIME));
 
 #ifdef PERF_MONITORING
@@ -126,8 +126,8 @@ void Display::run(sys::Projector & projector)
     sf::Time        perf_draw;
     sf::Time        perf_display;
 
-#   define PERF_BEGIN(type) perf_ ## type -= global_clock.getElapsedTime()
-#   define PERF_END(type)   perf_ ## type += global_clock.getElapsedTime()
+#   define PERF_BEGIN(type) perf_ ## type -= getGlobalClock().getElapsedTime()
+#   define PERF_END(type)   perf_ ## type += getGlobalClock().getElapsedTime()
 
 #else
 #   define PERF_BEGIN(type)
@@ -239,7 +239,7 @@ void Display::run(sys::Projector & projector)
             }
 
             // Prevent "Game is slowing down" warning on resume
-            next_update = global_clock.getElapsedTime()
+            next_update = getGlobalClock().getElapsedTime()
                         + sf::seconds(IWBAN_UPDATE_TIME);
 
         } // if (pause)
@@ -249,7 +249,7 @@ void Display::run(sys::Projector & projector)
 
             // Inflict a penalty on any update after the first one to increase consistency
             int update_count = 0;
-            while (global_clock.getElapsedTime() > (update_count == 0 ? next_update : next_update + sf::seconds(IWBAN_UPDATE_TIME / 4)))
+            while (getGlobalClock().getElapsedTime() > (update_count == 0 ? next_update : next_update + sf::seconds(IWBAN_UPDATE_TIME / 4)))
             {
                 // Scene update
                 projector.update();
@@ -262,10 +262,10 @@ void Display::run(sys::Projector & projector)
                     // Issue a warning when the game is slowing down,
                     // and reset next_update timer to prevent
                     // update burst after a lag spike
-                    if (global_clock.getElapsedTime() > next_update)
+                    sf::Time time (getGlobalClock().getElapsedTime());
+                    if (time > next_update)
                     {
-                        next_update = global_clock.getElapsedTime()
-                                    + sf::seconds(IWBAN_UPDATE_TIME);
+                        next_update = time + sf::seconds(IWBAN_UPDATE_TIME);
                         IWBAN_LOG_WARNING("Game is slowing down!\n");
                     }
 
@@ -280,12 +280,14 @@ void Display::run(sys::Projector & projector)
         PERF_END(update);
         PERF_BEGIN(draw);
 
+        sf::Time draw_time (getGlobalClock().getElapsedTime());
+
         // Background rendering
         if (marginX > 0 || marginY > 0)
         {
             _window.setView(bg_view);
 
-            float t = global_clock.getElapsedTime().asSeconds();
+            float t = draw_time.asSeconds();
             float t2 = - t/2;
 
             bg_mesh[0].texCoords.x = t;
@@ -299,11 +301,11 @@ void Display::run(sys::Projector & projector)
             bg_mesh[3].texCoords.y = winH2 + t2;
 
             _window.draw(bg_mesh, &bg_tex);
+
+            _window.setView(render_view);
         }
 
         // Scene rendering
-        _window.setView(render_view);
-
         renderer.begin();
         projector.render(renderer);
         renderer.end();
@@ -330,7 +332,7 @@ void Display::run(sys::Projector & projector)
     } // while(win.isOpen())
 
 #ifdef PERF_MONITORING
-    sf::Time perf_total = global_clock.getElapsedTime();
+    sf::Time perf_total = getGlobalClock().getElapsedTime();
 
     // Dump performance monitoring results to standard output
     std::cout << "Average FPS : " << (total_fps_counter / perf_total.asSeconds()) << std::endl
@@ -362,6 +364,8 @@ void Display::updateSceneView()
     render_view.setCenter(IWBAN_FRAME_WIDTH / 2, IWBAN_FRAME_HEIGHT / 2);
     render_view.setSize(IWBAN_FRAME_WIDTH + marginX * 2 / zoom,
                         IWBAN_FRAME_HEIGHT + marginY * 2 / zoom);
+
+    _window.setView(render_view);
 }
 
 }
