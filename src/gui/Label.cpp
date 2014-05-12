@@ -16,7 +16,6 @@ Label::Label(const std::string & string_key)
     : _text(res::getLocale().getString(string_key),
             res::getLocale().getFont())
 {
-    std::cout << _text.getLocalBounds().top << std::endl;
 }
 
 void Label::draw(gfx::DrawContext & context) const
