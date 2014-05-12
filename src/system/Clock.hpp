@@ -20,6 +20,12 @@ const sf::Clock & getGlobalClock()
     return s_global_clock;
 }
 
+inline
+sf::Time getGlobalTime()
+{
+    return getGlobalClock().getElapsedTime();
+}
+
 }
 // namespace sys
 

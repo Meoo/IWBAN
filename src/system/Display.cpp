@@ -126,8 +126,8 @@ void Display::run(sys::Projector & projector)
     sf::Time        perf_draw;
     sf::Time        perf_display;
 
-#   define PERF_BEGIN(type) perf_ ## type -= getGlobalClock().getElapsedTime()
-#   define PERF_END(type)   perf_ ## type += getGlobalClock().getElapsedTime()
+#   define PERF_BEGIN(type) perf_ ## type -= getGlobalTime()
+#   define PERF_END(type)   perf_ ## type += getGlobalTime()
 
 #else
 #   define PERF_BEGIN(type)
@@ -239,8 +239,7 @@ void Display::run(sys::Projector & projector)
             }
 
             // Prevent "Game is slowing down" warning on resume
-            next_update = getGlobalClock().getElapsedTime()
-                        + sf::seconds(IWBAN_UPDATE_TIME);
+            next_update = getGlobalTime() + sf::seconds(IWBAN_UPDATE_TIME);
 
         } // if (pause)
         else
@@ -249,7 +248,7 @@ void Display::run(sys::Projector & projector)
 
             // Inflict a penalty on any update after the first one to increase consistency
             int update_count = 0;
-            while (getGlobalClock().getElapsedTime() > (update_count == 0 ? next_update : next_update + sf::seconds(IWBAN_UPDATE_TIME / 4)))
+            while (getGlobalTime() > (update_count == 0 ? next_update : next_update + sf::seconds(IWBAN_UPDATE_TIME / 4)))
             {
                 // Scene update
                 projector.update();
@@ -262,7 +261,7 @@ void Display::run(sys::Projector & projector)
                     // Issue a warning when the game is slowing down,
                     // and reset next_update timer to prevent
                     // update burst after a lag spike
-                    sf::Time time (getGlobalClock().getElapsedTime());
+                    sf::Time time (getGlobalTime());
                     if (time > next_update)
                     {
                         next_update = time + sf::seconds(IWBAN_UPDATE_TIME);
