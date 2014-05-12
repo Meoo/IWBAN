@@ -12,7 +12,7 @@
 namespace
 {
 
-// TODO Constant in config instead
+// TODO Use a constant in config file instead
 const float SHADOW_FAR_DISTANCE = 2048;
 
 inline
@@ -67,10 +67,9 @@ void LightContext::buildShadowMask(const ut::Vector & origin,
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // Keep the vertex array here to avoid many memory allocations
-    // TODO Allocate vertices by default?
-    sf::VertexArray vertices(sf::TrianglesStrip);
+    static sf::VertexArray vertices(sf::TrianglesStrip);
 
-    // TODO Draw the mask we want to use
+    // Draw the mask we want to use
     for (const ShadowVolume * shadow : list)
     {
         if (shadow->getVertexCount() == 0)
@@ -80,6 +79,9 @@ void LightContext::buildShadowMask(const ut::Vector & origin,
             continue;
         }
 
+        // TODO May be optimized by reducing the amount of calls to draw...
+        // ... instead we could draw elements as Quads, and add one quad
+        // for every valid shadow line, and then pushing everything to the GPU.
         ut::Vector last_delta = shadow->getVertex(0) - origin;
         ::addVertex(vertices, shadow->getVertex(0), last_delta);
 

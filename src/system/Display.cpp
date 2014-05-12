@@ -17,7 +17,7 @@
 #include <resources/File.hpp>
 
 // Manually enable perf. monitoring
-//#define PERF_MONITORING
+#define PERF_MONITORING
 
 // Always enabled in Debug mode
 #ifndef NDEBUG

@@ -6,7 +6,7 @@ uniform float blur_x;
 void main()
 {
    vec4 sum = vec4(0.0);
- 
+
    sum += texture2D(texture, vec2(gl_TexCoord[0].x - 4.0 * blur_x,
                                   gl_TexCoord[0].y)) * 0.05;
    sum += texture2D(texture, vec2(gl_TexCoord[0].x - 3.0 * blur_x,
@@ -25,6 +25,6 @@ void main()
                                   gl_TexCoord[0].y)) * 0.09;
    sum += texture2D(texture, vec2(gl_TexCoord[0].x + 4.0 * blur_x,
                                   gl_TexCoord[0].y)) * 0.05;
- 
+
    gl_FragColor = sum;
 }

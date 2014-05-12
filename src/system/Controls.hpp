@@ -92,7 +92,7 @@ public:
     // Functions
     Action & getAction(ActionId action) { return _actions[action]; }
 
-    // Call this every update
+    // Call this right before every update
     void    update();
 
     // Deactivate all actions
