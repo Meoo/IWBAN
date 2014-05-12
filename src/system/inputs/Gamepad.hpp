@@ -12,6 +12,8 @@
 
 #include <SFML/Window.hpp>
 
+#include <iostream>
+
 namespace sys
 {
 

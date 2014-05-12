@@ -50,12 +50,19 @@ protected:
 
     gui::Menu menu;
 
+    std::vector<gfx::ShadowVolume *> shadows;
+
+    gfx::ShadowVolume * shad0;
+    gfx::ShadowVolume * shad1;
+    gfx::ShadowVolume * shad2;
+
     unsigned ticks;
 
     // Callbacks
     virtual void    onUpdate()
     {
         const float spd = 3.f;
+        const float jspd = 8.f;
 
         ut::Vector d = pl1->getVelocity();
         d.x = 0;
@@ -68,7 +75,7 @@ protected:
 
         if (pl1->hasParent() && getControls().getAction(ACT_UP).isJustActivated())
         {
-            d.y = - 7;
+            d.y = - jspd;
         }
 
         pl1->setVelocity(d);
@@ -87,7 +94,7 @@ protected:
 
         if (pl2_j && sf::Keyboard::isKeyPressed(sf::Keyboard::I))
         {
-            d.y = - 7;
+            d.y = - jspd;
             pl2_j = false;
         }
 
@@ -113,12 +120,31 @@ protected:
             if (getControls().getAction((ActionId) i).isJustActivated())
                 menu.dispatchAction((ActionId) i);
 
+        shad1->setPosition(obj3->getPosition());
+        shad2->setPosition(obj4->getPosition());
+
         ++ticks;
     }
 
     virtual void    onRender(gfx::Renderer & renderer) const
     {
-        // Debug
+        gfx::LightContext & light = renderer.openLightContext(sf::Color(64, 64, 64));
+        sf::RectangleShape rect(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT));
+
+        light.buildShadowMask(pl1->getPosition(), shadows);
+
+        rect.setFillColor(sf::Color(128, 128, 0));
+        light.draw(rect);
+
+        light.buildShadowMask(pl2->getPosition(), shadows);
+
+        rect.setFillColor(sf::Color(0, 128, 128));
+        light.draw(rect);
+
+        light.disableShadowMask();
+
+        light.close();
+
         gfx::DrawContext & draw = renderer.openDrawContext();
 
         draw.fill(sf::Color(28,61,12));
@@ -220,6 +246,36 @@ protected:
         sim.add(obj2);
         sim.add(obj3);
         sim.add(obj4);
+
+        shad0 = new gfx::ShadowVolume();
+
+        shad0->dbgAddVertex(ut::Vector(-60, -12));
+        shad0->dbgAddVertex(ut::Vector(60, -12));
+        shad0->dbgAddVertex(ut::Vector(60, 12));
+        shad0->dbgAddVertex(ut::Vector(-60, 12));
+        shad0->dbgAddVertex(ut::Vector(-60, -12));
+
+        shad0->setPosition(ut::Vector(150, 250));
+
+        shad1 = new gfx::ShadowVolume();
+
+        shad1->dbgAddVertex(ut::Vector(-60, -12));
+        shad1->dbgAddVertex(ut::Vector(60, -12));
+        shad1->dbgAddVertex(ut::Vector(60, 12));
+        shad1->dbgAddVertex(ut::Vector(-60, 12));
+        shad1->dbgAddVertex(ut::Vector(-60, -12));
+
+        shad2 = new gfx::ShadowVolume();
+
+        shad2->dbgAddVertex(ut::Vector(-60, -12));
+        shad2->dbgAddVertex(ut::Vector(60, -12));
+        shad2->dbgAddVertex(ut::Vector(60, 12));
+        shad2->dbgAddVertex(ut::Vector(-60, 12));
+        shad2->dbgAddVertex(ut::Vector(-60, -12));
+
+        shadows.push_back(shad0);
+        shadows.push_back(shad1);
+        shadows.push_back(shad2);
     }
 
     virtual void    onHide()
@@ -243,6 +299,10 @@ protected:
         delete obj2;
         delete obj3;
         delete obj4;
+
+        delete shad0;
+        delete shad1;
+        delete shad2;
     }
 
 };

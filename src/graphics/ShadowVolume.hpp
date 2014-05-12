@@ -18,23 +18,27 @@ namespace gfx
 
 class ShadowVolume
 {
-public:
-    struct Line
-    {
-        Vector first;
-        Vector second;
-    };
-    // struct Line
-
-
 private:
     // Data members
-    std::vector<Line> _lines;
+    // Vertices must be listed clockwise
+    // Last and first vertices are not considered as connected,
+    // so they should be duplicates if the volume needs to be a closed polygon
+    std::vector<ut::Vector> _vertices;
+
+    ut::Vector              _position;
 
 
 public:
     // Functions
-    ut::Rectangle getBoundingBox() const;
+    // TODO ? ut::Rectangle getBoundingBox() const;
+    void dbgAddVertex(const ut::Vector & vec) { _vertices.push_back(vec); }
+
+    // Accessors
+    std::size_t getVertexCount() const              { return _vertices.size(); }
+    ut::Vector  getVertex(std::size_t index) const  { return _position + _vertices[index]; }
+
+    const ut::Vector &  getPosition() const                         { return _position; }
+    void                setPosition(const ut::Vector & position)    { _position = position;}
 
 };
 // class ShadowVolume
