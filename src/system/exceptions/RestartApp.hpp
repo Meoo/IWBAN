@@ -15,6 +15,8 @@ class RestartApp : public std::exception
 {
 private:
     const char * _what;
+
+
 public:
     RestartApp(const char * what)
         : _what(what)
@@ -24,6 +26,7 @@ public:
     {
         return _what;
     }
+
 };
 // class RestartApp
 

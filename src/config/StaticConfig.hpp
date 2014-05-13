@@ -20,6 +20,8 @@
 
 #define IWBAN_CONFIG_FILE       IWBAN_USER_FOLDER "/iwban.cfg"
 
+#define IWBAN_DEFAULT_FONT      "system/poetsen_one.ttf"
+
 
 // Maximum capacity : 4096 entities
 #define IWBAN_ENTS_BLK_SIZE     512

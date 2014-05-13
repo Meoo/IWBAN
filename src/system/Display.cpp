@@ -214,8 +214,8 @@ void Display::run(sys::Projector & projector)
                 break;
 
             case sf::Event::LostFocus:
-                getControls().reset();
                 IWBAN_LOG_DEBUG("Focus lost\n");
+                getControls().reset();
                 break;
 
             default:
@@ -245,10 +245,10 @@ void Display::run(sys::Projector & projector)
         else
         {
 #endif
-
             // Inflict a penalty on any update after the first one to increase consistency
             int update_count = 0;
-            while (getGlobalTime() > (update_count == 0 ? next_update : next_update + sf::seconds(IWBAN_UPDATE_TIME / 4)))
+            while (getGlobalTime() > (update_count == 0 ?
+                    next_update : next_update + sf::seconds(IWBAN_UPDATE_TIME / 4)))
             {
                 // Scene update
                 projector.update();
@@ -271,7 +271,6 @@ void Display::run(sys::Projector & projector)
                     break;
                 }
             }
-
 #ifndef NDEBUG
         } // else if (pause)
 #endif
@@ -321,7 +320,8 @@ void Display::run(sys::Projector & projector)
         // Display FPS results every 1000 frames
         if ((++fps_counter) >= 1000)
         {
-            std::cout << "FPS  : "<< (fps_counter / fps_clock.getElapsedTime().asSeconds()) << std::endl;
+            std::cout << "FPS  : " << (fps_counter /
+                    fps_clock.getElapsedTime().asSeconds()) << std::endl;
             fps_clock.restart();
             fps_counter = 0;
         }
@@ -341,7 +341,9 @@ void Display::run(sys::Projector & projector)
               << "  Update  : " << (perf_update / perf_total) * 100 << std::endl
               << "  Draw    : " << (perf_draw / perf_total) * 100 << std::endl
               << "  Display : " << (perf_display / perf_total) * 100 << std::endl
-              << "  Other   : " << (1 - (perf_event + perf_update + perf_draw + perf_display) / perf_total) * 100 << std::endl;
+              << "  Other   : " << (1 - (perf_event + perf_update
+                                       + perf_draw + perf_display)
+                                           / perf_total) * 100 << std::endl;
 #endif
 }
 // Display::run()
@@ -352,8 +354,10 @@ void Display::updateSceneView()
 {
     zoom = std::min(_window.getSize().x / (float) IWBAN_FRAME_WIDTH,
                     _window.getSize().y / (float) IWBAN_FRAME_HEIGHT);
+
     if (cfg::zoom_multiplier)
         zoom = zoom - std::fmod(zoom + 0.00001f, cfg::zoom_multiplier);
+
     winW2 = _window.getSize().x / 2;
     winH2 = _window.getSize().y / 2;
     sceneW = IWBAN_FRAME_WIDTH * zoom;

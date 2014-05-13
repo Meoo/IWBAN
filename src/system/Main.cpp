@@ -8,13 +8,14 @@
 #include <config/Config.hpp>
 
 //#include <resources/Async.hpp>
+#include <resources/Locale.hpp>
 
 #include <system/Display.hpp>
 #include <system/Exception.hpp>
 #include <system/Projector.hpp>
 #include <system/exceptions/RestartApp.hpp>
 #include <system/screens/ExceptionScreen.hpp>
-#include <system/screens/IntroScreen.hpp>
+#include <system/screens/MainMenuScreen.hpp>
 #include <system/screens/SplashScreen.hpp>
 
 int main(int argc, char ** argv)
@@ -28,13 +29,17 @@ int main(int argc, char ** argv)
     res::async::initialize(cfg::threading);*/
 
 
+    IWBAN_LOG_INFO("Loading fonts\n");
+    res::getLocale().loadFont(IWBAN_DEFAULT_FONT);
+
+
     IWBAN_LOG_INFO("Opening display\n");
     sys::Display display;
     display.open();
 
 
     IWBAN_LOG_INFO("Initializing projector\n");
-    sys::Projector projector(new sys::SplashScreen(new sys::IntroScreen()));
+    sys::Projector projector(new sys::SplashScreen(new sys::MainMenuScreen()));
 
 
     // Loop until the game is closed
