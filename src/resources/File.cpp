@@ -8,12 +8,14 @@
 // TODO Remove that... must find another way to fix boost's bug
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 
-#include <resources/File.hpp>
+#include <config/Config.hpp>
 
+#include <resources/File.hpp>
 #include <resources/impl/Package.hpp>
 #include <resources/impl/SingleFile.hpp>
 
 #include <system/exceptions/FileNotFound.hpp>
+#include <system/exceptions/ResourceError.hpp>
 
 #include <boost/filesystem.hpp>
 
@@ -93,105 +95,136 @@ FileHandle::FileHandle(impl::FileHandleImpl* localized,
 
 File openFile(const std::string & filename)
 {
-    IWBAN_LOG_DEBUG("Opening file '%s'\n", filename.c_str());
-
     namespace fs = boost::filesystem;
 
-#ifndef NDEBUG
-
-    // Debug : Search on filesystem first
-    std::string path = std::string(IWBAN_DATA_FOLDER "/") + filename;
-    if (fs::exists(fs::path(path)))
-        return File(new impl::SingleFile(path));
-
-#endif
+    IWBAN_LOG_DEBUG("Opening file '%s'\n", filename.c_str());
 
     // Search in packages
     std::size_t sep = filename.find_first_of('/');
-    if (sep != std::string::npos)
+
+    if (sep == std::string::npos)
+        throw sys::ResourceError("All files must be contained within a package");
+
+    // Get directory before first '/'
+    std::string package_name = filename.substr(0, sep);
+    // Get path after first '/'
+    std::string file_id = filename.substr(sep + 1);
+
+#ifndef NDEBUG
+    // Debug : Search on filesystem first
     {
-        // Get directory before first '/'
-        std::string package_name = filename.substr(0, sep);
-        impl::Package * package = impl::getPackage(package_name);
+        // Localized
+        std::string file_path = std::string(IWBAN_DATA_FOLDER "/")
+            + package_name + "." + cfg::language + "/" + file_id;
+        if (fs::exists(fs::path(file_path)))
+            return File(new impl::SingleFile(file_path));
+    }
+    {
+        // Unlocalized
+        std::string file_path = std::string(IWBAN_DATA_FOLDER "/") + filename;
+        if (fs::exists(fs::path(file_path)))
+            return File(new impl::SingleFile(file_path));
+    }
+#endif
 
-        if (package != 0)
-        {
-            // Get path after first '/'
-            std::string file_id = filename.substr(sep + 1);
-            impl::FileImpl * file_impl = package->openFile(file_id);
+    // Search in packages
+    impl::Package * package = impl::getPackage(package_name);
+    if (package != 0)
+    {
+        impl::FileImpl * file_impl = package->openFile(file_id);
 
-            if (file_impl)
-                return File(file_impl);
-        }
+        if (file_impl)
+            return File(file_impl);
     }
 
 #ifdef NDEBUG
-
-    // Release : Search on filesystem
-    // SingleFile will throw by itself if no file is found
-    std::string path = std::string(IWBAN_DATA_FOLDER "/") + filename;
-    return File(new impl::SingleFile(path));
-
-#else
+    // Release : Search on filesystem last
+    {
+        // Localized
+        std::string file_path = std::string(IWBAN_DATA_FOLDER "/")
+            + package_name + "." + cfg::language + "/" + file_id;
+        if (fs::exists(fs::path(file_path)))
+            return File(new impl::SingleFile(file_path));
+    }
+    {
+        // Unlocalized
+        std::string file_path = std::string(IWBAN_DATA_FOLDER "/") + filename;
+        if (fs::exists(fs::path(file_path)))
+            return File(new impl::SingleFile(file_path));
+    }
+#endif
 
     // Debug : File not found
     throw sys::FileNotFound(filename.c_str());
-
-#endif
 }
 // openFile()
 
 
 FileHandle findFile(const std::string & filename)
 {
-    IWBAN_LOG_DEBUG("Finding file '%s'\n", filename.c_str());
-
     namespace fs = boost::filesystem;
+
+    IWBAN_LOG_DEBUG("Finding file '%s'\n", filename.c_str());
 
     impl::FileHandleImpl * localized = 0;
     impl::FileHandleImpl * unlocalized = 0;
 
-#ifndef NDEBUG
-
-    // Debug : Search on filesystem first
-    std::string path = std::string(IWBAN_DATA_FOLDER "/") + filename;
-    if (fs::exists(fs::path(path)))
-        unlocalized = new impl::SingleFileHandle(path);
-
-#endif
-
     // Search in packages
     std::size_t sep = filename.find_first_of('/');
-    if (sep != std::string::npos)
-    {
-        // Get directory before first '/'
-        std::string package_name = filename.substr(0, sep);
-        impl::Package * package = impl::getPackage(package_name);
 
-        if (package != 0)
-        {
-            // Get path after first '/'
-            std::string file_id = filename.substr(sep + 1);
+    if (sep == std::string::npos)
+        throw sys::ResourceError("All files must be contained within a package");
 
-            localized = package->findFileLocalized(file_id);
+    // Get directory before first '/'
+    std::string package_name = filename.substr(0, sep);
+    // Get path after first '/'
+    std::string file_id = filename.substr(sep + 1);
 
 #ifndef NDEBUG
-            if (unlocalized != 0)
+    // Debug : Search on filesystem first
+    {
+        // Localized
+        std::string file_path = std::string(IWBAN_DATA_FOLDER "/")
+            + package_name + "." + cfg::language + "/" + file_id;
+        if (fs::exists(fs::path(file_path)))
+            localized = new impl::SingleFileHandle(file_path);
+    }
+    {
+        // Unlocalized
+        std::string file_path = std::string(IWBAN_DATA_FOLDER "/") + filename;
+        if (fs::exists(fs::path(file_path)))
+            unlocalized = new impl::SingleFileHandle(file_path);
+    }
 #endif
-                unlocalized = package->findFileUnlocalized(file_id);
-        }
+
+    impl::Package * package = impl::getPackage(package_name);
+    if (package != 0)
+    {
+        // Theses if statements should be optimized out in Release mode
+        if (localized == 0)
+            localized = package->findFileLocalized(file_id);
+
+        if (unlocalized == 0)
+            unlocalized = package->findFileUnlocalized(file_id);
     }
 
 #ifdef NDEBUG
-
-    // Release : Search on filesystem
+    // Release : Search on filesystem last
+    if (localized == 0)
+    {
+        // Localized
+        std::string file_path = std::string(IWBAN_DATA_FOLDER "/")
+            + package_name + "." + cfg::language + "/" + file_id;
+        if (fs::exists(fs::path(file_path)))
+            localized = new impl::SingleFileHandle(file_path);
+    }
     if (unlocalized == 0)
     {
-        std::string path = std::string(IWBAN_DATA_FOLDER "/") + filename;
-        if (fs::exists(fs::path(path)))
-            unlocalized = new impl::SingleFileHandle(path);
+        // Unlocalized
+        std::string file_path = std::string(IWBAN_DATA_FOLDER "/") + filename;
+        if (fs::exists(fs::path(file_path)))
+            unlocalized = new impl::SingleFileHandle(file_path);
     }
-
 #endif
 
     return FileHandle(localized, unlocalized);
