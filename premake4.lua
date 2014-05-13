@@ -127,3 +127,16 @@ project "Packager"
   files       { "tools/packager/**.cpp" }
 
   use_Boost   { "system", "filesystem" }
+
+-- ///////////////////////////////////////////////////// --
+
+project "MapCompiler"
+  language "C++"
+  location( MAKE_DIR )
+
+  kind "ConsoleApp"
+  targetname "mapc"
+
+  includedirs { "tools" }
+
+  files       { "tools/mapcompiler/**.cpp" }
