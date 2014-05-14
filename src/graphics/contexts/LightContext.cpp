@@ -43,13 +43,6 @@ void LightContext::buildShadowMask(const ut::Vector & origin,
     // Draw the mask we want to use
     for (const ShadowVolume * shadow : list)
     {
-        if (shadow->getVertexCount() == 0)
-        {
-            // TODO Assert ? At least put the check in another place?
-            IWBAN_LOG_ERROR("Using a shadow volume with no vertices!\n");
-            continue;
-        }
-
         bool       last_valid = false;
         ut::Vector last_vert;
         ut::Vector last_delta;
@@ -78,10 +71,10 @@ void LightContext::buildShadowMask(const ut::Vector & origin,
             if (last_valid && valid
                 && delta.x * - last_delta.y + delta.y * last_delta.x < 0)
             {
-                vertices.append(sf::Vector2f(last_vert.x, last_vert.y));
-                vertices.append(sf::Vector2f(last_far.x, last_far.y));
-                vertices.append(sf::Vector2f(far_.x, far_.y));
-                vertices.append(sf::Vector2f(vert.x, vert.y));
+                vertices.append(sf::Vertex(last_vert));
+                vertices.append(sf::Vertex(last_far));
+                vertices.append(sf::Vertex(far_));
+                vertices.append(sf::Vertex(vert));
             }
 
             last_valid = valid;

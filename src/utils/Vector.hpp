@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <SFML/System/Vector2.hpp>
+
 namespace ut
 {
 
@@ -19,6 +21,9 @@ class Vector
 public:
     constexpr Vector() : x(0), y(0) {}
     constexpr Vector(float x, float y) : x(x), y(y) {}
+
+    constexpr Vector(const sf::Vector2f & vec) : x(vec.x), y(vec.y) {}
+    operator sf::Vector2f() { return sf::Vector2f(x, y); }
 
     float x;
     float y;
