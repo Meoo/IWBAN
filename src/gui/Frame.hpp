@@ -40,8 +40,8 @@ public:
 
     virtual void setPosition(const ut::Vector & position);
 
-    virtual void select()   { Element::select(); _content->select(); }
-    virtual void deselect() { Element::deselect(); _content->deselect(); }
+    virtual void select();
+    virtual void deselect();
 
     virtual bool isSelectable() const { return _content->isSelectable(); }
 

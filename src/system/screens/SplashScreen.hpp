@@ -38,7 +38,7 @@ protected:
     virtual void onUpdate()
     {
         // Either timeout or skip
-        if (getGlobalTime() - _begin_time >= _duration
+        if (getUpdateTime() - _begin_time >= _duration
          || (_skippable
            && (getControls().getAction(ACT_ACCEPT).isJustActivated()
             || getControls().getAction(ACT_CANCEL).isJustActivated()
@@ -51,7 +51,7 @@ protected:
 
     virtual void onRender(gfx::Renderer & renderer) const
     {
-        float time_left = (_duration - getGlobalTime() + _begin_time).asSeconds();
+        float time_left = (_duration - getDrawTime() + _begin_time).asSeconds();
 
         gfx::DrawContext & draw = renderer.openDrawContext();
 
@@ -67,7 +67,7 @@ protected:
 
     virtual void onShow()
     {
-        _begin_time = getGlobalTime();
+        _begin_time = getUpdateTime();
     }
 
     virtual void onHide()

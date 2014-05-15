@@ -234,12 +234,13 @@ void Display::run(sys::Projector & projector)
             if (play_next_frame)
             {
                 IWBAN_LOG_DEBUG("Processing single frame\n");
+                impl::setUpdateTime();
                 projector.update();
                 play_next_frame = false;
             }
 
             // Prevent "Game is slowing down" warning on resume
-            next_update = getGlobalTime() + sf::seconds(IWBAN_UPDATE_TIME);
+            next_update = getUpdateTime() + sf::seconds(IWBAN_UPDATE_TIME);
 
         } // if (pause)
         else
@@ -251,6 +252,7 @@ void Display::run(sys::Projector & projector)
                     next_update : next_update + sf::seconds(IWBAN_UPDATE_TIME / 4)))
             {
                 // Scene update
+                impl::setUpdateTime();
                 projector.update();
 
                 next_update += sf::seconds(IWBAN_UPDATE_TIME);
@@ -278,14 +280,14 @@ void Display::run(sys::Projector & projector)
         PERF_END(update);
         PERF_BEGIN(draw);
 
-        sf::Time draw_time (getGlobalClock().getElapsedTime());
+        impl::setDrawTime();
 
         // Background rendering
         if (marginX > 0 || marginY > 0)
         {
             _window.setView(bg_view);
 
-            float t = draw_time.asSeconds();
+            float t = getDrawTime().asSeconds();
             float t2 = - t/2;
 
             bg_mesh[0].texCoords.x = t;
@@ -331,7 +333,7 @@ void Display::run(sys::Projector & projector)
     } // while(win.isOpen())
 
 #ifdef PERF_MONITORING
-    sf::Time perf_total = getGlobalClock().getElapsedTime();
+    sf::Time perf_total = getGlobalTime();
 
     // Dump performance monitoring results to standard output
     std::cout << "Average FPS : " << (total_fps_counter / perf_total.asSeconds()) << std::endl

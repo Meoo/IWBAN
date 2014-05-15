@@ -39,6 +39,18 @@ void Frame::setPosition(const ut::Vector & position)
     updateContent();
 }
 
+void Frame::select()
+{
+    Element::select();
+    _content->select();
+}
+
+void Frame::deselect()
+{
+    Element::deselect();
+    _content->deselect();
+}
+
 void Frame::dispatchAction(sys::ActionId action)
 {
     _content->dispatchAction(action);

@@ -13,17 +13,54 @@
 namespace sys
 {
 
-inline
-const sf::Clock & getGlobalClock()
+namespace impl
 {
-    static sf::Clock s_global_clock;
-    return s_global_clock;
+
+extern sf::Clock global_clock;
+
+extern sf::Time update_time;
+extern sf::Time draw_time;
+
+inline
+void setUpdateTime()
+{
+    update_time = global_clock.getElapsedTime();
 }
 
 inline
+void setDrawTime()
+{
+    draw_time = global_clock.getElapsedTime();
+}
+
+}
+// namespace impl
+
+/**
+ * Get current time.
+ */
+inline
 sf::Time getGlobalTime()
 {
-    return getGlobalClock().getElapsedTime();
+    return impl::global_clock.getElapsedTime();
+}
+
+/**
+ * Get time of last frame update.
+ */
+inline
+const sf::Time & getUpdateTime()
+{
+    return impl::update_time;
+}
+
+/**
+ * Get time of last frame draw.
+ */
+inline
+const sf::Time & getDrawTime()
+{
+    return impl::draw_time;
 }
 
 }
