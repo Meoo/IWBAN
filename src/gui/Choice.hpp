@@ -23,29 +23,34 @@ private:
     bool                    _enabled = true;
     std::function<void()>   _action;
 
+    sf::Color               _idle_color     = sf::Color::White;
+    sf::Color               _selected_color = sf::Color::Green;
+    sf::Color               _disabled_color = sf::Color(128, 128, 128);
+
 
 public:
     // Constructor
-    explicit Choice(const std::string & string_key) : Label(string_key) {}
+    explicit Choice(const std::string & string_key)
+        : Label(string_key) { setTextColor(_idle_color); }
 
     // Functions
-    void enable()           { _enabled = true; }
-    void disable()          { _enabled = false; }
+    void enable();
+    void disable();
 
     bool isEnabled() const  { return _enabled; }
 
-    virtual void select()   { Label::select(); setTextColor(sf::Color::Green); }
-    virtual void deselect() { Label::deselect(); setTextColor(sf::Color::White); }
+    virtual void select();
+    virtual void deselect();
 
     virtual bool isSelectable() const { return isEnabled(); }
 
     void setAction(const std::function<void()> & func) { _action = func; }
 
-    virtual void dispatchAction(sys::ActionId action)
-    {
-        if (action == sys::ACT_ACCEPT && _action)
-            _action();
-    }
+    virtual void dispatchAction(sys::ActionId action);
+
+    void setIdleColor(const sf::Color & color);
+    void setSelectedColor(const sf::Color & color);
+    void setDisabledColor(const sf::Color & color);
 
 };
 // class Choice
