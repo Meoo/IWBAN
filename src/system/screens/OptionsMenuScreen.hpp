@@ -11,9 +11,11 @@
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
 
-#include <gui/Menu.hpp>
 #include <gui/Choice.hpp>
 #include <gui/Frame.hpp>
+#include <gui/Line.hpp>
+#include <gui/Menu.hpp>
+#include <gui/Separator.hpp>
 
 namespace sys
 {
@@ -34,9 +36,34 @@ public:
         res::getLocale().loadFile("system/menu.txt");
 
         _menu = new gui::Menu();
-        _menu->setPosition(ut::Vector(0, 40));
+        _menu->setPosition(ut::Vector(0, 20));
         _menu->setSize(ut::Vector(640, 400));
         _menu->setCentered(true);
+
+        {
+            gui::Label * title = new gui::Label("menu.options");
+            title->setCharacterSize(40);
+            _menu->add(new gui::Frame(ut::Vector(400, 80), title));
+        }
+
+        _menu->add(new gui::Line({
+            new gui::Frame(ut::Vector(200, 40), new gui::Choice("menu.options.volume")),
+            new gui::Frame(ut::Vector(400, 40), new gui::Label("VOLUME"))
+        }));
+
+        _menu->add(new gui::Line({
+            new gui::Frame(ut::Vector(200, 40), new gui::Choice("menu.options.gamepad")),
+            new gui::Separator(ut::Vector(400, 40))
+        }));
+
+        _menu->add(new gui::Line({
+            new gui::Frame(ut::Vector(200, 40), new gui::Choice("menu.options.keyboard")),
+            new gui::Separator(ut::Vector(400, 40))
+        }));
+
+        _menu->add(new gui::Separator(ut::Vector(400, 20)));
+        _menu->add(new gui::Frame(ut::Vector(400, 40), new gui::Choice("menu.options.save")));
+        _menu->add(new gui::Frame(ut::Vector(400, 40), new gui::Choice("menu.options.cancel")));
 
     }
 

@@ -57,7 +57,8 @@ void Line::select()
     Element::select();
 
     for (Element * elem : _content)
-        elem->select();
+        if (elem->isSelectable())
+            elem->select();
 }
 
 void Line::deselect()
@@ -65,7 +66,8 @@ void Line::deselect()
     Element::deselect();
 
     for (Element * elem : _content)
-        elem->deselect();
+        if (elem->isSelectable())
+            elem->deselect();
 }
 
 bool Line::isSelectable() const
