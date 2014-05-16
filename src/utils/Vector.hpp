@@ -23,7 +23,7 @@ public:
     constexpr Vector(float x, float y) : x(x), y(y) {}
 
     constexpr Vector(const sf::Vector2f & vec) : x(vec.x), y(vec.y) {}
-    operator sf::Vector2f() { return sf::Vector2f(x, y); }
+    operator sf::Vector2f() const { return sf::Vector2f(x, y); }
 
     float x;
     float y;
