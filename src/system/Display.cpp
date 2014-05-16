@@ -198,15 +198,18 @@ void Display::run(sys::Projector & projector)
                 break;
 
             case sf::Event::JoystickButtonPressed:
-                getGamepad().onButtonPressed(event.joystickButton.button);
+                if (event.joystickButton.joystickId == 0)
+                    getGamepad().onButtonPressed(event.joystickButton.button);
                 break;
 
             case sf::Event::JoystickButtonReleased:
-                getGamepad().onButtonReleased(event.joystickButton.button);
+                if (event.joystickButton.joystickId == 0)
+                    getGamepad().onButtonReleased(event.joystickButton.button);
                 break;
 
             case sf::Event::JoystickMoved:
-                getGamepad().onAxisMoved(event.joystickMove.axis, event.joystickMove.position);
+                if (event.joystickButton.joystickId == 0)
+                    getGamepad().onAxisMoved(event.joystickMove.axis, event.joystickMove.position);
                 break;
 
             case sf::Event::GainedFocus:
