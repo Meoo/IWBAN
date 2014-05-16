@@ -13,7 +13,8 @@ namespace gui
 Line::Line(const std::vector<Element *> & content)
     : _content(content)
 {
-    for (Element * elem : _content)
+    // TODO This is... just bad
+    IWBAN_DEBUG(for (Element * elem : _content))
         BOOST_ASSERT(elem);
 
     updateContent();
