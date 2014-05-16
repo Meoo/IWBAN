@@ -55,9 +55,6 @@ public:
 
     virtual void dispatchAction(sys::ActionId action);
 
-
-private:
-    // Private function
     void updateChilds();
 
 };

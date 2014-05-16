@@ -28,6 +28,8 @@ private:
 
 public:
     // Constructor
+    Label();
+
     explicit Label(const std::string & string_key);
 
     // Functions
@@ -38,6 +40,8 @@ public:
     virtual ut::Vector getSize() const;
 
     virtual void setPosition(const ut::Vector & position) { _position = position; }
+
+    void setText(const std::string & string_key);
 
     void setTextColor(const sf::Color & color) { _text.setColor(color); }
 

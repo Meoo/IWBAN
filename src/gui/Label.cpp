@@ -12,6 +12,11 @@
 namespace gui
 {
 
+Label::Label()
+{
+    _text.setFont(res::getLocale().getFont());
+}
+
 Label::Label(const std::string & string_key)
     : _text(res::getLocale().getString(string_key),
             res::getLocale().getFont())
@@ -44,6 +49,11 @@ ut::Vector Label::getSize() const
 {
     sf::FloatRect rect = _text.getLocalBounds();
     return ut::Vector(rect.width, rect.height) + _margin * 2;
+}
+
+void Label::setText(const std::string & string_key)
+{
+    _text.setString(res::getLocale().getString(string_key));
 }
 
 }
