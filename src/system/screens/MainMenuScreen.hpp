@@ -48,16 +48,9 @@ public:
         _menu->add(new gui::Frame(choice_box, _options = new gui::Choice("menu.options")));
         _menu->add(new gui::Frame(choice_box, _quit = new gui::Choice("menu.quit")));
 
-        _newgame->setShadow(true);
         _newgame->setAction([this](){ onNewGame(); });
-
-        _continue->setShadow(true);
         _continue->setAction([this](){ onContinue(); });
-
-        _options->setShadow(true);
         _options->setAction([this](){ onOptions(); });
-
-        _quit->setShadow(true);
         _quit->setAction([this](){ onQuit(); });
     }
 

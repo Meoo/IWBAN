@@ -23,8 +23,8 @@ private:
     bool                    _enabled = true;
     std::function<void()>   _action;
 
-    sf::Color               _idle_color     = sf::Color::White;
-    sf::Color               _selected_color = sf::Color::Green;
+    sf::Color               _idle_color     = sf::Color(196, 196, 196);
+    sf::Color               _selected_color = sf::Color::White;
     sf::Color               _disabled_color = sf::Color(128, 128, 128);
 
 

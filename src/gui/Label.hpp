@@ -20,7 +20,7 @@ private:
     // Data members
     sf::Text            _text;
 
-    bool                _shadow = false;
+    bool                _shadow = true;
 
     ut::Vector          _position;
     ut::Vector          _margin;
