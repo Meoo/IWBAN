@@ -9,13 +9,13 @@
 
 namespace gui
 {
-    
-void Choice::enable()           
+
+void Choice::enable()
 {
     _enabled = true;
 }
 
-void Choice::disable()          
+void Choice::disable()
 {
     _enabled = false;
 }
@@ -37,7 +37,7 @@ void Choice::dispatchAction(sys::ActionId action)
     if (action == sys::ACT_ACCEPT && _action)
         _action();
 }
-    
+
 void Choice::setIdleColor(const sf::Color & color)
 {
     _idle_color = color;
