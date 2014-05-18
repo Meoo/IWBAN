@@ -11,6 +11,7 @@
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
 #include <system/screens/OptionsMenuScreen.hpp>
+#include <system/screens/IntroScreen.hpp>
 
 #include <gui/Menu.hpp>
 #include <gui/Choice.hpp>
@@ -75,7 +76,7 @@ protected:
     {
         gfx::DrawContext & draw = renderer.openDrawContext();
 
-        draw.fill(sf::Color(128, 128, 128));
+        draw.fill(sf::Color(196, 196, 196));
 
         _menu->draw(draw);
 
@@ -93,6 +94,10 @@ protected:
     void onNewGame()
     {
         _newgame->setTextColor(sf::Color::Red);
+
+        // TODO Go to new game screen
+        setNextScreen(new IntroScreen());
+        dispose();
     }
 
     void onContinue()
@@ -104,7 +109,7 @@ protected:
     {
         _options->setTextColor(sf::Color::Red);
 
-        // TODO Go to Options screen
+        // TODO Go to options screen
         setNextScreen(new OptionsMenuScreen());
         dispose();
     }

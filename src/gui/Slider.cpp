@@ -10,11 +10,11 @@
 namespace gui
 {
 
-Slider::Slider(const ut::Vector & size, unsigned value)
-    : _size(size), _value(value)
+Slider::Slider(const ut::Vector & size, unsigned value, unsigned max_value)
+    : _size(size), _value(value), _value_max(max_value)
 {
     _border.setSize(size);
-    _border.setOutlineThickness(-2);
+    _border.setOutlineThickness(-3);
     _border.setOutlineColor(sf::Color(196, 196, 196));
     _border.setFillColor(sf::Color::Transparent);
 
@@ -40,11 +40,13 @@ void Slider::draw(gfx::DrawContext & context) const
 void Slider::select()
 {
     _border.setOutlineColor(sf::Color::White);
+    _center.setFillColor(sf::Color(128, 128, 128+96));
 }
 
 void Slider::deselect()
 {
-    _border.setOutlineColor(sf::Color(196, 196, 196));
+    _border.setOutlineColor(sf::Color(159, 159, 159));
+    _center.setFillColor(sf::Color(128, 128, 128+32));
 }
 
 void Slider::dispatchAction(sys::ActionId action)

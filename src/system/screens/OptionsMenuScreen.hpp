@@ -65,12 +65,12 @@ public:
 
         _menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("options.language")),
-            new gui::Frame(ut::Vector(400, 40), new gui::Slider(ut::Vector(250, 22), 10))
+            new gui::Frame(ut::Vector(400, 40), new gui::Choice("language"))
         }));
 
         _menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("options.audio")),
-            new gui::Frame(ut::Vector(400, 40), new gui::Slider(ut::Vector(250, 22), 15))
+            new gui::Frame(ut::Vector(400, 40), new gui::Slider(ut::Vector(250, 22), 5, 10))
         }));
 
         _menu->add(new gui::Line({
@@ -88,10 +88,11 @@ public:
         gui::Choice * gamepad = new gui::Choice("options.gamepad");
         gamepad->setAction([this](){ setState(ST_GAMEPAD); });
         _gamepad_state = new gui::Label();
-        _gamepad_state->setCharacterSize(24);
+        _gamepad_state->setCharacterSize(22);
         _menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), gamepad),
-            new gui::Frame(ut::Vector(400, 40), _gamepad_state)
+            new gui::Frame(ut::Vector(200, 40), _gamepad_state),
+            new gui::Separator(ut::Vector(200, 40))
         }));
 
         _menu->add(new gui::Separator(ut::Vector(400, 40)));
@@ -181,6 +182,11 @@ public:
             title->setCharacterSize(40);
             _gamepad_menu->add(new gui::Frame(ut::Vector(400, 70), title));
         }
+
+        _gamepad_menu->add(new gui::Line({
+            new gui::Frame(ut::Vector(200, 40), new gui::Choice("gamepad.sensibility")),
+            new gui::Frame(ut::Vector(400, 40), new gui::Slider(ut::Vector(250, 22), 5, 10))
+        }));
 
         _gamepad_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.jump")),

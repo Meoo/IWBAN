@@ -48,8 +48,6 @@ protected:
     phy::PhysicsBehavior phys;
     phy::MovingBehavior mov;
 
-    gui::Menu menu;
-
     std::vector<gfx::ShadowVolume *> shadows;
 
     gfx::ShadowVolume * shad0;
@@ -116,10 +114,6 @@ protected:
 
         sim.step();
 
-        for (unsigned i = 0; i < ACT_COUNT; ++i)
-            if (getControls().getAction((ActionId) i).isJustActivated())
-                menu.dispatchAction((ActionId) i);
-
         shad1->setPosition(obj3->getPosition());
         shad2->setPosition(obj4->getPosition());
 
@@ -155,8 +149,6 @@ protected:
         text.setColor(sf::Color::Black);
         draw.draw(text);
 
-        menu.draw(draw);
-
         draw.close();
 
 #ifndef NDEBUG
@@ -172,16 +164,6 @@ protected:
     virtual void    onShow()
     {
         res::getLocale().loadFile("system/language.txt");
-        res::getLocale().loadFile("system/menu.txt");
-        res::getLocale().loadFont("system/poetsen_one.ttf");
-
-        menu.setPosition(ut::Vector(0, 240));
-        menu.setSize(ut::Vector(640, 240));
-        menu.setCentered(true);
-        menu.add(new gui::Frame(ut::Vector(300, 40), new gui::Choice("menu.newgame")));
-        menu.add(new gui::Frame(ut::Vector(300, 40), new gui::Choice("menu.continue")));
-        menu.add(new gui::Frame(ut::Vector(300, 40), new gui::Choice("menu.options")));
-        menu.add(new gui::Frame(ut::Vector(300, 40), new gui::Choice("menu.quit")));
 
         pl2_j = false;
 

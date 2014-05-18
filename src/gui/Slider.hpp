@@ -27,12 +27,12 @@ private:
     ut::Vector          _size;
 
     unsigned            _value;
-    unsigned            _value_max = 20;
+    unsigned            _value_max;
 
 
 public:
     // Constructor
-    explicit Slider(const ut::Vector & size, unsigned value);
+    explicit Slider(const ut::Vector & size, unsigned value, unsigned max_value);
 
     // Functions
     virtual void draw(gfx::DrawContext & context) const;

@@ -1,3 +1,5 @@
+language            "English"
+
 menu.newgame        "New Game"
 menu.continue       "Continue"
 menu.options        "Settings"
@@ -12,12 +14,13 @@ options.save        "Save"
 options.cancel      "Cancel"
 
 actions.jump        "Jump"
-actions.fire        "Fire"
+actions.fire        "Attack"
 actions.retry       "Retry"
 actions.up          "Up"
 actions.down        "Down"
 actions.left        "Left"
 actions.right       "Right"
 
-gamepad.connected       "Gamepad connected"
-gamepad.disconnected    "Gamepad disconnected"
+gamepad.connected       "Connected"
+gamepad.disconnected    "Disconnected"
+gamepad.sensibility     "Sensibility"

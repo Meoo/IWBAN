@@ -75,6 +75,7 @@ void PhysicsBehavior::onCollide(Object & object, Object & other, const Collision
     ut::Vector delta_vel = other.getVelocity() - object.getVelocity();
 
     // Split horizontally or vertically?
+    // Vertical is slightly advantaged, no big deal
     if (std::abs(data.intersect.x - delta_vel.x)
       > std::abs(data.intersect.y - delta_vel.y))
     {
