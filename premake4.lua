@@ -113,6 +113,14 @@ project "IWBAN"
   configuration { "Debug", "not MacOSX" }
     kind "ConsoleApp"
 
+  -- Link time optimizations
+  configuration { "Release", "GMake" }
+    linkoptions { "-flto" }
+
+  configuration { "Release", "VS*" }
+    linkoptions { "/GL /LTCG" }
+
+
 -- ///////////////////////////////////////////////////// --
 
 project "Packager"
