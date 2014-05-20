@@ -17,9 +17,6 @@
 #include <physics/Object.hpp>
 #include <physics/shapes/Box.hpp>
 
-#include <resources/File.hpp>
-#include <resources/Locale.hpp>
-
 #include <gui/Menu.hpp>
 #include <gui/Choice.hpp>
 #include <gui/Frame.hpp>
@@ -126,45 +123,30 @@ protected:
         sf::RectangleShape rect(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT));
 
         light.buildShadowMask(pl1->getPosition(), shadows);
-
-        rect.setFillColor(sf::Color(128, 128, 0));
-        light.draw(rect);
+            rect.setFillColor(sf::Color(128, 128, 0));
+            light.draw(rect);
 
         light.buildShadowMask(pl2->getPosition(), shadows);
-
-        rect.setFillColor(sf::Color(0, 128, 128));
-        light.draw(rect);
+            rect.setFillColor(sf::Color(0, 128, 128));
+            light.draw(rect);
 
         light.disableShadowMask();
 
         light.close();
 
         gfx::DrawContext & draw = renderer.openDrawContext();
-
         draw.fill(sf::Color(28,61,12));
-
-        sf::String testext(res::getLocale().getString("test"));
-        sf::Text text(testext, res::getLocale().getFont(), 24);
-        text.setPosition(25, 25);
-        text.setColor(sf::Color::Black);
-        draw.draw(text);
-
         draw.close();
 
 #ifndef NDEBUG
         gfx::DebugContext & debug = renderer.openDebugContext();
         sim.drawDebug(debug);
-        text.setPosition(20, 20);
-        text.setColor(sf::Color::Red);
-        debug.draw(text);
         debug.close();
 #endif
     }
 
     virtual void    onShow()
     {
-        res::getLocale().loadFile("system/language.txt");
-
         pl2_j = false;
 
         ticks = 0;

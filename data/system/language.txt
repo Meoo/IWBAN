@@ -1,4 +1,0 @@
-bonjour     "Bonjour!"
-caca        "Caca"
-truc        "Test truc chose"
-test        'Aà Cç Eé 1& 2% 3$ 4£ -->清昌冲<--'
