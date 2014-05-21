@@ -11,13 +11,19 @@
 #include <system/Clock.hpp>
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
+#include <system/inputs/Gamepad.hpp>
+#include <system/inputs/Keyboard.hpp>
 
+#include <gui/ButtonLabel.hpp>
 #include <gui/Choice.hpp>
 #include <gui/Frame.hpp>
+#include <gui/KeyLabel.hpp>
 #include <gui/Line.hpp>
 #include <gui/Menu.hpp>
 #include <gui/Separator.hpp>
 #include <gui/Slider.hpp>
+
+#include <resources/Locale.hpp>
 
 namespace sys
 {
@@ -47,6 +53,9 @@ public:
     OptionsMenuScreen()
     {
         const ut::Vector choice_box(300, 40);
+
+        res::getLocale().loadFile("system/gamepad.txt");
+        res::getLocale().loadFile("system/keyboard.txt");
 
 
         // Options menu
@@ -115,51 +124,44 @@ public:
 
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.up")),
-            new gui::Separator(ut::Vector(100, 40)),
-            new gui::Separator(ut::Vector(150, 40)),
-            new gui::Separator(ut::Vector(150, 40))
+            new gui::Frame(ut::Vector(400, 40),
+                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_UP)))
         }));
 
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.left")),
-            new gui::Separator(ut::Vector(100, 40)),
-            new gui::Separator(ut::Vector(150, 40)),
-            new gui::Separator(ut::Vector(150, 40))
+            new gui::Frame(ut::Vector(400, 40),
+                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_LEFT)))
         }));
 
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.down")),
-            new gui::Separator(ut::Vector(100, 40)),
-            new gui::Separator(ut::Vector(150, 40)),
-            new gui::Separator(ut::Vector(150, 40))
+            new gui::Frame(ut::Vector(400, 40),
+                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_DOWN)))
         }));
 
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.right")),
-            new gui::Separator(ut::Vector(100, 40)),
-            new gui::Separator(ut::Vector(150, 40)),
-            new gui::Separator(ut::Vector(150, 40))
+            new gui::Frame(ut::Vector(400, 40),
+                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_RIGHT)))
         }));
 
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.jump")),
-            new gui::Separator(ut::Vector(100, 40)),
-            new gui::Separator(ut::Vector(150, 40)),
-            new gui::Separator(ut::Vector(150, 40))
+            new gui::Frame(ut::Vector(400, 40),
+                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_JUMP)))
         }));
 
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.fire")),
-            new gui::Separator(ut::Vector(100, 40)),
-            new gui::Separator(ut::Vector(150, 40)),
-            new gui::Separator(ut::Vector(150, 40))
+            new gui::Frame(ut::Vector(400, 40),
+                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_FIRE)))
         }));
 
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.retry")),
-            new gui::Separator(ut::Vector(100, 40)),
-            new gui::Separator(ut::Vector(150, 40)),
-            new gui::Separator(ut::Vector(150, 40))
+            new gui::Frame(ut::Vector(400, 40),
+                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_RETRY)))
         }));
 
         _keyboard_menu->add(new gui::Separator(ut::Vector(400, 10)));
@@ -190,20 +192,20 @@ public:
 
         _gamepad_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.jump")),
-            new gui::Separator(ut::Vector(250, 40)),
-            new gui::Separator(ut::Vector(150, 40))
+            new gui::Frame(ut::Vector(400, 40),
+                new gui::ButtonLabel(getGamepad().getButtonFromAction(ACT_JUMP)))
         }));
 
         _gamepad_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.fire")),
-            new gui::Separator(ut::Vector(250, 40)),
-            new gui::Separator(ut::Vector(150, 40))
+            new gui::Frame(ut::Vector(400, 40),
+                new gui::ButtonLabel(getGamepad().getButtonFromAction(ACT_FIRE)))
         }));
 
         _gamepad_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.retry")),
-            new gui::Separator(ut::Vector(250, 40)),
-            new gui::Separator(ut::Vector(150, 40))
+            new gui::Frame(ut::Vector(400, 40),
+                new gui::ButtonLabel(getGamepad().getButtonFromAction(ACT_RETRY)))
         }));
 
         _gamepad_menu->add(new gui::Separator(ut::Vector(400, 10)));
@@ -242,7 +244,7 @@ protected:
                 _gamepad_state->setTextColor(sf::Color(128, 64, 64));
             }
 
-            _gamepad_state_timer = getUpdateTime() + sf::seconds(1);
+            _gamepad_state_timer = getUpdateTime() + sf::seconds(2);
             _menu->updateChilds();
         }
 

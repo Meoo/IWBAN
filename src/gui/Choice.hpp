@@ -29,7 +29,9 @@ private:
 
 
 public:
-    // Constructor
+    // Constructors
+    Choice() { setTextColor(_idle_color); }
+
     explicit Choice(const std::string & string_key)
         : Label(string_key) { setTextColor(_idle_color); }
 

@@ -27,10 +27,13 @@ private:
 
 
 public:
-    // Constructor
+    // Constructors
     Label();
 
     explicit Label(const std::string & string_key);
+
+    // Virtual destructor
+    ~Label() {}
 
     // Functions
     virtual void draw(gfx::DrawContext & context) const;
@@ -53,4 +56,4 @@ public:
 }
 // namespace gui
 
-#endif // _IWBAN_CHOICE_HPP_
+#endif // _IWBAN_LABEL_HPP_
