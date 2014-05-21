@@ -8,7 +8,7 @@
 
 #include <Global.hpp>
 
-#include <gui/Label.hpp>
+#include <gui/Choice.hpp>
 
 #include <SFML/Window.hpp>
 
@@ -16,7 +16,7 @@ namespace gui
 {
 
 // A label displaying a gamepad button name
-class ButtonLabel : public Label
+class ButtonLabel : public Choice
 {
 public:
     // Constructors

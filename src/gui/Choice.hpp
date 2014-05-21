@@ -54,6 +54,8 @@ public:
     void setSelectedColor(const sf::Color & color);
     void setDisabledColor(const sf::Color & color);
 
+    void updateColor();
+
 };
 // class Choice
 

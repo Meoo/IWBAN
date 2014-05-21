@@ -172,6 +172,8 @@ void Display::run(sys::Projector & projector)
                 break;
 
             case sf::Event::KeyPressed:
+                if (event.key.code == sf::Keyboard::Unknown) continue;
+
                 if (event.key.code == sf::Keyboard::Return
                         && event.key.alt && !event.key.shift
                         && !event.key.control && !event.key.system)
@@ -194,6 +196,8 @@ void Display::run(sys::Projector & projector)
                 break;
 
             case sf::Event::KeyReleased:
+                if (event.key.code == sf::Keyboard::Unknown) continue;
+
                 getKeyboard().onKeyReleased(event.key.code);
                 break;
 

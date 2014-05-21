@@ -41,21 +41,31 @@ void Choice::dispatchAction(sys::ActionId action)
 void Choice::setIdleColor(const sf::Color & color)
 {
     _idle_color = color;
-    if (isEnabled() && !isSelected())
-        setTextColor(_idle_color);
+    updateColor();
 }
 
 void Choice::setSelectedColor(const sf::Color & color)
 {
     _selected_color = color;
-    if (isEnabled() && isSelected())
-        setTextColor(_selected_color);
+    updateColor();
 }
 
 void Choice::setDisabledColor(const sf::Color & color)
 {
     _disabled_color = color;
-    if (!isEnabled())
+    updateColor();
+}
+
+void Choice::updateColor()
+{
+    if (isEnabled())
+    {
+        if (isSelected())
+            setTextColor(_selected_color);
+        else
+            setTextColor(_idle_color);
+    }
+    else
         setTextColor(_disabled_color);
 }
 

@@ -17,7 +17,7 @@
 // Fixed buttons
 #define IWBAN_GAMEPAD_ACCEPT        0 // A
 #define IWBAN_GAMEPAD_CANCEL        1 // B
-#define IWBAN_GAMEPAD_MENU          4 // Start
+#define IWBAN_GAMEPAD_MENU          7 // Start
 
 
 #endif // _IWBAN_GAMEPADCONFIG_HPP_

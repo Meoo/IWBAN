@@ -106,6 +106,13 @@ void Gamepad::onButtonPressed(unsigned button)
 {
     BOOST_ASSERT(button < sf::Joystick::ButtonCount);
 
+    if (_catch_hook)
+    {
+        _catch_hook(button);
+        _catch_hook = nullptr;
+        return;
+    }
+
     // Fixed configuration
     switch (button)
     {

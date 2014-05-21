@@ -99,4 +99,7 @@ keyboard.97     "F13"
 keyboard.98     "F14"
 keyboard.99     "F15"
 keyboard.100    "Pause"
-keyboard.101    "None"
+
+keyboard.101    "Unassigned"
+
+keyboard.presskey   "Press a key"

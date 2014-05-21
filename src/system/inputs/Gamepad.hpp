@@ -13,6 +13,7 @@
 #include <SFML/Window.hpp>
 
 #include <iostream>
+#include <functional>
 
 namespace sys
 {
@@ -30,6 +31,8 @@ private:
     float       _axis_threshold;
 
     bool        _up, _down, _left, _right;
+
+    std::function<void(unsigned)>  _catch_hook;
 
 
 public:
@@ -50,6 +53,8 @@ public:
 
     float getAxisThreshold() const { return _axis_threshold; }
     void setAxisThreshold(float thresh) { _axis_threshold = thresh; }
+
+    void catchNextButton(const std::function<void(unsigned)> & hook) { _catch_hook = hook; }
 
 };
 // class Keyboard

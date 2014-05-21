@@ -102,7 +102,14 @@ sf::Keyboard::Key Keyboard::getKeyFromAction(ActionId action)
 
 void Keyboard::onKeyPressed(sf::Keyboard::Key key)
 {
-    BOOST_ASSERT(key < sf::Keyboard::KeyCount);
+    BOOST_ASSERT(key >= 0 && key < sf::Keyboard::KeyCount);
+
+    if (_catch_hook)
+    {
+        _catch_hook(key);
+        _catch_hook = nullptr;
+        return;
+    }
 
     ActionId id = _key_to_action[key];
 
@@ -127,7 +134,7 @@ void Keyboard::onKeyPressed(sf::Keyboard::Key key)
 
 void Keyboard::onKeyReleased(sf::Keyboard::Key key)
 {
-    BOOST_ASSERT(key < sf::Keyboard::KeyCount);
+    BOOST_ASSERT(key >= 0 && key < sf::Keyboard::KeyCount);
 
     ActionId id = _key_to_action[key];
 
@@ -135,11 +142,11 @@ void Keyboard::onKeyReleased(sf::Keyboard::Key key)
     switch (id)
     {
     case ACT_JUMP:
-        _controls.getAction(ACT_ACCEPT).activate();
+        _controls.getAction(ACT_ACCEPT).deactivate();
         break;
 
     case ACT_FIRE:
-        _controls.getAction(ACT_CANCEL).activate();
+        _controls.getAction(ACT_CANCEL).deactivate();
         break;
 
     default:

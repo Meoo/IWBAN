@@ -8,6 +8,9 @@
 
 #include <Global.hpp>
 
+#include <config/GamepadConfig.hpp>
+#include <config/KeyboardConfig.hpp>
+
 #include <system/Clock.hpp>
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
@@ -38,6 +41,21 @@ private:
 
     sf::Time     _gamepad_state_timer;
     gui::Label * _gamepad_state;
+
+    gui::KeyLabel * _key_up;
+    gui::KeyLabel * _key_down;
+    gui::KeyLabel * _key_left;
+    gui::KeyLabel * _key_right;
+    gui::KeyLabel * _key_jump;
+    gui::KeyLabel * _key_fire;
+    gui::KeyLabel * _key_retry;
+
+    gui::ButtonLabel * _btn_jump;
+    gui::ButtonLabel * _btn_fire;
+    gui::ButtonLabel * _btn_retry;
+
+    // Block controls if waiting for an input
+    bool            _waiting_input = false;
 
     enum State
     {
@@ -122,52 +140,63 @@ public:
             _keyboard_menu->add(new gui::Frame(ut::Vector(400, 70), title));
         }
 
+        _key_up = new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_UP));
+        _key_up->setAction([this](){ hookKeyboard(_key_up, ACT_UP); });
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.up")),
-            new gui::Frame(ut::Vector(400, 40),
-                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_UP)))
+            new gui::Frame(ut::Vector(400, 40), _key_up)
         }));
 
+        _key_left = new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_LEFT));
+        _key_left->setAction([this](){ hookKeyboard(_key_left, ACT_LEFT); });
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.left")),
-            new gui::Frame(ut::Vector(400, 40),
-                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_LEFT)))
+            new gui::Frame(ut::Vector(400, 40), _key_left)
         }));
 
+        _key_down = new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_DOWN));
+        _key_down->setAction([this](){ hookKeyboard(_key_down, ACT_DOWN); });
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.down")),
-            new gui::Frame(ut::Vector(400, 40),
-                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_DOWN)))
+            new gui::Frame(ut::Vector(400, 40), _key_down)
         }));
 
+        _key_right = new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_RIGHT));
+        _key_right->setAction([this](){ hookKeyboard(_key_right, ACT_RIGHT); });
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.right")),
-            new gui::Frame(ut::Vector(400, 40),
-                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_RIGHT)))
+            new gui::Frame(ut::Vector(400, 40), _key_right)
         }));
 
+        _key_jump = new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_JUMP));
+        _key_jump->setAction([this](){ hookKeyboard(_key_jump, ACT_JUMP); });
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.jump")),
-            new gui::Frame(ut::Vector(400, 40),
-                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_JUMP)))
+            new gui::Frame(ut::Vector(400, 40), _key_jump)
         }));
 
+        _key_fire = new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_FIRE));
+        _key_fire->setAction([this](){ hookKeyboard(_key_fire, ACT_FIRE); });
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.fire")),
-            new gui::Frame(ut::Vector(400, 40),
-                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_FIRE)))
+            new gui::Frame(ut::Vector(400, 40), _key_fire)
         }));
 
+        _key_retry = new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_RETRY));
+        _key_retry->setAction([this](){ hookKeyboard(_key_retry, ACT_RETRY); });
         _keyboard_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.retry")),
-            new gui::Frame(ut::Vector(400, 40),
-                new gui::KeyLabel(getKeyboard().getKeyFromAction(ACT_RETRY)))
+            new gui::Frame(ut::Vector(400, 40), _key_retry)
         }));
 
-        _keyboard_menu->add(new gui::Separator(ut::Vector(400, 10)));
-        _keyboard_menu->add(new gui::Frame(ut::Vector(400, 40), new gui::Choice("options.save")));
+        {
+            gui::Choice * reset = new gui::Choice("options.defaults");
+            reset->setAction([this](){ getKeyboard().reloadDefaults(); updateKeyboardKeys(); });
+            _keyboard_menu->add(new gui::Separator(ut::Vector(400, 10)));
+            _keyboard_menu->add(new gui::Frame(ut::Vector(400, 40), reset));
+        }
 
-        gui::Choice * kcancel = new gui::Choice("options.cancel");
+        gui::Choice * kcancel = new gui::Choice("options.return");
         kcancel->setAction([this](){ setState(ST_OPTIONS); });
         _keyboard_menu->add(new gui::Frame(ut::Vector(400, 40), kcancel));
 
@@ -190,28 +219,36 @@ public:
             new gui::Frame(ut::Vector(400, 40), new gui::Slider(ut::Vector(250, 22), 5, 10))
         }));
 
+        _btn_jump = new gui::ButtonLabel(getGamepad().getButtonFromAction(ACT_JUMP));
+        _btn_jump->setAction([this](){ hookGamepad(_btn_jump, ACT_JUMP); });
         _gamepad_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.jump")),
-            new gui::Frame(ut::Vector(400, 40),
-                new gui::ButtonLabel(getGamepad().getButtonFromAction(ACT_JUMP)))
+            new gui::Frame(ut::Vector(400, 40), _btn_jump)
         }));
 
+        _btn_fire = new gui::ButtonLabel(getGamepad().getButtonFromAction(ACT_FIRE));
+        _btn_fire->setAction([this](){ hookGamepad(_btn_fire, ACT_FIRE); });
         _gamepad_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.fire")),
-            new gui::Frame(ut::Vector(400, 40),
-                new gui::ButtonLabel(getGamepad().getButtonFromAction(ACT_FIRE)))
+            new gui::Frame(ut::Vector(400, 40), _btn_fire)
         }));
 
+        _btn_retry = new gui::ButtonLabel(getGamepad().getButtonFromAction(ACT_RETRY));
+        _btn_retry->setAction([this](){ hookGamepad(_btn_retry, ACT_RETRY); });
         _gamepad_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("actions.retry")),
-            new gui::Frame(ut::Vector(400, 40),
-                new gui::ButtonLabel(getGamepad().getButtonFromAction(ACT_RETRY)))
+            new gui::Frame(ut::Vector(400, 40), _btn_retry)
         }));
 
-        _gamepad_menu->add(new gui::Separator(ut::Vector(400, 10)));
-        _gamepad_menu->add(new gui::Frame(ut::Vector(400, 40), new gui::Choice("options.save")));
+        {
+            gui::Choice * reset = new gui::Choice("options.defaults");
+            reset->setAction([this](){ getGamepad().reloadDefaults(); updateGamepadButtons(); });
+            _gamepad_menu->add(new gui::Separator(ut::Vector(400, 10)));
+            _gamepad_menu->add(new gui::Frame(ut::Vector(400, 40), reset));
+        }
 
-        gui::Choice * gcancel = new gui::Choice("options.cancel");
+
+        gui::Choice * gcancel = new gui::Choice("options.return");
         gcancel->setAction([this](){ setState(ST_OPTIONS); });
         _gamepad_menu->add(new gui::Frame(ut::Vector(400, 40), gcancel));
 
@@ -248,43 +285,83 @@ protected:
             _menu->updateChilds();
         }
 
-        if (getControls().getAction(ACT_MENU).isJustActivated())
+        if (!_waiting_input)
         {
-            switch (_state)
-            {
-            case ST_OPTIONS:
-                // TODO Go back to main menu
-                break;
-
-            case ST_KEYBOARD:
-                setState(ST_OPTIONS);
-                break;
-
-            case ST_GAMEPAD:
-                setState(ST_OPTIONS);
-                break;
-            }
-            return;
-        }
-
-        for (unsigned i = 0; i < ACT_COUNT; ++i)
-            if (getControls().getAction((ActionId) i).isJustActivated())
+            // If menu is pressed, return to previous menu
+            if (getControls().getAction(ACT_MENU).isJustActivated())
             {
                 switch (_state)
                 {
                 case ST_OPTIONS:
-                    _menu->dispatchAction((ActionId) i);
+                    // TODO Go back to main menu
                     break;
 
                 case ST_KEYBOARD:
-                    _keyboard_menu->dispatchAction((ActionId) i);
+                    setState(ST_OPTIONS);
                     break;
 
                 case ST_GAMEPAD:
-                    _gamepad_menu->dispatchAction((ActionId) i);
+                    setState(ST_OPTIONS);
                     break;
                 }
+                return;
             }
+
+            // Send actions to active menu
+            for (unsigned i = 0; i < ACT_COUNT; ++i)
+            {
+                if (getControls().getAction((ActionId) i).isJustActivated())
+                {
+                    switch (_state)
+                    {
+                    case ST_OPTIONS:
+                        _menu->dispatchAction((ActionId) i);
+                        break;
+
+                    case ST_KEYBOARD:
+                        _keyboard_menu->dispatchAction((ActionId) i);
+                        break;
+
+                    case ST_GAMEPAD:
+                        _gamepad_menu->dispatchAction((ActionId) i);
+                        break;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (getControls().getAction(ACT_MENU).isJustActivated())
+            {
+                if (_state == ST_GAMEPAD)
+                {
+                    // If we are waiting for a gamepad input and the user presses escape
+                    // we need to handle it properly
+                    getGamepad().catchNextButton(nullptr);
+                    _waiting_input = false;
+                    _btn_jump->updateColor();
+                    _btn_fire->updateColor();
+                    _btn_retry->updateColor();
+                    updateGamepadButtons();
+                }
+                else if (_state == ST_KEYBOARD)
+                {
+                    // Same thing if we are waiting for keyboard input and the user presses
+                    // start on his gamepad
+                    getKeyboard().catchNextKey(nullptr);
+                    _waiting_input = false;
+                    _key_up->updateColor();
+                    _key_down->updateColor();
+                    _key_left->updateColor();
+                    _key_right->updateColor();
+                    _key_jump->updateColor();
+                    _key_fire->updateColor();
+                    _key_retry->updateColor();
+                    updateKeyboardKeys();
+                }
+            }
+        }
+
     }
 
     virtual void onRender(gfx::Renderer & renderer) const
@@ -322,6 +399,75 @@ protected:
     void setState(State state)
     {
         _state = state;
+    }
+
+    void hookKeyboard(gui::KeyLabel * key_label, ActionId action)
+    {
+        _waiting_input = true;
+        key_label->setText("keyboard.presskey");
+        key_label->setTextColor(sf::Color::Red);
+        getKeyboard().catchNextKey([this, key_label, action](sf::Keyboard::Key key)
+            {
+                // Map a key, or unmap if Menu is pressed
+                if (key == IWBAN_KEYBOARD_MENU)
+                {
+                    sf::Keyboard::Key prev_key = getKeyboard().getKeyFromAction(action);
+                    if (prev_key != sf::Keyboard::KeyCount)
+                        getKeyboard().unmapKey(prev_key);
+                }
+                else
+                    getKeyboard().mapKeyToAction(key, action);
+
+                // Update button text
+                key_label->setTextColor(sf::Color::White);
+                updateKeyboardKeys();
+
+                // Reset controls, just in case
+                getControls().reset();
+                _waiting_input = false;
+            });
+    }
+
+    void updateKeyboardKeys()
+    {
+        _key_up->setKey(getKeyboard().getKeyFromAction(ACT_UP));
+        _key_down->setKey(getKeyboard().getKeyFromAction(ACT_DOWN));
+        _key_left->setKey(getKeyboard().getKeyFromAction(ACT_LEFT));
+        _key_right->setKey(getKeyboard().getKeyFromAction(ACT_RIGHT));
+        _key_jump->setKey(getKeyboard().getKeyFromAction(ACT_JUMP));
+        _key_fire->setKey(getKeyboard().getKeyFromAction(ACT_FIRE));
+        _key_retry->setKey(getKeyboard().getKeyFromAction(ACT_RETRY));
+
+        _keyboard_menu->updateChilds();
+    }
+
+    void hookGamepad(gui::ButtonLabel * button_label, ActionId action)
+    {
+        _waiting_input = true;
+        button_label->setText("gamepad.pressbutton");
+        button_label->setTextColor(sf::Color::Red);
+        getGamepad().catchNextButton([this, button_label, action](unsigned button)
+            {
+                // Map a button
+                getGamepad().mapButtonToAction(button, action);
+
+                // Update button text
+                button_label->setTextColor(sf::Color::White);
+                updateGamepadButtons();
+
+                // Reset controls, just in case
+                getControls().reset();
+                _waiting_input = false;
+            });
+    }
+
+    void updateGamepadButtons()
+    {
+        _btn_jump->setButton(getGamepad().getButtonFromAction(ACT_JUMP));
+        _btn_fire->setButton(getGamepad().getButtonFromAction(ACT_FIRE));
+        _btn_retry->setButton(getGamepad().getButtonFromAction(ACT_RETRY));
+
+        _gamepad_menu->updateChilds();
     }
 
 };

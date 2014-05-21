@@ -13,6 +13,7 @@
 #include <SFML/Window.hpp>
 
 #include <iostream>
+#include <functional>
 
 namespace sys
 {
@@ -26,6 +27,8 @@ private:
     ActionId    _key_to_action[sf::Keyboard::KeyCount];
 
     sf::Keyboard::Key _action_bindings[ACT_COUNT];
+
+    std::function<void(sf::Keyboard::Key)>  _catch_hook;
 
 
 public:
@@ -41,6 +44,8 @@ public:
 
     void onKeyPressed(sf::Keyboard::Key key);
     void onKeyReleased(sf::Keyboard::Key key);
+
+    void catchNextKey(const std::function<void(sf::Keyboard::Key)> & hook) { _catch_hook = hook; }
 
 };
 // class Keyboard
