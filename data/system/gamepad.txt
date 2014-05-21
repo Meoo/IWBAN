@@ -1,0 +1,6 @@
+gamepad.0   "A"
+gamepad.1   "B"
+gamepad.2   "X"
+gamepad.3   "Y"
+gamepad.4   "Start"
+gamepad.5   "Select"
