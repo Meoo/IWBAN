@@ -43,6 +43,10 @@ int process_file(const char * filename)
         return -1;
     }
 
+    std::cout << "===== Processing file " << filename << " =====" << std::endl;
+
+    std::cout << "+++ Parsing XML data +++" << std::endl;
+
     // Get root element
     tx::XMLElement * map = doc.FirstChildElement("map");
 
@@ -76,6 +80,33 @@ int process_file(const char * filename)
     {
         // Layers
         std::cout << "LAYER" << std::endl;
+
+        tx::XMLElement * data = layer->FirstChildElement("data");
+        if (!data)
+        {
+            std::cerr << "!!!!! No data node found in layer !!!!!" << std::endl;
+            return -1;
+        }
+
+        if (data->Attribute("compression"))
+        {
+            std::cerr << "!!!!! Layer data compression not supported !!!!!" << std::endl;
+            return -1;
+        }
+
+        if (data->Attribute("encoding", "csv"))
+        {
+            // TODO Parse CSV
+        }
+        else if (data->Attribute("encoding", "base64"))
+        {
+            // TODO Parse base64
+        }
+        else
+        {
+            std::cerr << "!!!!! Unsupported layer encoding !!!!!" << std::endl;
+            return -1;
+        }
     }
 
     for (tx::XMLElement * objs = map->FirstChildElement("objectgroup");
@@ -91,6 +122,8 @@ int process_file(const char * filename)
         // Images
         std::cout << "????? Image layers are not handled ?????" << std::endl;
     }
+
+    // TODO XML parsed, process the data
 
     return 0;
 }

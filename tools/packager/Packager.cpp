@@ -59,11 +59,11 @@ int process_folder(const char * path_name)
     std::cout << "===== Processing directory " << folder.leaf().string().c_str()
               << " =====" << std::endl;
 
+    std::cout << "+++ Listing files +++" << std::endl;
+
     // Index size is magic + number of entries + length of paths + size of IndexEntries
     IndexMap index;
     std::size_t index_size = sizeof(uint32_t) + sizeof(PKG_MAGIC);
-
-    std::cout << "+++ Listing files +++" << std::endl;
 
     // Recursively walk the folder
     for (fs::recursive_directory_iterator it(folder), end;
