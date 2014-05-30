@@ -1,11 +1,11 @@
 /**
- * @file   Clock.cpp
+ * @file   Time.cpp
  * @author Bastien Brunnenstein
  */
 
 #include <Global.hpp>
 
-#include <system/Clock.hpp>
+#include <system/Time.hpp>
 
 namespace sys
 {

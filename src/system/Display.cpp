@@ -7,10 +7,10 @@
 
 #include <config/Config.hpp>
 
-#include <system/Clock.hpp>
 #include <system/Controls.hpp>
 #include <system/Display.hpp>
 #include <system/Projector.hpp>
+#include <system/Time.hpp>
 #include <system/exceptions/RestartApp.hpp>
 #include <system/inputs/Gamepad.hpp>
 #include <system/inputs/Keyboard.hpp>

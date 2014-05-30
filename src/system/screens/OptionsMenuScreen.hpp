@@ -11,9 +11,9 @@
 #include <config/GamepadConfig.hpp>
 #include <config/KeyboardConfig.hpp>
 
-#include <system/Clock.hpp>
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
+#include <system/Time.hpp>
 #include <system/inputs/Gamepad.hpp>
 #include <system/inputs/Keyboard.hpp>
 

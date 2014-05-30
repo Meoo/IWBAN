@@ -8,9 +8,9 @@
 
 #include <Global.hpp>
 
-#include <system/Clock.hpp>
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
+#include <system/Time.hpp>
 
 namespace sys
 {

@@ -1,10 +1,10 @@
 /**
- * @file   Clock.hpp
+ * @file   Time.hpp
  * @author Bastien Brunnenstein
  */
 
-#ifndef _IWBAN_CLOCK_HPP_
-#define _IWBAN_CLOCK_HPP_
+#ifndef _IWBAN_TIME_HPP_
+#define _IWBAN_TIME_HPP_
 
 #include <Global.hpp>
 
@@ -66,4 +66,4 @@ const sf::Time & getDrawTime()
 }
 // namespace sys
 
-#endif // _IWBAN_CLOCK_HPP_
+#endif // _IWBAN_TIME_HPP_
