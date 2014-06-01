@@ -7,27 +7,27 @@
 
 #include <physics/CollisionData.hpp>
 #include <physics/Shape.hpp>
-#include <physics/Simulator.hpp>
+#include <physics/Space.hpp>
 
 namespace phy
 {
 
-Simulator::Simulator()
+Space::Space()
 {
 }
 
-void Simulator::add(Object * object)
+void Space::add(Object * object)
 {
     object->updateLastPosition();
     _objects.push_back(*object);
 }
 
-void Simulator::remove(const Object * object)
+void Space::remove(const Object * object)
 {
     _objects.erase(_objects.iterator_to(*object));
 }
 
-void Simulator::step()
+void Space::step()
 {
     for (Object & obj : _objects)
         obj.prepare();
@@ -62,7 +62,7 @@ void Simulator::step()
 }
 
 #ifndef NDEBUG
-void Simulator::drawDebug(gfx::DebugContext & debug_context) const
+void Space::drawDebug(gfx::DebugContext & debug_context) const
 {
     for (const Object & obj : _objects)
         obj.drawDebug(debug_context);

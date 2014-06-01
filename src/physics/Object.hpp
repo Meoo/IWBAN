@@ -25,7 +25,6 @@ namespace phy
 class Behavior;
 class Object;
 class Shape;
-class Simulator;
 
 namespace impl
 {

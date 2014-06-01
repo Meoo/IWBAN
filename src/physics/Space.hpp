@@ -1,10 +1,10 @@
 /**
- * @file   Simulator.hpp
+ * @file   Space.hpp
  * @author Bastien Brunnenstein
  */
 
-#ifndef _IWBAN_SIMULATOR_HPP_
-#define _IWBAN_SIMULATOR_HPP_
+#ifndef _IWBAN_SPACE_HPP_
+#define _IWBAN_SPACE_HPP_
 
 #include <Global.hpp>
 
@@ -17,14 +17,14 @@
 namespace phy
 {
 
-class Simulator
+class Space
 {
 public:
     // Data members
     Object::List    _objects;
 
     // Constructor
-         Simulator();
+         Space();
 
     // Functions
     void add(Object * object);
@@ -39,9 +39,9 @@ public:
 #endif
 
 };
-// class Simulator
+// class Space
 
 }
 // namespace phy
 
-#endif // _IWBAN_SIMULATOR_HPP_
+#endif // _IWBAN_SPACE_HPP_

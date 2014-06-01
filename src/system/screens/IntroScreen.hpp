@@ -13,7 +13,7 @@
 
 #include <physics/behaviors/PhysicsBehavior.hpp>
 #include <physics/behaviors/MovingBehavior.hpp>
-#include <physics/Simulator.hpp>
+#include <physics/Space.hpp>
 #include <physics/Object.hpp>
 #include <physics/shapes/Box.hpp>
 
@@ -27,7 +27,7 @@ namespace sys
 class IntroScreen : public Screen
 {
 protected:
-    phy::Simulator sim;
+    phy::Space sim;
 
     phy::Object * pl1;
     phy::Object * pl2;
