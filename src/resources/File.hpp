@@ -11,11 +11,10 @@
 #include <boost/noncopyable.hpp>
 
 #include <vector>
+#include <memory>
 
 namespace res
 {
-
-class FileHandle;
 
 namespace impl
 {
@@ -34,20 +33,6 @@ public:
 };
 // class FileImpl
 
-// ---- ---- ---- ----
-
-class FileHandleImpl
-{
-public:
-    // Virtual destructor
-    virtual ~FileHandleImpl() {}
-
-    // Virtual functions
-    virtual FileImpl * open() = 0;
-
-};
-// class FileHandleImpl
-
 }
 // namespace impl
 
@@ -60,22 +45,18 @@ class File : public boost::noncopyable
 {
 public:
     friend File res::openFile(const std::string & filename);
-    friend class res::FileHandle;
 
 
 private:
     // Implementation
-    impl::FileImpl * _impl;
+    std::unique_ptr<impl::FileImpl> _impl;
 
 
 public:
     // Constructors
-    File();
+    File() = default;
 
     File(File && other);
-
-    // Destructor
-    ~File();
 
     // Assignment move
     File & operator = (File && other);
@@ -95,7 +76,7 @@ public:
 
     bool isOpen() const
     {
-        return _impl != 0;
+        return static_cast<bool>(_impl);
     }
 
 
@@ -108,93 +89,8 @@ private:
 
 // ---- ---- ---- ----
 
-// TODO Should be copyable?
-class FileHandle : public boost::noncopyable
-{
-public:
-    friend FileHandle findFile(const std::string & filename);
-    friend std::vector<FileHandle> findFiles(const std::string & file_pattern);
-
-
-private:
-    // Data members
-    const std::string       _filename;
-
-    impl::FileHandleImpl *  _localized;
-    impl::FileHandleImpl *  _unlocalized;
-
-
-public:
-    // Constructors
-    FileHandle();
-
-    FileHandle(FileHandle && other);
-
-    // Destructor
-    ~FileHandle();
-
-    // Assignment move
-    FileHandle & operator = (FileHandle && other);
-
-    // Functions
-    // Check if the file can be opened
-    bool isValid()
-    {
-        return _localized != 0 || _unlocalized != 0;
-    }
-
-    // Open localized, or unlocalized if it doesn't exist
-    File open()
-    {
-        BOOST_ASSERT(isValid());
-        if (isLocalized())
-            return openLocalized();
-        else
-            return openUnlocalized();
-    }
-
-    bool isLocalized() const
-    {
-        return _localized != 0;
-    }
-
-    File openLocalized()
-    {
-        BOOST_ASSERT(isLocalized());
-        return File(_localized->open());
-    }
-
-    bool isUnlocalized() const
-    {
-        return _unlocalized != 0;
-    }
-
-    File openUnlocalized()
-    {
-        BOOST_ASSERT(isUnlocalized());
-        return File(_unlocalized->open());
-    }
-
-    const std::string & getFileName() const
-    {
-        return _filename;
-    }
-
-
-private:
-    // Private constructor
-    FileHandle(impl::FileHandleImpl * localized,
-               impl::FileHandleImpl * unlocalized);
-
-};
-// class FileHandle
-
-// ---- ---- ---- ----
-
 // Static functions
 File openFile(const std::string & filename);
-
-FileHandle findFile(const std::string & filename);
 
 }
 // namespace res
