@@ -98,7 +98,7 @@ project "IWBAN"
 
   kind "WindowedApp"
 
-  includedirs { "src", "tools" }
+  includedirs { "src" }
 
   files       { "src/**.cpp" }
   excludes    { "src/Global.cpp" }
