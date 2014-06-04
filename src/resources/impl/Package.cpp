@@ -9,17 +9,89 @@
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 
 #include <config/Config.hpp>
+#include <config/PackageConfig.hpp>
 
 #include <resources/FileStream.hpp>
 #include <resources/impl/Package.hpp>
 #include <resources/impl/PackagedFile.hpp>
 
 #include <system/exceptions/FileCorrupted.hpp>
-
-#include <packager/PackagerConfig.hpp>
-#include <packager/ReadIndex.hpp>
+#include <system/exceptions/FileNotFound.hpp>
 
 #include <map>
+#include <memory>
+
+namespace
+{
+
+typedef std::unique_ptr<res::impl::Package> PackagePtr;
+
+class PackageEntry
+{
+public:
+    PackagePtr localized;
+    PackagePtr unlocalized;
+};
+
+typedef std::map<std::string, PackageEntry> PackageMap;
+
+// ---- ---- ---- ----
+
+static PackageMap s_package_map;
+
+// ---- ---- ---- ----
+
+PackageMap::iterator loadPackage(const std::string & package)
+{
+    PackageEntry entry;
+
+    // Unlocalized
+    try
+    {
+        std::string unloc_path = std::string(IWBAN_DATA_FOLDER "/")
+                               + package + IWBAN_PKG_EXTENSION;
+
+        entry.unlocalized.reset(new res::impl::Package(unloc_path));
+
+        IWBAN_LOG_INFO("Package '%s' found\n", package.c_str());
+    }
+    catch (sys::FileNotFound & ignored)
+    {
+        IWBAN_LOG_INFO("Package '%s' not found\n", package.c_str());
+    }
+
+    // Localized
+    try
+    {
+        std::string loc_path = std::string(IWBAN_DATA_FOLDER "/")
+                             + package + "." + cfg::language + IWBAN_PKG_EXTENSION;
+
+        entry.localized.reset(new res::impl::Package(loc_path));
+
+        IWBAN_LOG_INFO("Package '%s.%s' found\n",
+            package.c_str(), cfg::language.c_str());
+    }
+    catch (sys::FileNotFound & ignored)
+    {
+        IWBAN_LOG_INFO("Package '%s.%s' not found\n",
+            package.c_str(), cfg::language.c_str());
+    }
+
+    // Insert the package into the map
+    auto ret = s_package_map.insert(std::make_pair(package, std::move(entry)));
+
+    // TODO Better than that?
+    BOOST_ASSERT(ret.second == true);
+
+    return ret.first;
+
+}
+// loadPackage()
+
+}
+// namespace
+
+// ---- ---- ---- ----
 
 namespace res
 {
@@ -27,145 +99,55 @@ namespace res
 namespace impl
 {
 
-typedef std::map<std::string, Package *> PackageMap;
-
-// ---- ---- ---- ----
-
-Package::Package(const std::string & package_name,
-                 MappedFile & loc, MappedFile & base)
-    : _package_name(package_name), _loc_file(loc), _base_file(base)
+Package::Package(const std::string & package_filename)
 {
-    // TODO MappedFiles should be loaded from inside this function, and not in getPackage
-    _has_loc = loc.is_open();
-    if (_has_loc)
+    // Wrap boost exception using our own exceptions
+    try
     {
-        // Create stream
-        FileStream loc_st(_loc_file.data(), _loc_file.size());
-
-        // Read index
-        if (!pkg::readIndex(loc_st, _loc_index))
-            throw sys::FileCorrupted((_package_name + "."
-                    + cfg::language + PKG_EXTENSION).c_str());
+        _source.open(package_filename);
+    }
+    catch (/* TODO boost::file_not_found */...)
+    {
+        throw sys::FileNotFound(package_filename.c_str());
     }
 
     // Create stream
-    std::istringstream base_st;
-    base_st.rdbuf()->pubsetbuf(
-            const_cast<char*>(_base_file.data()), _base_file.size());
+    FileStream stream(_source.data(), _source.size());
 
     // Read index
-    if (!pkg::readIndex(base_st, _base_index))
-        throw sys::FileCorrupted((_package_name + PKG_EXTENSION).c_str());
+    if (!readIndex(stream, _index))
+        throw sys::FileCorrupted(package_filename.c_str());
 }
 
 FileImpl * Package::openFile(const std::string & filename)
 {
-    FileImpl * file = openFileLocalized(filename);
-    if (file)
-        return file;
+    Index::iterator it = _index.find(filename);
 
-    return openFileUnlocalized(filename);
-}
-
-FileImpl * Package::openFileUnlocalized(const std::string & filename)
-{
-    // Unlocalized
-    pkg::IndexMap::iterator it = _base_index.find(filename);
-    if (it != _base_index.end())
-        return new PackagedFile(_base_file, it->second);
-
-    return 0;
-}
-
-FileImpl * Package::openFileLocalized(const std::string & filename)
-{
-    // Localized
-    if (_has_loc)
-    {
-        pkg::IndexMap::iterator it = _loc_index.find(filename);
-        if (it != _loc_index.end())
-            return new PackagedFile(_loc_file, it->second);
-    }
-
-    return 0;
-}
-
-FileHandleImpl * Package::findFile(const std::string& filename)
-{
-    FileHandleImpl * file = findFileLocalized(filename);
-    if (file)
-        return file;
-
-    return findFileUnlocalized(filename);
-}
-
-FileHandleImpl * Package::findFileUnlocalized(const std::string& filename)
-{
-    // Unlocalized
-    pkg::IndexMap::iterator it = _base_index.find(filename);
-    if (it != _base_index.end())
-        return new PackagedFileHandle(this, it->second, true);
-
-    return 0;
-}
-
-FileHandleImpl * Package::findFileLocalized(const std::string& filename)
-{
-    // Localized
-    pkg::IndexMap::iterator it = _loc_index.find(filename);
-    if (it != _loc_index.end())
-        return new PackagedFileHandle(this, it->second, false);
+    if (it != _index.end())
+        return new PackagedFile(_source, it->second);
 
     return 0;
 }
 
 // ---- ---- ---- ----
 
-Package * getPackage(const std::string & package)
+FileImpl * openFileInPackage(const std::string & package,
+                             const std::string & filename)
 {
-    static PackageMap s_package_map;
-
     PackageMap::iterator it = s_package_map.find(package);
 
-    if (it != s_package_map.end())
-        return it->second;
+    if (it == s_package_map.end())
+        it = loadPackage(package);
 
-    else
-    {
-        // Base
-        std::string base_path = std::string(IWBAN_DATA_FOLDER "/")
-                + package + PKG_EXTENSION;
-        Package::MappedFile base;
+    // Localized
+    if (it->second.localized)
+        return it->second.localized->openFile(filename);
 
-        try { base.open(base_path); }
-        catch (...) {}
+    // Unlocalized
+    if (it->second.unlocalized)
+        return it->second.unlocalized->openFile(filename);
 
-        if (!base.is_open())
-        {
-            // No package found
-            IWBAN_LOG_INFO("Package '%s' not found\n", package.c_str());
-            s_package_map[package] = 0;
-            return 0;
-        }
-
-        // Localization
-        std::string loc_path = std::string(IWBAN_DATA_FOLDER "/")
-                + package + "." + cfg::language + PKG_EXTENSION;
-        Package::MappedFile loc;
-
-        try { loc.open(loc_path); }
-        catch (...) {}
-
-        // Finally, create package
-        Package * p = new Package(package, loc, base);
-        s_package_map[package] = p;
-
-        IWBAN_LOG_INFO("Package '%s' found (%s '%s' localization)\n",
-                package.c_str(), loc.is_open() ? "with" : "without",
-                cfg::language.c_str());
-
-        return p;
-    }
+    return 0;
 }
 
 }
