@@ -130,7 +130,7 @@ project "Packager"
   kind "ConsoleApp"
   targetname "pkgtool"
 
-  includedirs { "tools" }
+  includedirs { "src", "tools" }
 
   files       { "tools/packager/**.cpp" }
 

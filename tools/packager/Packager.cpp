@@ -3,9 +3,9 @@
  * @author Bastien Brunnenstein
  */
 
-#include <packager/PackagerConfig.hpp>
-#include <packager/ReadIndex.hpp>
-#include <packager/WriteIndex.hpp>
+#include <config/PackageConfig.hpp>
+
+#include <resources/impl/Index.hpp>
 
 #include <boost/filesystem.hpp>
 
@@ -15,9 +15,7 @@
 #include <string>
 
 namespace fs = boost::filesystem;
-
-using pkg::IndexMap;
-using pkg::IndexEntry;
+namespace pk = res::impl;
 
 void print_help()
 {
@@ -62,8 +60,8 @@ int process_folder(const char * path_name)
     std::cout << "+++ Listing files +++" << std::endl;
 
     // Index size is magic + number of entries + length of paths + size of IndexEntries
-    IndexMap index;
-    std::size_t index_size = sizeof(uint32_t) + sizeof(PKG_MAGIC);
+    pk::Index index;
+    std::size_t index_size = sizeof(uint32_t) + sizeof(IWBAN_PKG_MAGIC);
 
     // Recursively walk the folder
     for (fs::recursive_directory_iterator it(folder), end;
@@ -75,13 +73,13 @@ int process_folder(const char * path_name)
         if (!fs::is_directory(it.status()))
         {
             // Increase index size (+1 is for '\0')
-            index_size += sizeof(IndexEntry) + std::strlen(nice_path) + 1;
+            index_size += sizeof(pk::IndexEntry) + std::strlen(nice_path) + 1;
 
             // Insert an entry in the map
-            index.insert(IndexMap::value_type(nice_path, IndexEntry()));
+            index.insert(pk::Index::value_type(nice_path, pk::IndexEntry()));
 
             // Check for maximum number of files in a package
-            if (index.size() > PKG_MAX_FILES)
+            if (index.size() > IWBAN_PKG_MAX_FILES)
             {
                 std::cerr << "!!! Too many files in directory !!!" << std::endl;
                 return 1;
@@ -90,7 +88,7 @@ int process_folder(const char * path_name)
     }
 
     // Open package file
-    std::string package_name(folder.leaf().string() + PKG_EXTENSION);
+    std::string package_name(folder.leaf().string() + IWBAN_PKG_EXTENSION);
 
     std::ofstream package(package_name.c_str(),
             std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
@@ -103,8 +101,7 @@ int process_folder(const char * path_name)
     package.seekp(index_size);
 
     // Iterate over all files
-    for (IndexMap::iterator it = index.begin();
-            it != index.end(); ++it)
+    for (auto it = index.begin(); it != index.end(); ++it)
     {
         // Append file to the package
         std::ifstream file((folder.string() + "/" + it->first).c_str(),
@@ -125,7 +122,7 @@ int process_folder(const char * path_name)
 
         // Go to next block if necessary
         std::size_t cpos = package.tellp();
-        std::size_t pos = ((cpos - 1) / PKG_BLOCK_SIZE + 1) * PKG_BLOCK_SIZE;
+        std::size_t pos = ((cpos - 1) / IWBAN_PKG_BLOCK_SIZE + 1) * IWBAN_PKG_BLOCK_SIZE;
 
         if ((pos - cpos) < file_size)
             package.seekp(pos);
@@ -135,9 +132,9 @@ int process_folder(const char * path_name)
         // Copy single file to package
         while (!file.eof())
         {
-            static char buffer[PKG_BLOCK_SIZE];
+            static char buffer[IWBAN_PKG_BLOCK_SIZE];
 
-            file.readsome(buffer, PKG_BLOCK_SIZE);
+            file.readsome(buffer, IWBAN_PKG_BLOCK_SIZE);
             package.write(buffer, file.gcount());
 
             if (file.gcount() == 0) break;
@@ -157,7 +154,7 @@ int process_folder(const char * path_name)
     // ---- Write index
 
     package.seekp(0);
-    pkg::writeIndex(package, index);
+    pk::writeIndex(package, index);
 
     // ----
 
@@ -191,15 +188,14 @@ int list_package(const char * packagefile)
         return 1;
     }
 
-    IndexMap index;
-    if (!pkg::readIndex(package, index))
+    pk::Index index;
+    if (!pk::readIndex(package, index))
     {
         std::cerr << "!!! File is not a valid package !!!" << std::endl;
         return 1;
     }
 
-    for (IndexMap::iterator it = index.begin();
-            it != index.end(); ++it)
+    for (auto it = index.begin(); it != index.end(); ++it)
     {
         std::cout << it->first << "\t: ";
         size_t sz = it->second.size;
@@ -240,14 +236,14 @@ int extract_file(const char * file, const char * packagefile)
         return 1;
     }
 
-    IndexMap index;
-    if (!pkg::readIndex(package, index))
+    pk::Index index;
+    if (!pk::readIndex(package, index))
     {
         std::cerr << "!!! File is not a valid package !!!" << std::endl;
         return 1;
     }
 
-    IndexMap::iterator it = index.find(std::string(file));
+    auto it = index.find(std::string(file));
     if (it == index.end())
     {
         std::cerr << "!!! File not found in package !!!" << std::endl;
