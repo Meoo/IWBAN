@@ -5,7 +5,7 @@
 
 #include <Global.hpp>
 
-#include <config/Config.hpp>
+#include <config/Settings.hpp>
 
 //#include <resources/Async.hpp>
 #include <resources/Locale.hpp>
@@ -22,7 +22,7 @@ int main(int argc, char ** argv)
 {
     IWBAN_LOG_INFO("Loading configuration\n");
     cfg::load();
-    cfg::parse_args(argc, argv);
+    cfg::parseArgs(argc, argv);
 
 
     /*IWBAN_LOG_INFO("Initializing threads\n");

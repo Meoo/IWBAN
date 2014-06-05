@@ -5,7 +5,7 @@
 
 #include <Global.hpp>
 
-#include <config/Config.hpp>
+#include <config/Settings.hpp>
 
 #include <system/Controls.hpp>
 #include <system/Display.hpp>

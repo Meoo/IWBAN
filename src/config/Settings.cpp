@@ -1,11 +1,11 @@
 /**
- * @file   Config.cpp
+ * @file   Settings.cpp
  * @author Bastien Brunnenstein
  */
 
 #include <Global.hpp>
 
-#include <config/Config.hpp>
+#include <config/Settings.hpp>
 
 #include <system/inputs/Gamepad.hpp>
 #include <system/inputs/Keyboard.hpp>
@@ -36,7 +36,7 @@ unsigned    particles       = 2;
 
 // ---- ---- ---- ----
 
-void parse_args(int argc, char ** argv)
+void parseArgs(int argc, char ** argv)
 {
 }
 

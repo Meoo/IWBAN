@@ -8,7 +8,7 @@
 // TODO Remove that... must find another way to fix boost's bug
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 
-#include <config/Config.hpp>
+#include <config/Settings.hpp>
 
 #include <resources/File.hpp>
 #include <resources/impl/Package.hpp>

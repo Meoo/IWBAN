@@ -9,7 +9,7 @@
 #include <graphics/contexts/impl/QuickLightContext.hpp>
 #include <graphics/contexts/impl/SmoothLightContext.hpp>
 
-#include <config/Config.hpp>
+#include <config/Settings.hpp>
 
 #include <resources/File.hpp>
 

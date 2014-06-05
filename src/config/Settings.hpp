@@ -1,10 +1,10 @@
 /**
- * @file   Config.hpp
+ * @file   Settings.hpp
  * @author Bastien Brunnenstein
  */
 
-#ifndef _IWBAN_CONFIG_HPP_
-#define _IWBAN_CONFIG_HPP_
+#ifndef _IWBAN_SETTINGS_HPP_
+#define _IWBAN_SETTINGS_HPP_
 
 #include <Global.hpp>
 
@@ -31,7 +31,7 @@ extern unsigned     particles;
 
 // ---- ---- ---- ----
 
-void parse_args(int argc, char ** argv);
+void parseArgs(int argc, char ** argv);
 
 void save();
 void load();
@@ -39,4 +39,4 @@ void load();
 }
 // namespace cfg
 
-#endif // _IWBAN_CONFIG_HPP_
+#endif // _IWBAN_SETTINGS_HPP_
