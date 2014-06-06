@@ -237,17 +237,18 @@ void Display::run(sys::Projector & projector)
         // DEBUG : Allow the game to be paused by pressing Insert key
         if (pause)
         {
+            sf::Time update_time = getGlobalTime();
+
             // Press PageDown key to process a single step
             if (play_next_frame)
             {
                 IWBAN_LOG_DEBUG("Processing single frame\n");
-                impl::setUpdateTime();
-                projector.update();
+                projector.update(update_time);
                 play_next_frame = false;
             }
 
             // Prevent "Game is slowing down" warning on resume
-            next_update = getUpdateTime() + sf::seconds(IWBAN_UPDATE_TIME);
+            next_update = update_time + sf::seconds(IWBAN_UPDATE_TIME);
 
         } // if (pause)
         else
@@ -255,12 +256,12 @@ void Display::run(sys::Projector & projector)
 #endif
             // Inflict a penalty on any update after the first one to increase consistency
             int update_count = 0;
-            while (getGlobalTime() > (update_count == 0 ?
+            sf::Time update_time;
+            while ((update_time = getGlobalTime()) > (update_count == 0 ?
                     next_update : next_update + sf::seconds(IWBAN_UPDATE_TIME / 4)))
             {
                 // Scene update
-                impl::setUpdateTime();
-                projector.update();
+                projector.update(update_time);
 
                 next_update += sf::seconds(IWBAN_UPDATE_TIME);
 
@@ -287,14 +288,14 @@ void Display::run(sys::Projector & projector)
         PERF_END(update);
         PERF_BEGIN(draw);
 
-        impl::setDrawTime();
+        sf::Time render_time = getGlobalTime();
 
         // Background rendering
         if (marginX > 0 || marginY > 0)
         {
             _window.setView(bg_view);
 
-            float t = getDrawTime().asSeconds();
+            float t = render_time.asSeconds();
             float t2 = - t/2;
 
             bg_mesh[0].texCoords.x = t;
@@ -314,7 +315,7 @@ void Display::run(sys::Projector & projector)
 
         // Scene rendering
         renderer.begin();
-        projector.render(renderer);
+        projector.render(renderer, render_time);
         renderer.end();
 
         PERF_END(draw);

@@ -36,9 +36,9 @@ public:
 
     void    setScreen(Screen * screen);
 
-    void    update();
+    void    update(const sf::Time & update_time);
 
-    void    render(gfx::Renderer & renderer) const;
+    void    render(gfx::Renderer & renderer, const sf::Time & render_time) const;
 
 };
 // class Projector

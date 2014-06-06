@@ -35,10 +35,10 @@ public:
 
 protected:
     // Callbacks
-    virtual void onUpdate()
+    virtual void onUpdate(const sf::Time & update_time)
     {
         // Either timeout or skip
-        if (getUpdateTime() - _begin_time >= _duration
+        if (update_time - _begin_time >= _duration
          || (_skippable
            && (getControls().getAction(ACT_ACCEPT).isJustActivated()
             || getControls().getAction(ACT_CANCEL).isJustActivated()
@@ -49,9 +49,9 @@ protected:
         }
     }
 
-    virtual void onRender(gfx::Renderer & renderer) const
+    virtual void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
     {
-        float time_left = (_duration - getDrawTime() + _begin_time).asSeconds();
+        float time_left = (_duration - render_time + _begin_time).asSeconds();
 
         gfx::DrawContext & draw = renderer.openDrawContext();
 
@@ -67,7 +67,7 @@ protected:
 
     virtual void onShow()
     {
-        _begin_time = getUpdateTime();
+        _begin_time = getGlobalTime();
     }
 
     virtual void onHide()

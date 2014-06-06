@@ -22,8 +22,8 @@ private:
 
 protected:
     // Callbacks
-    virtual void    onUpdate();
-    virtual void    onRender(gfx::Renderer & renderer) const;
+    virtual void    onUpdate(const sf::Time & update_time);
+    virtual void    onRender(gfx::Renderer & renderer, const sf::Time & render_time) const;
 
     virtual void    onShow();
     virtual void    onHide();

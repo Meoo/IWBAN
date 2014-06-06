@@ -36,12 +36,12 @@ void Projector::setScreen(Screen * screen)
     _current_screen->onShow();
 }
 
-void Projector::update()
+void Projector::update(const sf::Time & update_time)
 {
     // Update controls right before updating the screen
     getControls().update();
 
-    _current_screen->onUpdate();
+    _current_screen->onUpdate(update_time);
 
     // Check if we should change screen
     Screen * next_screen = _current_screen->getNextScreen();
@@ -62,9 +62,9 @@ void Projector::update()
     }
 }
 
-void Projector::render(gfx::Renderer & renderer) const
+void Projector::render(gfx::Renderer & renderer, const sf::Time & render_time) const
 {
-    _current_screen->onRender(renderer);
+    _current_screen->onRender(renderer, render_time);
 }
 
 }

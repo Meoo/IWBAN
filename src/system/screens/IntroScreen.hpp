@@ -54,7 +54,7 @@ protected:
     unsigned ticks;
 
     // Callbacks
-    virtual void    onUpdate()
+    virtual void    onUpdate(const sf::Time & update_time)
     {
         const float spd = 3.f;
         const float jspd = 8.f;
@@ -117,7 +117,7 @@ protected:
         ++ticks;
     }
 
-    virtual void    onRender(gfx::Renderer & renderer) const
+    virtual void    onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
     {
         gfx::LightContext & light = renderer.openLightContext(sf::Color(64, 64, 64));
         sf::RectangleShape rect(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT));

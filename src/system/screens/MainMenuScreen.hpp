@@ -65,14 +65,14 @@ public:
 
 protected:
     // Callbacks
-    virtual void onUpdate()
+    virtual void onUpdate(const sf::Time & update_time)
     {
         for (unsigned i = 0; i < ACT_COUNT; ++i)
             if (getControls().getAction((ActionId) i).isJustActivated())
                 _menu->dispatchAction((ActionId) i);
     }
 
-    virtual void onRender(gfx::Renderer & renderer) const
+    virtual void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
     {
         gfx::DrawContext & draw = renderer.openDrawContext();
 
@@ -81,14 +81,6 @@ protected:
         _menu->draw(draw);
 
         draw.close();
-    }
-
-    virtual void onShow()
-    {
-    }
-
-    virtual void onHide()
-    {
     }
 
     void onNewGame()

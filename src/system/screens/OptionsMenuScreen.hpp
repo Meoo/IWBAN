@@ -266,9 +266,9 @@ public:
 
 protected:
     // Callbacks
-    virtual void onUpdate()
+    virtual void onUpdate(const sf::Time & update_time)
     {
-        if (_state == ST_OPTIONS && _gamepad_state_timer < getUpdateTime())
+        if (_state == ST_OPTIONS && _gamepad_state_timer < update_time)
         {
             if (sf::Joystick::isConnected(0))
             {
@@ -281,7 +281,7 @@ protected:
                 _gamepad_state->setTextColor(sf::Color(128, 64, 64));
             }
 
-            _gamepad_state_timer = getUpdateTime() + sf::seconds(2);
+            _gamepad_state_timer = update_time + sf::seconds(2);
             _menu->updateChilds();
         }
 
@@ -364,7 +364,7 @@ protected:
 
     }
 
-    virtual void onRender(gfx::Renderer & renderer) const
+    virtual void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
     {
         gfx::DrawContext & draw = renderer.openDrawContext();
 

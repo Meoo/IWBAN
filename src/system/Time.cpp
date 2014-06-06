@@ -15,9 +15,6 @@ namespace impl
 
 sf::Clock global_clock;
 
-sf::Time update_time;
-sf::Time draw_time;
-
 }
 // namespace impl
 

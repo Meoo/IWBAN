@@ -23,27 +23,25 @@ public:
 
 private:
     // Data members
-    Screen *    _next_screen;
-    bool        _disposable;
+    Screen *    _next_screen    = nullptr;
+    bool        _disposable     = false;
 
 
 public:
     // Constructor
-                    Screen()
-                        : _next_screen(0), _disposable(false)
-                    {}
+                    Screen() = default;
 
-    // Destructor
+    // Virtual destructor
     virtual         ~Screen() {}
 
 
 protected:
     // Callbacks
-    virtual void    onUpdate() = 0;
-    virtual void    onRender(gfx::Renderer & renderer) const = 0;
+    virtual void    onUpdate(const sf::Time & update_time) = 0;
+    virtual void    onRender(gfx::Renderer & renderer, const sf::Time & render_time) const = 0;
 
-    virtual void    onShow() = 0;
-    virtual void    onHide() = 0;
+    virtual void    onShow() {}
+    virtual void    onHide() {}
 
     // Internal functions
     /**
@@ -68,8 +66,8 @@ protected:
 
 
 private:
-    // Functions for Projector
-    void        resetNextScreen()       { _next_screen = 0; }
+    // Private functions for Projector
+    void        resetNextScreen()       { _next_screen = nullptr; }
     Screen *    getNextScreen() const   { return _next_screen; }
     bool        isDisposable() const    { return _disposable; }
 

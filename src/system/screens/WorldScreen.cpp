@@ -10,12 +10,12 @@
 namespace sys
 {
 
-void WorldScreen::onUpdate()
+void WorldScreen::onUpdate(const sf::Time & update_time)
 {
     _world.update();
 }
 
-void WorldScreen::onRender(gfx::Renderer & renderer) const
+void WorldScreen::onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
 {
     _world.render(renderer);
 }
