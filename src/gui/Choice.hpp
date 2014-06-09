@@ -18,14 +18,17 @@ namespace gui
 // A choice in a menu
 class Choice : public Label
 {
+public:
+    typedef std::function<void ()> ActionCallback;
+
 private:
     // Data members
-    bool                    _enabled = true;
-    std::function<void()>   _action;
+    bool            _enabled = true;
+    ActionCallback  _action;
 
-    sf::Color               _idle_color     = sf::Color(152, 152, 152);
-    sf::Color               _selected_color = sf::Color::White;
-    sf::Color               _disabled_color = sf::Color(96, 96, 96);
+    sf::Color       _idle_color     = sf::Color(152, 152, 152);
+    sf::Color       _selected_color = sf::Color::White;
+    sf::Color       _disabled_color = sf::Color(96, 96, 96);
 
 
 public:
@@ -46,7 +49,7 @@ public:
 
     virtual bool isSelectable() const { return isEnabled(); }
 
-    void setAction(const std::function<void()> & func) { _action = func; }
+    void setAction(const ActionCallback & func) { _action = func; }
 
     virtual void dispatchAction(sys::ActionId action);
 
