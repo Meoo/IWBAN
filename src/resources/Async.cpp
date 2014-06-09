@@ -29,13 +29,15 @@ namespace
 
     using typename res::async::AsyncFunction;
 
-    typedef struct Job
+    class Job
     {
-        volatile Job *  next;
+    public:
+        Job *           next;
         AsyncFunction   function;
         void *          param;
 
-    } Job;
+    };
+    // class Job
 
     bool                threading_enabled;
 
@@ -50,22 +52,22 @@ namespace
 
     ConditionVariable   jobs_condition;
 
-    volatile Job        job_pool[JOBS_MAX];
+    Job                 job_pool[JOBS_MAX];
 
-    volatile Job *      first_job;
+    Job *               first_job;
 
-    volatile Job *      last_job;
+    Job *               last_job;
 
-    volatile Job *      first_free_job;
+    Job *               first_free_job;
 
-    void schedule_job(AsyncFunction function, void * param, bool priority = false)
+    void schedule_job(const AsyncFunction & function, void * param, bool priority = false)
     {
         Lock lock(jobs_mutex);
 
         if (!first_free_job)
             throw sys::ResourceError("Cannot schedule task : no more job slots");
 
-        volatile Job * job = first_free_job;
+        Job * job = first_free_job;
         first_free_job = job->next;
 
         job->function = function;
@@ -91,7 +93,7 @@ namespace
         jobs_condition.notify_one();
     }
 
-    volatile Job * acquire_job()
+    Job * acquire_job()
     {
         UniqueLock lock(jobs_mutex);
 
@@ -102,13 +104,13 @@ namespace
                 return 0;
         }
 
-        volatile Job * job = first_job;
+        Job * job = first_job;
         first_job = job->next;
 
         return job;
     }
 
-    void free_job(volatile Job * job)
+    void free_job(Job * job)
     {
         Lock lock(jobs_mutex);
 
@@ -123,7 +125,7 @@ namespace
 
         while(!kill_workers)
         {
-            volatile Job * job = ::acquire_job();
+            Job * job = ::acquire_job();
             if (job)
             {
                 job->function(job->param);
@@ -210,7 +212,7 @@ void terminate()
     }
 }
 
-void run(AsyncFunction function, void * param, bool priority)
+void run(const AsyncFunction & function, void * param, bool priority)
 {
     BOOST_ASSERT_MSG(ready, "Async module is not initialized yet");
 

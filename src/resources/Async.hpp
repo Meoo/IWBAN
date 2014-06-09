@@ -8,13 +8,15 @@
 
 #include <Global.hpp>
 
+#include <functional>
+
 namespace res
 {
 
 namespace async
 {
 
-typedef void (*AsyncFunction) (void *);
+typedef std::function<void (void *)> AsyncFunction;
 
 // Start workers
 void initialize(bool enable_threading);
@@ -27,7 +29,7 @@ void terminate();
 // This function should be thread safe, so you can use it within a secondary thread
 // If threading is disabled in Config, using it "recursively" will probably cause errors
 // Throw sys::ResourceError if all job slots are in use
-void run(AsyncFunction function, void * param, bool priority = false);
+void run(const AsyncFunction & function, void * param, bool priority = false);
 
 }
 // namespace async
