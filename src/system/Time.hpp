@@ -13,6 +13,20 @@
 namespace sys
 {
 
+/**
+ * Time as a number of frames.
+ */
+typedef unsigned FTime;
+
+typedef int      FTimeOffset;
+
+constexpr FTimeOffset fseconds(float seconds)
+{
+    return static_cast<FTimeOffset>(seconds * IWBAN_FRAME_RATE);
+}
+
+// ---- ---- ---- ----
+
 namespace impl
 {
 
@@ -24,7 +38,7 @@ extern sf::Clock global_clock;
 // ---- ---- ---- ----
 
 /**
- * Get current time.
+ * Get current global time.
  */
 inline
 sf::Time getGlobalTime()
