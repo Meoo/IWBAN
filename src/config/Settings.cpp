@@ -51,7 +51,7 @@ void save()
     std::ofstream f(IWBAN_CONFIG_FILE);
     if (!f.is_open())
     {
-        IWBAN_LOG_WARNING("Unable to save configuration : " IWBAN_CONFIG_FILE "\n");
+        IWBAN_LOG_ERROR("Unable to save configuration : " IWBAN_CONFIG_FILE "\n");
         return;
     }
 
@@ -70,6 +70,10 @@ void save()
     SAVE(gamepad);
 
     f.flush();
+    if (!f.good())
+    {
+        IWBAN_LOG_ERROR("An error occured while saving configuration\n");
+    }
     f.close();
 }
 
@@ -93,7 +97,13 @@ void load()
     while (!f.eof())
     {
         std::string n;
-        f >> n;
+        f >> n >> std::ws;
+
+        if (!f.good()) // eof is an error
+        {
+            IWBAN_LOG_ERROR("Unexpected error after key : '%s'\n", n.c_str());
+            return;
+        }
 
         LOAD(fullscreen);
         LOAD(threading);
@@ -109,9 +119,15 @@ void load()
         LOAD(keyboard);
         LOAD(gamepad);
 
+        if (f.bad() || f.fail()) // eof is not an error
+        {
+            IWBAN_LOG_ERROR("Unexpected error while reading value for key"
+                            " : '%s'\n", n.c_str());
+            return;
+        }
+
         f >> std::ws;
     }
-
     f.close();
 
     // Check values
