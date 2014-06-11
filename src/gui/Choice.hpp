@@ -21,6 +21,7 @@ class Choice : public Label
 public:
     typedef std::function<void ()> ActionCallback;
 
+
 private:
     // Data members
     bool            _enabled = true;
