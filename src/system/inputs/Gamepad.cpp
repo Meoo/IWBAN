@@ -13,83 +13,71 @@ namespace sys
 {
 
 Gamepad::Gamepad(Controls & controls)
-    : _controls(controls), _axis_threshold(IWBAN_GAMEPAD_AXIS_THRESH),
-      _up(false), _down(false), _left(false), _right(false)
+    : _controls(controls)
 {
+    reloadDefaults();
+}
+
+void Gamepad::mapButtonToAction(Button button, ActionId action)
+{
+    BOOST_ASSERT(button < sf::Joystick::ButtonCount && action < ACT_COUNT);
+
+    // Ignore navigation actions
+    if (action == ACT_ACCEPT || action == ACT_CANCEL || action == ACT_MENU)
+    {
+        IWBAN_LOG_WARNING("Trying to set a navigation action\n");
+        return;
+    }
+
+    // For gamepad, we do not really care whatever happens to previous
+    // configuration since we have fixed navigation keys
+    unmapButton(button);
+    unmapAction(action);
+
+    _button_to_action[button] = action;
+    _action_to_button[action] = button;
+}
+
+void Gamepad::unmapButton(Button button)
+{
+    BOOST_ASSERT(button < sf::Joystick::ButtonCount);
+
+    ActionId action = _button_to_action[button];
+
+    if (action != ACT_COUNT)
+    {
+        _action_to_button[action] = sf::Joystick::ButtonCount;
+        _button_to_action[button] = ACT_COUNT;
+    }
+}
+
+void Gamepad::unmapAction(ActionId action)
+{
+    BOOST_ASSERT(action < ACT_COUNT);
+
+    Button button = _action_to_button[action];
+
+    if (button != sf::Joystick::ButtonCount)
+    {
+        _action_to_button[action] = sf::Joystick::ButtonCount;
+        _button_to_action[button] = ACT_COUNT;
+    }
+}
+
+void Gamepad::reloadDefaults()
+{
+    // Clean first
     // We use ACT_COUNT as an invalid id
     for (std::size_t i = 0; i < sf::Joystick::ButtonCount; ++i)
         _button_to_action[i] = ACT_COUNT;
 
     // We use KeyCount as an invalid id
     for (std::size_t i = 0; i < ACT_COUNT; ++i)
-        _action_bindings[i] = sf::Joystick::ButtonCount;
+        _action_to_button[i] = sf::Joystick::ButtonCount;
 
-    reloadDefaults();
-}
+    // Initial configuration
+    setAxisThreshold(IWBAN_GAMEPAD_AXIS_THRESH);
 
-void Gamepad::mapButtonToAction(unsigned button, ActionId action)
-{
-    BOOST_ASSERT(button < sf::Joystick::ButtonCount && action < ACT_COUNT);
-
-    // Ignore fixed actions
-    if (action == ACT_ACCEPT || action == ACT_CANCEL || action == ACT_MENU)
-        return;
-
-    // On gamepad, we need to make sure that actions are bound to something
-    if (_action_bindings[action] != sf::Joystick::ButtonCount)
-    {
-        if (_button_to_action[button] != ACT_COUNT)
-        {
-            // Button is already in use
-            // Swap with previously used button for our action
-            unsigned act_prev_btn = _action_bindings[action];
-            ActionId btn_prev_act = _button_to_action[button];
-            _button_to_action[act_prev_btn] = btn_prev_act;
-            _action_bindings[btn_prev_act] = act_prev_btn;
-        }
-        else
-        {
-            // Unmap previously used button for our action
-            unmapButton(_action_bindings[action]);
-        }
-    }
-    else if (_button_to_action[button] != ACT_COUNT)
-        IWBAN_LOG_WARNING("Trying to map a button which is already bound\n");
-
-    else
-    {
-        _button_to_action[button] = action;
-        _action_bindings[action] = button;
-    }
-}
-
-void Gamepad::unmapButton(unsigned button)
-{
-    BOOST_ASSERT(button < sf::Joystick::ButtonCount);
-
-    // Remove from action mapping if required
-    ActionId act = _button_to_action[button];
-
-    if (_action_bindings[act] == button)
-        _action_bindings[act] = sf::Joystick::ButtonCount;
-
-    // Remove from key mapping
-    _button_to_action[button] = ACT_COUNT;
-}
-
-void Gamepad::reloadDefaults()
-{
-    // Clean first
-    for (std::size_t i = 0; i < ACT_COUNT; ++i)
-    {
-        if (_action_bindings[i] != sf::Joystick::ButtonCount)
-        {
-            _button_to_action[_action_bindings[i]] = ACT_COUNT;
-            _action_bindings[i] = sf::Joystick::ButtonCount;
-        }
-    }
-
-    // Dynamic configuration
     mapButtonToAction(IWBAN_GAMEPAD_JUMP, ACT_JUMP);
     mapButtonToAction(IWBAN_GAMEPAD_FIRE, ACT_FIRE);
     mapButtonToAction(IWBAN_GAMEPAD_RETRY, ACT_RETRY);
@@ -99,7 +87,7 @@ unsigned Gamepad::getButtonFromAction(ActionId action)
 {
     BOOST_ASSERT(action < ACT_COUNT);
 
-    return _action_bindings[action];
+    return _action_to_button[action];
 }
 
 void Gamepad::onButtonPressed(unsigned button)
@@ -113,7 +101,7 @@ void Gamepad::onButtonPressed(unsigned button)
         return;
     }
 
-    // Fixed configuration
+    // Navigation configuration is fixed
     switch (button)
     {
     case IWBAN_GAMEPAD_ACCEPT:
@@ -129,12 +117,12 @@ void Gamepad::onButtonPressed(unsigned button)
         break;
 
     default:
+        // Buttons can be used for both navigation and actions
         break;
     }
 
     // Dynamic configuration
     ActionId id = _button_to_action[button];
-
     if (id != ACT_COUNT)
         _controls.getAction(id).activate();
 }
@@ -143,7 +131,7 @@ void Gamepad::onButtonReleased(unsigned button)
 {
     BOOST_ASSERT(button < sf::Joystick::ButtonCount);
 
-    // Fixed configuration
+    // Navigation configuration is fixed
     switch (button)
     {
     case IWBAN_GAMEPAD_ACCEPT:
@@ -159,12 +147,12 @@ void Gamepad::onButtonReleased(unsigned button)
         break;
 
     default:
+        // Buttons can be used for both navigation and actions
         break;
     }
 
     // Dynamic configuration
     ActionId id = _button_to_action[button];
-
     if (id != ACT_COUNT)
         _controls.getAction(id).deactivate();
 }
@@ -248,7 +236,7 @@ std::ostream & operator << (std::ostream & ostr, Gamepad & gamepad)
 
     for (std::size_t i = 0; i < ACT_COUNT; ++i)
     {
-        unsigned button = gamepad.getButtonFromAction((ActionId) i);
+        Gamepad::Button button = gamepad.getButtonFromAction((ActionId) i);
         if (button != sf::Joystick::ButtonCount)
         {
             ostr << "  " << i << ' ' << button << '\n';
@@ -279,7 +267,7 @@ std::istream & operator >> (std::istream & istr, Gamepad & gamepad)
     while (istr.peek() != '}')
     {
         ActionId act;
-        unsigned button;
+        Gamepad::Button button;
 
         {
             unsigned a;
@@ -295,7 +283,8 @@ std::istream & operator >> (std::istream & istr, Gamepad & gamepad)
 
         if (act >= ACT_COUNT || button >= sf::Joystick::ButtonCount)
         {
-            IWBAN_LOG_ERROR("Invalid values for action and key while reading gamepad configuration\n");
+            IWBAN_LOG_ERROR("Invalid values for action and key while reading"
+                            " gamepad configuration\n");
             continue;
         }
 

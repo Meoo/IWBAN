@@ -446,7 +446,7 @@ protected:
         _waiting_input = true;
         button_label->setText("gamepad.pressbutton");
         button_label->setTextColor(sf::Color::Red);
-        getGamepad().catchNextButton([this, button_label, action](unsigned button)
+        getGamepad().catchNextButton([this, button_label, action](Gamepad::Button button)
             {
                 // Map a button
                 getGamepad().mapButtonToAction(button, action);

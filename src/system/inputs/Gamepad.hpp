@@ -20,41 +20,50 @@ namespace sys
 
 class Gamepad
 {
+public:
+    typedef unsigned                    Button;
+    typedef std::function<void(Button)> HookFunction;
+
+
 private:
     // Data members
     Controls &  _controls;
 
     ActionId    _button_to_action[sf::Joystick::ButtonCount];
-
-    unsigned    _action_bindings[ACT_COUNT];
+    Button      _action_to_button[ACT_COUNT];
 
     float       _axis_threshold;
 
-    bool        _up, _down, _left, _right;
+    bool        _up = false;
+    bool        _down = false;
+    bool        _left = false;
+    bool        _right = false;
 
-    std::function<void(unsigned)>  _catch_hook;
+    HookFunction _catch_hook;
 
 
 public:
     // Constructor
-    Gamepad(Controls & controls);
+            Gamepad(Controls & controls);
 
-    void mapButtonToAction(unsigned button, ActionId action);
-    void unmapButton(unsigned button);
+    void    mapButtonToAction(Button button, ActionId action);
 
-    void reloadDefaults();
+    void    unmapButton(Button button);
+    void    unmapAction(ActionId button);
+
+    void    reloadDefaults();
 
     unsigned getButtonFromAction(ActionId action);
 
-    void onButtonPressed(unsigned button);
-    void onButtonReleased(unsigned button);
+    void    onButtonPressed(Button button);
+    void    onButtonReleased(Button button);
 
-    void onAxisMoved(sf::Joystick::Axis axis, float position);
+    void    onAxisMoved(sf::Joystick::Axis axis, float position);
 
-    float getAxisThreshold() const { return _axis_threshold; }
-    void setAxisThreshold(float thresh) { _axis_threshold = thresh; }
+    float   getAxisThreshold() const { return _axis_threshold; }
+    void    setAxisThreshold(float thresh) { _axis_threshold = thresh; }
 
-    void catchNextButton(const std::function<void(unsigned)> & hook) { _catch_hook = hook; }
+    void    catchNextButton(const HookFunction & hook) { _catch_hook = hook; }
 
 };
 // class Keyboard
