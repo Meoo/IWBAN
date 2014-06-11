@@ -30,13 +30,13 @@
 
 /**
  * @def IWBAN_LOG_LEVEL
- * Log level.
+ * Log level, higher means more logs.
  *
- * 0 : All logs disabled
+ * 0 : Critical (Min)
  * 1 : Error
  * 2 : Warning
  * 3 : Info
- * 4 : Debug
+ * 4 : Debug (Max)
  */
 #ifdef NDEBUG
 #  define IWBAN_LOG_LEVEL 2
@@ -45,12 +45,15 @@
 #endif
 
 /**
+ * @def IWBAN_LOG_CRITICAL
  * @def IWBAN_LOG_ERROR
  * @def IWBAN_LOG_WARNING
  * @def IWBAN_LOG_INFO
  * @def IWBAN_LOG_DEBUG
  * Log functions.
  */
+
+#define IWBAN_LOG_CRITICAL(...)  _IWBAN_PRINT_LOG("CRIT : " __VA_ARGS__)
 
 #if IWBAN_LOG_LEVEL >= 1
 #  define IWBAN_LOG_ERROR(...)   _IWBAN_PRINT_LOG("ERROR: " __VA_ARGS__)
