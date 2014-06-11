@@ -10,8 +10,9 @@
 namespace gui
 {
 
-Slider::Slider(const ut::Vector & size, unsigned value, unsigned max_value)
-    : _size(size), _value(value), _value_max(max_value)
+Slider::Slider(const ut::Vector & size,
+               int min, int max, int step, int value)
+    : _size(size), _value(value), _value_min(min), _value_max(max), _step(step)
 {
     _border.setSize(size);
     _border.setOutlineThickness(-3);
@@ -51,14 +52,28 @@ void Slider::deselect()
 
 void Slider::dispatchAction(sys::ActionId action)
 {
-    if (action == sys::ACT_LEFT && _value > 0)
+    if (action == sys::ACT_LEFT && _value > _value_min)
     {
-        --_value;
+        _value -= _step;
+
+        if (_value < _value_min)
+            _value = _value_min;
+
+        if (_action)
+            _action(_value);
+
         updateValue();
     }
     else if (action == sys::ACT_RIGHT && _value < _value_max)
     {
-        ++_value;
+        _value += _step;
+
+        if (_value > _value_max)
+            _value = _value_max;
+
+        if (_action)
+            _action(_value);
+
         updateValue();
     }
 }
@@ -72,7 +87,7 @@ void Slider::setPosition(const ut::Vector & position)
 void Slider::updateValue()
 {
     _center.setSize({
-        (_size.x * _value) / _value_max,
+        (_size.x * (_value - _value_min)) / (_value_max - _value_min),
         _size.y
     });
 }

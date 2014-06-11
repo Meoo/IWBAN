@@ -50,6 +50,7 @@ private:
     gui::KeyLabel * _key_fire;
     gui::KeyLabel * _key_retry;
 
+    gui::Slider      * _thresh;
     gui::ButtonLabel * _btn_jump;
     gui::ButtonLabel * _btn_fire;
     gui::ButtonLabel * _btn_retry;
@@ -97,7 +98,8 @@ public:
 
         _menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("options.audio")),
-            new gui::Frame(ut::Vector(400, 40), new gui::Slider(ut::Vector(250, 22), 5, 10))
+            new gui::Frame(ut::Vector(400, 40),
+                        new gui::Slider(ut::Vector(250, 22), 0, 100, 10, 50))
         }));
 
         _menu->add(new gui::Line({
@@ -127,6 +129,7 @@ public:
         _menu->add(new gui::Frame(ut::Vector(400, 40), new gui::Choice("options.cancel")));
 
 
+        // ################################################################
         // Keyboard menu
 
         _keyboard_menu = new gui::Menu();
@@ -201,6 +204,7 @@ public:
         _keyboard_menu->add(new gui::Frame(ut::Vector(400, 40), kcancel));
 
 
+        // ################################################################
         // Gamepad menu
 
         _gamepad_menu = new gui::Menu();
@@ -214,9 +218,12 @@ public:
             _gamepad_menu->add(new gui::Frame(ut::Vector(400, 70), title));
         }
 
+        _thresh = new gui::Slider(ut::Vector(250, 22), 5, 95, 9,
+                                    100 - getGamepad().getAxisThreshold());
+        _thresh->setAction([this](unsigned value){ updateThresh(value); });
         _gamepad_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("gamepad.sensibility")),
-            new gui::Frame(ut::Vector(400, 40), new gui::Slider(ut::Vector(250, 22), 5, 10))
+            new gui::Frame(ut::Vector(400, 40), _thresh)
         }));
 
         _btn_jump = new gui::ButtonLabel(getGamepad().getButtonFromAction(ACT_JUMP));
@@ -441,6 +448,11 @@ protected:
         _keyboard_menu->updateChilds();
     }
 
+    void updateThresh(unsigned value)
+    {
+        getGamepad().setAxisThreshold(100 - value);
+    }
+
     void hookGamepad(gui::ButtonLabel * button_label, ActionId action)
     {
         _waiting_input = true;
@@ -463,6 +475,7 @@ protected:
 
     void updateGamepadButtons()
     {
+        _thresh->setValue(100 - getGamepad().getAxisThreshold());
         _btn_jump->setButton(getGamepad().getButtonFromAction(ACT_JUMP));
         _btn_fire->setButton(getGamepad().getButtonFromAction(ACT_FIRE));
         _btn_retry->setButton(getGamepad().getButtonFromAction(ACT_RETRY));

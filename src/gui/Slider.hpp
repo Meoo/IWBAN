@@ -16,8 +16,14 @@ namespace gui
 // A text in a menu
 class Slider : public Element
 {
+public:
+    typedef std::function<void (unsigned)> ActionCallback;
+
+
 private:
     // Data members
+    ActionCallback      _action;
+
     sf::RectangleShape  _border;
     sf::RectangleShape  _center;
 
@@ -26,13 +32,16 @@ private:
     ut::Vector          _position;
     ut::Vector          _size;
 
-    unsigned            _value;
-    unsigned            _value_max;
+    int                 _value;
+    int                 _value_min;
+    int                 _value_max;
+    int                 _step;
 
 
 public:
     // Constructor
-    explicit Slider(const ut::Vector & size, unsigned value, unsigned max_value);
+    explicit Slider(const ut::Vector & size,
+                    int min, int max, int step, int value);
 
     // Functions
     virtual void draw(gfx::DrawContext & context) const;
@@ -42,6 +51,7 @@ public:
 
     virtual bool isSelectable() const { return true; }
 
+    void setAction(const ActionCallback & func) { _action = func; }
     virtual void dispatchAction(sys::ActionId action);
 
     // Accessors
@@ -52,7 +62,8 @@ public:
 
     virtual void setPosition(const ut::Vector & position);
 
-    unsigned getValue() const { return _value; }
+    int getValue() const { return _value; }
+    void setValue(int value) { _value = value; updateValue(); }
 
 
 private:
