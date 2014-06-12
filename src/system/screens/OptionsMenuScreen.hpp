@@ -50,6 +50,9 @@ private:
     gui::KeyLabel * _key_fire;
     gui::KeyLabel * _key_retry;
 
+    // Slider for axis threshold (sensibility)
+    // Value is between 5 and 95, with a step of 9
+    // Since the label says "sensibility", the threshold is the invert, 100 - value
     gui::Slider      * _thresh;
     gui::ButtonLabel * _btn_jump;
     gui::ButtonLabel * _btn_fire;
@@ -77,7 +80,9 @@ public:
         res::getLocale().loadFile("system/keyboard.txt");
 
 
+        // ################################################################
         // Options menu
+        // ################################################################
 
         _menu = new gui::Menu();
         _menu->setPosition(ut::Vector(0, 20));
@@ -131,6 +136,7 @@ public:
 
         // ################################################################
         // Keyboard menu
+        // ################################################################
 
         _keyboard_menu = new gui::Menu();
         _keyboard_menu->setPosition(ut::Vector(0, 20));
@@ -206,6 +212,7 @@ public:
 
         // ################################################################
         // Gamepad menu
+        // ################################################################
 
         _gamepad_menu = new gui::Menu();
         _gamepad_menu->setPosition(ut::Vector(0, 20));
@@ -335,9 +342,11 @@ protected:
                     }
                 }
             }
-        }
+        } // if (!_waiting_input)
         else
         {
+            // If we catch an action while a hook is active, it means
+            // another device sent it.
             if (getControls().getAction(ACT_MENU).isJustActivated())
             {
                 if (_state == ST_GAMEPAD)
@@ -367,8 +376,7 @@ protected:
                     updateKeyboardKeys();
                 }
             }
-        }
-
+        } // else if (!_waiting_input)
     }
 
     virtual void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
