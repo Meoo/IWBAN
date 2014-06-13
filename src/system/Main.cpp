@@ -20,6 +20,8 @@
 
 int main(int argc, char ** argv)
 {
+    IWBAN_LOG_INFO("Version " IWBAN_VERSION " - " __DATE__ " " __TIME__ "\n");
+
     IWBAN_LOG_INFO("Loading configuration\n");
     cfg::load();
     cfg::parseArgs(argc, argv);

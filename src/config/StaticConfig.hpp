@@ -8,6 +8,7 @@
 
 
 #define IWBAN_GAME_NAME         "I Wanna Be The Ninja Master"
+#define IWBAN_VERSION           "D.1"
 
 #define IWBAN_FRAME_WIDTH       640 // px
 #define IWBAN_FRAME_HEIGHT      480 // px
