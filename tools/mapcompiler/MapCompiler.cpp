@@ -6,9 +6,39 @@
 #include <mapcompiler/tinyxml/tinyxml2.h>
 
 #include <iostream>
+#include <map>
 #include <string>
 
 namespace tx = tinyxml2;
+
+typedef std::map<std::string, std::string> Properties;
+
+// Find <properties> in element, and parse all <property> from it
+void parse_properties(const tx::XMLElement * element, Properties & properties)
+{
+    for (const tx::XMLElement * props = element->FirstChildElement("properties");
+            props != 0; props = props->NextSiblingElement("properties"))
+    {
+        // Properties
+        for (const tx::XMLElement * prop = props->FirstChildElement("property");
+            prop != 0; prop = prop->NextSiblingElement("property"))
+        {
+            // Property
+            const char * key    = prop->Attribute("name");
+            const char * value  = prop->Attribute("value");
+
+            if (!key || value)
+            {
+                std::cout << "????? Missing key or value attribute from"
+                          << " property element, ignored ?????" << std::endl;
+                continue;
+            }
+
+            properties[std::string(key)] = std::string(value);
+        }
+    }
+}
+
 
 void print_help()
 {
@@ -56,30 +86,51 @@ int process_file(const char * filename)
         return -1;
     }
 
-    for (tx::XMLElement * props = map->FirstChildElement("properties");
-            props != 0; props = props->NextSiblingElement("properties"))
+    // Properties
+    const char * version    = map->Attribute("version");
+    if (!version || std::string(version) != "1.0")
     {
-        // Properties
-        for (tx::XMLElement * prop = map->FirstChildElement("property");
-            prop != 0; prop = prop->NextSiblingElement("property"))
-        {
-            // Property
-            std::cout << "PROP" << std::endl;
-        }
+        std::cerr << "!!!!! TMX file format version is not good ("
+                  << version << " !!!!!" << std::endl;
+        return -1;
     }
 
+    const char * width      = map->Attribute("width"); // in tiles
+    const char * height     = map->Attribute("height"); // in tiles
+
+    const char * tilewidth  = map->Attribute("tilewidth"); // in pixels
+    const char * tileheight = map->Attribute("tileheight"); // in pixels
+
+    Properties map_props;
+    parse_properties(map, map_props);
+
+    // Parse child elements
     for (tx::XMLElement * tileset = map->FirstChildElement("tileset");
             tileset != 0; tileset = tileset->NextSiblingElement("tileset"))
     {
-        // Tilesets
+        // Tileset
         std::cout << "TSET" << std::endl;
+
+        const char * source = tileset->Attribute("");
+        if (source)
+        {
+            std::cerr << "!!!!! External tilesets not supported !!!!!" << std::endl;
+            return -1;
+        }
+
     }
 
     for (tx::XMLElement * layer = map->FirstChildElement("layer");
             layer != 0; layer = layer->NextSiblingElement("layer"))
     {
-        // Layers
+        // Tiles layer
         std::cout << "LAYER" << std::endl;
+
+        // Properties
+        const char * name = layer->Attribute("name");
+
+        Properties layer_props;
+        parse_properties(map, layer_props);
 
         tx::XMLElement * data = layer->FirstChildElement("data");
         if (!data)
@@ -109,17 +160,34 @@ int process_file(const char * filename)
         }
     }
 
-    for (tx::XMLElement * objs = map->FirstChildElement("objectgroup");
-            objs != 0; objs = objs->NextSiblingElement("objectgroup"))
+    for (tx::XMLElement * objlay = map->FirstChildElement("objectgroup");
+            objlay != 0; objlay = objlay->NextSiblingElement("objectgroup"))
     {
-        // Objects
-        std::cout << "OBJS" << std::endl;
+        // Object layer
+        std::cout << "OBJLAY" << std::endl;
+
+        // Properties
+        const char * name = objlay->Attribute("name");
+
+        Properties objlay_props;
+        parse_properties(objlay, objlay_props);
+
+        for (tx::XMLElement * obj = objlay->FirstChildElement("object");
+                obj != 0; obj = obj->NextSiblingElement("object"))
+        {
+            // Object
+            std::cout << "OBJ" << std::endl;
+
+            // Properties
+            Properties obj_props;
+            parse_properties(obj, obj_props);
+        }
     }
 
     for (tx::XMLElement * img = map->FirstChildElement("imagelayer");
             img != 0; img = img->NextSiblingElement("imagelayer"))
     {
-        // Images
+        // Images are ignored, issue a warning
         std::cout << "????? Image layers are not handled ?????" << std::endl;
     }
 
@@ -158,7 +226,7 @@ int main(int argc, char ** argv)
         }
     }
 
-    // Default behavior : Package folders
+    // Default behavior : Compile maps
     for (int i = 1; i < argc; ++i)
     {
         int ret = process_file(argv[i]);
