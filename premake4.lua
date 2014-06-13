@@ -66,7 +66,8 @@ solution "IWannaBeANinja"
   targetdir( BIN_DIR )
   objdir   ( OBJ_DIR )
 
-  flags { "ExtraWarnings", "FatalWarnings", "NoRTTI" }
+  flags   { "ExtraWarnings", "FatalWarnings", "NoRTTI" }
+  defines { "'__USER__=\"$(USERNAME)\"'" }
 
   if STDLIB_STATIC then
     flags { "StaticRuntime" }
