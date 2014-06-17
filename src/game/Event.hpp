@@ -8,20 +8,17 @@
 
 #include <Global.hpp>
 
+#include <memory>
+
 namespace game
 {
-
-class Entity;
 
 enum EventId
 {
     EVT_DAMAGE,
-    EVT_KILL,
 
     EVT_ENABLE,
     EVT_DISABLE,
-
-    EVT_TOUCH,
 
     EVT_ACTION1,
     EVT_ACTION2,
@@ -37,16 +34,16 @@ class Event
 {
 public:
     Event(const EventId & evt_id)
-        : source(0), event_id(evt_id), param(0)
+        : event_id(evt_id)
     {}
 
-    Entity *    source;
+    EventId                 event_id;
 
-    EventId     event_id;
+    //EntityHandle    source;
 
-    void *      param;
+    uint32_t                int_param;
 
-    // TODO Event delay ?
+    std::unique_ptr<void>   ptr_param;
 
 };
 // class Event

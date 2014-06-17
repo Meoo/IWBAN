@@ -10,10 +10,13 @@
 
 #include <boost/intrusive/list.hpp>
 
+#include <SFML/Graphics.hpp>
+
 namespace gfx
 {
 
-class Drawable : public boost::intrusive::list_base_hook<>
+class Drawable : public sf::Drawable,
+                 public boost::intrusive::list_base_hook<>
 {
 public:
     class Comparator;
@@ -22,26 +25,23 @@ public:
 
 private:
     // Data members
-    int     _render_priority;
+    int     _depth;
 
 
 public:
     // Virtual destructor
     virtual ~Drawable()     {}
 
-    // Virtual functions
-    virtual void draw(gfx::DrawContext & context) = 0;
-
     // Getters / setters
-    int     getPriority() const         { return _render_priority; }
-    void    setPriority(int priority)   { _render_priority = priority; }
+    int     getDepth() const    { return _depth; }
+    void    setDepth(int depth) { _depth = depth; }
 
 
     class Comparator
     {
     public:
         bool operator () (const Drawable & a, const Drawable & b) const
-            { return a.getPriority() < b.getPriority(); }
+            { return a.getDepth() < b.getDepth(); }
     };
     // class Comparator
 

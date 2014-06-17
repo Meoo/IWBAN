@@ -24,10 +24,8 @@
 #define IWBAN_DEFAULT_FONT      "system/poetsen_one.ttf"
 
 
-// Maximum capacity : 4096 entities
-#define IWBAN_ENTS_BLK_SIZE     512
-#define IWBAN_ENTS_BLK_COUNT    16
-#define IWBAN_MAX_ENTITIES      (IWBAN_ENTS_BLK_SIZE * IWBAN_ENTS_BLK_COUNT)
+// Maximum capacity for a World : 1024 entities
+#define IWBAN_MAX_ENTITIES      1024
 
 
 #define IWBAN_UPDATE_RATE       60 // Hz

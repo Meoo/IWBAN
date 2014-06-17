@@ -8,7 +8,12 @@
 
 #include <Global.hpp>
 
-#include <physics/Object.hpp>
+#include <physics/Body.hpp>
+
+#include <utils/Rectangle.hpp>
+#include <utils/Vector.hpp>
+
+#include <functional>
 
 #ifndef NDEBUG
 #  include <graphics/contexts/debug/DebugContext.hpp>
@@ -20,19 +25,34 @@ namespace phy
 class Space
 {
 public:
-    // Data members
-    Object::List    _objects;
+    typedef std::function<void(Body*, Body*)> PairCallback;
 
+    typedef std::function<void(Body*)> RayCallback;
+    typedef std::function<void(Body*)> RectangleCallback;
+
+
+private:
+    // Data members
+    Body::List    _objects;
+
+
+public:
     // Constructor
          Space();
 
     // Functions
-    void add(Object * object);
-    void remove(const Object * object);
+    void add(Body * object);
+    void remove(const Body * object);
 
     void step();
 
-    // TODO updateSingleObject ?
+    void computePairs(const PairCallback & callback) const;
+
+    void testRay(const ut::Vector & begin, const ut::Vector & end,
+                 const RayCallback & callback) const;
+
+    void testRectangle(const ut::Rectangle & rect,
+                       const RectangleCallback & callback) const;
 
 #ifndef NDEBUG
     void drawDebug(gfx::DebugContext & debug_context) const;

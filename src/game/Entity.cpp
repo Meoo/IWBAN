@@ -12,39 +12,47 @@
 namespace game
 {
 
-// ---- ---- ---- ----
-
 void EntityHandle::reset(Entity * entity)
 {
     if (entity)
     {
+        BOOST_ASSERT_MSG(entity->isValid(), "Cannot create a handle to an invalid Entity");
+
+        _world  = &(entity->getWorld());
         _id     = entity->getId();
         _serial = entity->getSerial();
     }
     else
     {
+        _world  = nullptr;
         _id     = Entity::INVALID_ID;
     }
 }
 
 Entity * EntityHandle::get()
 {
-    Entity * e = getWorld().getEntityById(_id);
+    if (!_world)
+        return nullptr;
 
-    if (e->getSerial() == _serial)
+    Entity * e = _world->getEntityById(_id);
+
+    if (e->getSerial() == _serial && e->isValid())
         return e;
 
-    return 0;
+    return nullptr;
 }
 
 const Entity * EntityHandle::get() const
 {
-    Entity * e = getWorld().getEntityById(_id);
+    if (!_world)
+        return nullptr;
 
-    if (e->getSerial() == _serial)
+    Entity * e = _world->getEntityById(_id);
+
+    if (e->getSerial() == _serial && e->isValid())
         return e;
 
-    return 0;
+    return nullptr;
 }
 
 }

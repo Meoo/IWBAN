@@ -16,28 +16,28 @@ Space::Space()
 {
 }
 
-void Space::add(Object * object)
+void Space::add(Body * object)
 {
     object->updateLastPosition();
     _objects.push_back(*object);
 }
 
-void Space::remove(const Object * object)
+void Space::remove(const Body * object)
 {
     _objects.erase(_objects.iterator_to(*object));
 }
 
 void Space::step()
 {
-    for (Object & obj : _objects)
+    for (Body & obj : _objects)
         obj.prepare();
 
-    for (Object & obj : _objects)
+    for (Body & obj : _objects)
         obj.step();
 
     // TODO Build QuadTree
 
-    for (Object & obj : _objects)
+    for (Body & obj : _objects)
     {
         if (!obj.isAwake())
             continue;
@@ -46,7 +46,7 @@ void Space::step()
 
         // TODO Get objects in QuadTree near obj
 
-        for (Object & other : _objects)
+        for (Body & other : _objects)
         {
             if (&obj == &other)
                 continue;
@@ -57,14 +57,14 @@ void Space::step()
     }
 
     // Finish frame by saving last position
-    for (Object & obj : _objects)
+    for (Body & obj : _objects)
         obj.finish();
 }
 
 #ifndef NDEBUG
 void Space::drawDebug(gfx::DebugContext & debug_context) const
 {
-    for (const Object & obj : _objects)
+    for (const Body & obj : _objects)
         obj.drawDebug(debug_context);
 }
 #endif

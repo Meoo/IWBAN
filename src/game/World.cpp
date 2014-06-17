@@ -7,6 +7,8 @@
 
 #include <game/World.hpp>
 
+#include <algorithm> // find_if
+
 namespace game
 {
 
@@ -18,18 +20,21 @@ Entity * World::getEntityById(Entity::Id id)
     if (id == Entity::INVALID_ID)
         return 0;
 
-    PoolNode * n = _entities.at(id);
-    if (n->getValue().in_use)
-        return n->getValue().entity;
+    for (unsigned i = 0; i < IWBAN_MAX_ENTITIES; ++i)
+        _free_slots.push_back(IWBAN_MAX_ENTITIES - i - 1);
 
     return 0;
 }
 
 void World::update()
 {
+    // Tick clock
+    ++_clock;
+
     // TODO We do not do it after update so we can still render entities that just died (MAYBE?)
     cleanDeadEntities();
 
+    // Update entities
     updateEntities();
 
     spawnNewEntities();
@@ -42,141 +47,100 @@ void World::update()
 
     // Collision response
 
+
+    // Pump events
+    pumpEvents();
+
 }
 
 void World::render(gfx::Renderer & renderer) const
 {
-    renderEntities(renderer);
+    // Sort the drawables
+    ut::doubleBubbleSort(_drawables.begin(), _drawables.end(),
+                         gfx::Drawable::Comparator());
+
+    gfx::DrawContext & draw = renderer.openDrawContext();
+
+    // Draw every drawable in the DrawContext
+    for (const gfx::Drawable & drawable : _drawables)
+        draw.draw(drawable);
+
+    draw.close();
+}
+
+void World::queueEvent(Entity * source, Entity * target, EventId event)
+{
+    queueDelayedEvent(source, target, event, 0);
+}
+
+void World::queueDelayedEvent(Entity * source, Entity * target, EventId event, sys::FTimeOffset delay)
+{
+    //Event event_table(event);
+    //sys::FTime time = _clock + delay;
+
+    // Insert before the first event who have a higher time
+    // TODO Start from the end of the list to improve performances a little
+    /*_event_list.insert(std::find_if(_event_list.begin(), _event_list.end(),
+            [time](auto it) { return it->time > time; }
+        ), std::move(event_table));*/
 }
 
 // ---- ---- ---- ----
 
-World::World()
-{
-    _next_serial = 1;
-}
-
 void World::updateEntities()
 {
-    PoolNode * node = _valid_ents_list.getFirst();
-    const void * end = _valid_ents_list.getSentry();
-
-    while (node != end)
+    for (Entity * entity : _entities)
     {
-        // Call update function
-        node->getValue().entity->update();
-
-        node = node->getNext();
+        if (entity && entity->isAlive() && entity->_next_update == _clock)
+            entity->onUpdate();
     }
-}
-
-void World::renderEntities(gfx::Renderer & renderer) const
-{
-    const PoolNode * node = _valid_ents_list.getFirst();
-    const void * end = _valid_ents_list.getSentry();
-
-    while (node != end)
-    {
-        // TODO Sort by render order
-
-        node = node->getNext();
-    }
-
-    // TODO Call render function
-
-    //renderer.beginLight();
-
-    // TODO Call render light function
-
-    //renderer.endLight();
 }
 
 void World::spawnNewEntities()
 {
-    PoolNode * node = _new_ents_list.getFirst();
-    const void * end = _new_ents_list.getSentry();
 
-    // We can create entities within spawn function
-    while (node != end)
-    {
-        // Call spawn function
-        node->getValue().entity->spawn();
-
-        node = node->getNext();
-    }
-
-    // Move all spawned entities to the valid list
-    _valid_ents_list.insertTail(_new_ents_list.getFirst(),
-                                _new_ents_list.getLast());
 }
 
 void World::cleanDeadEntities()
 {
-    PoolNode * node = _valid_ents_list.getFirst();
-    const void * end = _valid_ents_list.getSentry();
 
-    while (node != end)
-    {
-        EntityDesc & desc = node->getValue();
-
-        if (!desc.entity->isAlive())
-        {
-            // TODO Call despawn function or something, and destructor
-
-
-            // Free the descriptor
-            desc.entity = 0;
-            desc.in_use = false;
-
-            PoolNode * dead_node = node;
-            node = node->getNext();
-            _entities.free(dead_node);
-        }
-        else
-            node = node->getNext();
-    }
 }
 
-void World::registerEntity(Entity * entity)
+void World::pumpEvents()
+{
+    /*Event e;
+    while ((e = _event_list.front()).time <= _clock)
+    {
+         _event_list.pop_front();
+
+         // TODO Process event
+         Entity * source;
+         Entity * target;
+
+    }*/
+}
+
+void World::spawnEntity(Entity * entity)
 {
     BOOST_ASSERT_MSG(entity, "Entity cannot be null");
+    BOOST_ASSERT_MSG(!_free_slots.empty(), "No free entity slot");
 
-    PoolNode *      node    = _entities.alloc();
+    Entity::Id id = _free_slots.back();
+    _free_slots.pop_back();
+    _entities[id] = entity;
 
-    Entity::Id      id      = _entities.getIdFromNode(node);
-    Entity::Serial  serial  = _next_serial++;
-    EntityDesc &    desc    = node->getValue();
-
-    // Setup descriptor
-    desc.entity = entity;
-    desc.in_use = true;
-
-    // Move the descriptor to the new list
-    _new_ents_list.insertTail(node);
-
-    // Assign new values to entity
-    entity->setId(id);
-    entity->setSerial(serial);
+    entity->spawn(this, id, _next_serial++);
 }
 
 /*
 void World::unregisterEntity(Entity * entity)
 {
     BOOST_ASSERT_MSG(entity, "Entity cannot be null");
+    BOOST_ASSERT_MSG(_entities[entity->getId()] == entity, "Entity does not belong to this World");
 
-    Entity::Id      id      = entity->getId();
-    PoolNode *      node    = _entities.at(id);
-    EntityDesc &    desc    = node->value;
-
-    BOOST_ASSERT_MSG(id >= 0 && id < IWBAN_MAX_ENTITIES
-                  && id != Entity::INVALID_ID, "Entity id is invalid");
-    BOOST_ASSERT_MSG(desc.entity == entity, "Entity / descriptor mismatch");
-
-    // Free the descriptor
-    desc.entity = 0;
-    desc.in_use = false;
-
-    _entities.free(node);
+    _free_slots.push_back(entity->getId());
+    _entities[entity->getId()] = nullptr;
+    entity->despawn();
 }*/
 
 }

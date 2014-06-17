@@ -11,10 +11,8 @@
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
 
-#include <physics/behaviors/PhysicsBehavior.hpp>
-#include <physics/behaviors/MovingBehavior.hpp>
 #include <physics/Space.hpp>
-#include <physics/Object.hpp>
+#include <physics/Body.hpp>
 #include <physics/shapes/Box.hpp>
 
 #include <gui/Menu.hpp>
@@ -29,21 +27,18 @@ class IntroScreen : public Screen
 protected:
     phy::Space sim;
 
-    phy::Object * pl1;
-    phy::Object * pl2;
+    phy::Body * pl1;
+    phy::Body * pl2;
     bool          pl2_j;
 
-    phy::Object * obj1;
-    phy::Object * obj2;
-    phy::Object * obj3;
-    phy::Object * obj4;
+    phy::Body * obj1;
+    phy::Body * obj2;
+    phy::Body * obj3;
+    phy::Body * obj4;
 
     phy::Box * box;
     phy::Box * box2;
     phy::Box * box3;
-
-    phy::PhysicsBehavior phys;
-    phy::MovingBehavior mov;
 
     std::vector<gfx::ShadowVolume *> shadows;
 
@@ -173,33 +168,33 @@ protected:
         box2 = new phy::Box(rec2);
         box3 = new phy::Box(rec3);
 
-        pl1 = new phy::Object(box, &phys);
+        pl1 = new phy::Body(box, &phys);
         pl1->setSolidityGroup(phy::COL_PLAYER);
         pl1->setCollisionMask(phy::COL_ALL);
         pl1->setPosition(ut::Vector(150, 100));
         pl1->setMass(10.f);
         pl1->wake();
 
-        pl2 = new phy::Object(box, &phys);
+        pl2 = new phy::Body(box, &phys);
         pl2->setSolidityGroup(phy::COL_ENEMY);
         pl2->setCollisionMask(phy::COL_ALL);
         pl2->setPosition(ut::Vector(450, 100));
         pl2->setMass(3.f);
         pl2->wake();
 
-        obj1 = new phy::Object(box3);
+        obj1 = new phy::Body(box3);
         obj1->setSolidityGroup(phy::COL_WORLD);
         obj1->setPosition(ut::Vector(0, 480));
 
-        obj2 = new phy::Object(box2);
+        obj2 = new phy::Body(box2);
         obj2->setSolidityGroup(phy::COL_WORLD);
         obj2->setPosition(ut::Vector(150, 250));
 
-        obj3 = new phy::Object(box2, &mov);
+        obj3 = new phy::Body(box2, &mov);
         obj3->setSolidityGroup(phy::COL_WORLD);
         obj3->setPosition(ut::Vector(400, 250));
 
-        obj4 = new phy::Object(box2, &mov);
+        obj4 = new phy::Body(box2, &mov);
         obj4->setSolidityGroup(phy::COL_WORLD);
         obj4->setPosition(ut::Vector(300, 400));
 

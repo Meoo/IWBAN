@@ -10,85 +10,68 @@
 
 #include <game/Entity.hpp>
 
-#include <graphics/Renderer.hpp> // TODO Fwd decl?
 #include <graphics/Drawable.hpp>
+#include <graphics/Renderer.hpp> // TODO Fwd decl?
 
-#include <utils/IndexedPool.hpp>
+#include <system/Time.hpp>
+
+#include <array>
+#include <list>
+#include <set>
 
 namespace game
 {
 
 class World
 {
-public:
-    // Singleton accessor
-    friend World & game::getWorld();
-
-
 private:
-    // Entity descriptors
-    class EntityDesc
-    {
-    public:
-        Entity *    entity;
-        bool        in_use;
-
-        EntityDesc() : entity(0), in_use(false) {}
-
-    };
-
-    typedef ut::IndexedPool<EntityDesc, IWBAN_ENTS_BLK_SIZE,
-                                        IWBAN_ENTS_BLK_COUNT> EntityDescPool;
-
-    typedef EntityDescPool::Node    PoolNode;
-    typedef EntityDescPool::List    EntityList;
-
     // Data members
-    EntityDescPool  _entities;
+    std::array<Entity *, IWBAN_MAX_ENTITIES> _entities;
 
-    EntityList      _valid_ents_list;
-    EntityList      _new_ents_list;
+    std::vector<unsigned> _free_slots;
 
-    Entity::Serial  _next_serial;
+    Entity::Serial      _next_serial    = 1;
+
+    sys::FTime          _clock;
+
+    std::list<Event>    _event_list;
+
+    gfx::Drawable::List _drawables;
 
 
 public:
+                World() = default;
+
     Entity *    getEntityById(Entity::Id id);
 
     void        update();
 
     void        render(gfx::Renderer & renderer) const;
 
-    // TODO broadcast event
+    void        queueEvent(Entity * source, Entity * target, Event event);
+
+    void        queueDelayedEvent(Entity * source, Entity * target, Event event, sys::FTimeOffset delay);
+
+    sys::FTime  getClock() const { return _clock; }
 
 
 private:
-    // Private constructor for singleton
-            World();
-
+    // Internal functions
     void    updateEntities();
-
-    void    renderEntities(gfx::Renderer & renderer) const;
 
     void    spawnNewEntities();
 
     void    cleanDeadEntities();
 
-    void    registerEntity(Entity * entity);
+    void    pumpEvents();
+
+
+    void    spawnEntity(Entity * entity);
 
     /*TODO void    unregisterEntity(Entity * entity);*/
 
 };
 // class World
-
-// ---- ---- ---- ----
-
-inline
-World & getWorld()
-{
-    static World s_world;
-    return s_world;
-}
 
 }
 // namespace game

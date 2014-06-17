@@ -21,8 +21,6 @@ private:
 
 
 public:
-    // Virtual functions
-    virtual void draw(gfx::DrawContext & context);
 
 };
 // class Sprite

@@ -10,8 +10,6 @@
 
 #include <graphics/Drawable.hpp>
 
-#include <SFML/Graphics.hpp>
-
 namespace gfx
 {
 
@@ -21,11 +19,8 @@ private:
     // Data members
     sf::Sprite _sprite;
 
+
 public:
-    virtual void draw(gfx::Renderer & renderer)
-    {
-        renderer.draw(_sprite);
-    }
 
 };
 // class Sprite

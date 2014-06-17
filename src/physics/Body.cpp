@@ -1,38 +1,35 @@
 /**
- * @file   Object.cpp
+ * @file   Body.cpp
  * @author Bastien Brunnenstein
  */
 
 #include <Global.hpp>
 
-#include <physics/Behavior.hpp>
-#include <physics/Object.hpp>
+#include <physics/Body.hpp>
 #include <physics/Shape.hpp>
 
 namespace phy
 {
 
-Object::Object(const Shape * shape, Behavior * behavior)
-    : _shape(shape), _behavior(behavior),
-    _user_data(0), _mass(0),
-    _solidity_group(COL_NONE), _collision_mask(COL_NONE)
+Body::Body(const Shape * shape)
+    : _shape(shape)
 {
     BOOST_ASSERT(shape);
 }
 
-void Object::move(const ut::Vector & delta)
+void Body::move(const ut::Vector & delta)
 {
     _position += delta;
     wake();
 }
 
-void Object::moveTo(const ut::Vector & position)
+void Body::moveTo(const ut::Vector & position)
 {
     _position = position;
     wake();
 }
 
-void Object::prepare()
+void Body::prepare()
 {
     _updated = false;
 
@@ -40,7 +37,7 @@ void Object::prepare()
         _behavior->prepare(*this);
 }
 
-void Object::step()
+void Body::step()
 {
     if (_updated) return;
 
@@ -61,7 +58,7 @@ void Object::step()
     _updated = true;
 }
 
-void Object::finish()
+void Body::finish()
 {
     updateLastPosition();
 
@@ -69,7 +66,7 @@ void Object::finish()
         _behavior->finish(*this);
 }
 
-void Object::collideWith(Object & other)
+void Body::collideWith(Body & other)
 {
     // Do not perform narrow phase if both objects do not react to collisions
     if (!getBehavior() && !other.getBehavior())
@@ -108,25 +105,25 @@ void Object::collideWith(Object & other)
     }
 }
 
-bool Object::hasParent() const
+bool Body::hasParent() const
 {
     // Cast this as ChildHook and check if linked
     return impl::ChildHook::is_linked();
 }
 
-Object & Object::getParent()
+Body & Body::getParent()
 {
     BOOST_ASSERT(hasParent());
     return *_parent;
 }
 
-const Object & Object::getParent() const
+const Body & Body::getParent() const
 {
     BOOST_ASSERT(hasParent());
     return *_parent;
 }
 
-void Object::setParent(Object & parent)
+void Body::setParent(Body & parent)
 {
     BOOST_ASSERT(!hasParent());
 
@@ -135,7 +132,7 @@ void Object::setParent(Object & parent)
 
 #ifndef NDEBUG
     // This piece of code is horrible, but works as intended
-    const Object * p = &parent;
+    const Body * p = &parent;
     while (p->hasParent())
     {
         BOOST_ASSERT_MSG(p != this, "Circular parenting detected!");
@@ -144,21 +141,21 @@ void Object::setParent(Object & parent)
 #endif
 }
 
-void Object::unsetParent()
+void Body::unsetParent()
 {
     // Cast this as ChildHook and unlink it
     impl::ChildHook::unlink();
     _parent = 0;
 }
 
-void Object::setPosition(const ut::Vector & position)
+void Body::setPosition(const ut::Vector & position)
 {
     _position = position;
     // TODO just_teleported = true;
     wake();
 }
 
-ut::Rectangle Object::getBoundingBox() const
+ut::Rectangle Body::getBoundingBox() const
 {
     ut::Rectangle r = getShape()->getBoundingBox();
     r.x += _position.x;
@@ -166,14 +163,14 @@ ut::Rectangle Object::getBoundingBox() const
     return r;
 }
 
-void Object::setVelocity(const ut::Vector & velocity)
+void Body::setVelocity(const ut::Vector & velocity)
 {
     _velocity = velocity;
     wake();
 }
 
 #ifndef NDEBUG
-void Object::drawDebug(gfx::DebugContext & debug_context) const
+void Body::drawDebug(gfx::DebugContext & debug_context) const
 {
     sf::Color col = getColorFromCollisionGroup(getSolidityGroup());
 
@@ -184,9 +181,9 @@ void Object::drawDebug(gfx::DebugContext & debug_context) const
 }
 #endif
 
-void Object::stepChilds(Object & parent, Behavior * behavior)
+void Body::stepChilds(Body & parent, Behavior * behavior)
 {
-    for (Object & child : _childs)
+    for (Body & child : _childs)
     {
         behavior->stepChild(parent, child);
         child.stepChilds(parent, behavior);
