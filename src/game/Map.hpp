@@ -8,14 +8,48 @@
 
 #include <Global.hpp>
 
+#include <SFML/Graphics.hpp>
+
+#include <map>
+#include <vector>
+
 namespace game
 {
 
 class Map
 {
+public:
+    class EntityDescriptor
+    {
+    public:
+        typedef std::map<std::string, std::string> PropertyMap;
+
+        std::string     class_name;
+        std::string     name;
+
+        PropertyMap     properties;
+
+    };
+    // class EntityDescriptor
+
+    typedef std::vector<EntityDescriptor> DescriptorTable;
+
+    class TerrainChunk
+    {
+    public:
+        // TODO gfx::Material material;
+        sf::VertexArray vertices;
+
+        // TODO Rectangle bounds;
+
+    };
+
+
 private:
     // Data members
-    sf::Color   _ambient_light;
+    sf::Color       _ambient_light;
+
+    DescriptorTable _entity_descriptors;
 
 
 public:

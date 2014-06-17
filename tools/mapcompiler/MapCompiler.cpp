@@ -13,6 +13,31 @@ namespace tx = tinyxml2;
 
 typedef std::map<std::string, std::string> Properties;
 
+class Tileset
+{
+public:
+    unsigned first_gid;
+
+    // TODO Image image;
+
+    Properties properties;
+
+    std::map<unsigned, Tile> tiles;
+
+};
+
+class Tile
+{
+public:
+    // TODO Tileset tileset;
+
+    Properties properties;
+
+};
+// class Tile
+
+typedef std::map<unsigned, Tile> TileDictionnary;
+
 // Find <properties> in element, and parse all <property> from it
 void parse_properties(const tx::XMLElement * element, Properties & properties)
 {
@@ -127,7 +152,7 @@ int process_file(const char * filename)
         std::cout << "LAYER" << std::endl;
 
         // Properties
-        const char * name = layer->Attribute("name");
+        const char * layer_name = layer->Attribute("name");
 
         Properties layer_props;
         parse_properties(map, layer_props);
@@ -167,7 +192,7 @@ int process_file(const char * filename)
         std::cout << "OBJLAY" << std::endl;
 
         // Properties
-        const char * name = objlay->Attribute("name");
+        const char * objlay_name = objlay->Attribute("name");
 
         Properties objlay_props;
         parse_properties(objlay, objlay_props);
@@ -177,6 +202,9 @@ int process_file(const char * filename)
         {
             // Object
             std::cout << "OBJ" << std::endl;
+
+            const char * obj_name = obj->Attribute("name");
+            const char * obj_type = obj->Attribute("type");
 
             // Properties
             Properties obj_props;
