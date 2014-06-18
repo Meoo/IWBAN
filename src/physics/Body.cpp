@@ -29,13 +29,13 @@ void Body::moveTo(const ut::Vector & position)
     wake();
 }
 
-void Body::prepare()
+/*void Body::prepare()
 {
     _updated = false;
 
     if (_behavior)
         _behavior->prepare(*this);
-}
+}*/
 
 void Body::step()
 {
@@ -58,15 +58,15 @@ void Body::step()
     _updated = true;
 }
 
-void Body::finish()
+/*void Body::finish()
 {
     updateLastPosition();
 
     if (_behavior)
         _behavior->finish(*this);
-}
+}*/
 
-void Body::collideWith(Body & other)
+/*void Body::collideWith(Body & other)
 {
     // Do not perform narrow phase if both objects do not react to collisions
     if (!getBehavior() && !other.getBehavior())
@@ -103,9 +103,9 @@ void Body::collideWith(Body & other)
             other.getBehavior()->onCollide(other, *this, data);
         }
     }
-}
+}*/
 
-bool Body::hasParent() const
+/*bool Body::hasParent() const
 {
     // Cast this as ChildHook and check if linked
     return impl::ChildHook::is_linked();
@@ -146,14 +146,14 @@ void Body::unsetParent()
     // Cast this as ChildHook and unlink it
     impl::ChildHook::unlink();
     _parent = 0;
-}
+}*/
 
-void Body::setPosition(const ut::Vector & position)
+/*void Body::setPosition(const ut::Vector & position)
 {
     _position = position;
     // TODO just_teleported = true;
     wake();
-}
+}*/
 
 ut::Rectangle Body::getBoundingBox() const
 {
@@ -163,11 +163,11 @@ ut::Rectangle Body::getBoundingBox() const
     return r;
 }
 
-void Body::setVelocity(const ut::Vector & velocity)
+/*void Body::setVelocity(const ut::Vector & velocity)
 {
     _velocity = velocity;
     wake();
-}
+}*/
 
 #ifndef NDEBUG
 void Body::drawDebug(gfx::DebugContext & debug_context) const
@@ -180,15 +180,6 @@ void Body::drawDebug(gfx::DebugContext & debug_context) const
     getShape()->drawDebug(debug_context, getPosition(), col);
 }
 #endif
-
-void Body::stepChilds(Body & parent, Behavior * behavior)
-{
-    for (Body & child : _childs)
-    {
-        behavior->stepChild(parent, child);
-        child.stepChilds(parent, behavior);
-    }
-}
 
 }
 // namespace phy

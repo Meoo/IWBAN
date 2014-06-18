@@ -22,7 +22,6 @@
 namespace phy
 {
 
-class Behavior;
 class Body;
 class Shape;
 
@@ -56,7 +55,7 @@ namespace impl
 
 // Boost's hooks must use public inheritance
 class Body : public impl::ObjectHook,
-               public impl::ChildHook
+             public impl::ChildHook
 {
 public:
     typedef impl::ObjectList    List;
@@ -84,6 +83,7 @@ private:
 
     ut::Vector      _acceleration;
 
+    // Mass <= 0 means infinite (cannot be moved by other bodies)
     float           _mass           = 0;
 
     CollisionGroup  _solidity_group = COL_NONE;
@@ -104,9 +104,7 @@ public:
     void            move(const ut::Vector & delta);
     void            moveTo(const ut::Vector & position);
 
-    void            prepare();
     void            step();
-    void            finish();
 
     // Getters / setters
     const Shape *   getShape() const                { return _shape; }
@@ -135,10 +133,6 @@ public:
 #ifndef NDEBUG
     void            drawDebug(gfx::DebugContext & debug_context) const;
 #endif
-
-
-protected:
-    void            stepChilds(Body & parent, Behavior * behavior);
 
 };
 // class Object
