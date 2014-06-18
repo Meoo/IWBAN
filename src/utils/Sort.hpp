@@ -27,11 +27,11 @@ void doubleBubbleSort(I begin, I end, C comparator = C())
     while (begin != end)
     {
         // Bubble up
-        i = begin;
-        j = begin + 1;
+        j = begin; // begin + 1
+        i = j++;   // begin
         while (j != end)
         {
-            if (comparator(j, i))
+            if (comparator(*j, *i))
             {
                 std::swap(i, j);
                 done = i;
@@ -48,11 +48,11 @@ void doubleBubbleSort(I begin, I end, C comparator = C())
 
         // Bubble down
         // TODO Will probably crash, since j goes out of bounds when i is begin
-        i = end;
-        j = end - 1;
+        j = end; // end - 1
+        i = j--; // end
         while (i != begin)
         {
-            if (comparator(i, j))
+            if (comparator(*i, *j))
             {
                 std::swap(i, j);
                 done = j;
