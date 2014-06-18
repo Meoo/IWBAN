@@ -48,9 +48,10 @@ public:
 
     void        render(gfx::Renderer & renderer) const;
 
-    void        queueEvent(Entity * source, Entity * target, Event event);
+    void        queueEvent(Entity * source, Entity * target, Event && event);
 
-    void        queueDelayedEvent(Entity * source, Entity * target, Event event, sys::FTimeOffset delay);
+    void        queueDelayedEvent(Entity * source, Entity * target,
+                                  Event && event, sys::FTimeOffset delay);
 
     sys::FTime  getClock() const { return _clock; }
 

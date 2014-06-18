@@ -7,6 +7,8 @@
 
 #include <game/World.hpp>
 
+#include <utils/Sort.hpp>
+
 #include <algorithm> // find_if
 
 namespace game
@@ -68,12 +70,13 @@ void World::render(gfx::Renderer & renderer) const
     draw.close();
 }
 
-void World::queueEvent(Entity * source, Entity * target, EventId event)
+void World::queueEvent(Entity * source, Entity * target, Event && event)
 {
-    queueDelayedEvent(source, target, event, 0);
+    queueDelayedEvent(source, target, std::move(event), 0);
 }
 
-void World::queueDelayedEvent(Entity * source, Entity * target, EventId event, sys::FTimeOffset delay)
+void World::queueDelayedEvent(Entity * source, Entity * target,
+                              Event && event, sys::FTimeOffset delay)
 {
     //Event event_table(event);
     //sys::FTime time = _clock + delay;
