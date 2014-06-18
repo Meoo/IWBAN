@@ -25,7 +25,7 @@ namespace sys
 class IntroScreen : public Screen
 {
 protected:
-    phy::Space sim;
+    /*phy::Space sim;
 
     phy::Body * pl1;
     phy::Body * pl2;
@@ -46,12 +46,12 @@ protected:
     gfx::ShadowVolume * shad1;
     gfx::ShadowVolume * shad2;
 
-    unsigned ticks;
+    unsigned ticks;*/
 
     // Callbacks
     virtual void    onUpdate(const sf::Time & update_time)
     {
-        const float spd = 3.f;
+        /*const float spd = 3.f;
         const float jspd = 8.f;
 
         ut::Vector d = pl1->getVelocity();
@@ -109,12 +109,12 @@ protected:
         shad1->setPosition(obj3->getPosition());
         shad2->setPosition(obj4->getPosition());
 
-        ++ticks;
+        ++ticks;*/
     }
 
     virtual void    onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
     {
-        gfx::LightContext & light = renderer.openLightContext(sf::Color(64, 64, 64));
+        /*gfx::LightContext & light = renderer.openLightContext(sf::Color(64, 64, 64));
         sf::RectangleShape rect(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT));
 
         light.buildShadowMask(pl1->getPosition(), shadows);
@@ -127,22 +127,22 @@ protected:
 
         light.disableShadowMask();
 
-        light.close();
+        light.close();*/
 
         gfx::DrawContext & draw = renderer.openDrawContext();
         draw.fill(sf::Color(28,61,12));
         draw.close();
 
 #ifndef NDEBUG
-        gfx::DebugContext & debug = renderer.openDebugContext();
+        /*gfx::DebugContext & debug = renderer.openDebugContext();
         sim.drawDebug(debug);
-        debug.close();
+        debug.close();*/
 #endif
     }
 
     virtual void    onShow()
     {
-        pl2_j = false;
+        /*pl2_j = false;
 
         ticks = 0;
 
@@ -234,12 +234,12 @@ protected:
 
         shadows.push_back(shad0);
         shadows.push_back(shad1);
-        shadows.push_back(shad2);
+        shadows.push_back(shad2);*/
     }
 
     virtual void    onHide()
     {
-        sim.remove(pl1);
+        /*sim.remove(pl1);
         sim.remove(pl2);
 
         sim.remove(obj1);
@@ -261,7 +261,7 @@ protected:
 
         delete shad0;
         delete shad1;
-        delete shad2;
+        delete shad2;*/
     }
 
 };
