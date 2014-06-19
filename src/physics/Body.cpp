@@ -19,13 +19,13 @@ Body::Body(const Shape * shape)
 
 void Body::move(const ut::Vector & delta)
 {
-    _position += delta;
+    //_position += delta;
     wake();
 }
 
 void Body::moveTo(const ut::Vector & position)
 {
-    _position = position;
+    //_position = position;
     wake();
 }
 
@@ -39,10 +39,10 @@ void Body::moveTo(const ut::Vector & position)
 
 void Body::step()
 {
-    if (_updated) return;
+    /*if (_updated) return;
 
-    if (hasParent())
-        getParent().step();
+    if (getParent())
+        getParent()->step();
 
     if (isAwake())
     {
@@ -55,7 +55,7 @@ void Body::step()
             sleep();
     }
 
-    _updated = true;
+    _updated = true;*/
 }
 
 /*void Body::finish()
@@ -158,8 +158,8 @@ void Body::unsetParent()
 ut::Rectangle Body::getBoundingBox() const
 {
     ut::Rectangle r = getShape()->getBoundingBox();
-    r.x += _position.x;
-    r.y += _position.y;
+    /*r.x += _position.x;
+    r.y += _position.y;*/
     return r;
 }
 
@@ -177,7 +177,8 @@ void Body::drawDebug(gfx::DebugContext & debug_context) const
     if (!isAwake())
         col *= sf::Color(128, 128, 128);
 
-    getShape()->drawDebug(debug_context, getPosition(), col);
+    //getShape()->drawDebug(debug_context, getPosition(), col);
+    getShape()->drawDebug(debug_context, ut::Vector(), col);
 }
 #endif
 

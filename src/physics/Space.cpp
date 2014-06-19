@@ -18,7 +18,7 @@ Space::Space()
 
 void Space::add(Body * object)
 {
-    object->updateLastPosition();
+    //object->updateLastPosition();
     _objects.push_back(*object);
 }
 
@@ -29,15 +29,15 @@ void Space::remove(const Body * object)
 
 void Space::step()
 {
-    for (Body & obj : _objects)
-        obj.prepare();
+    /*for (Body & obj : _objects)
+        obj.prepare();*/
 
     for (Body & obj : _objects)
         obj.step();
 
     // TODO Build QuadTree
 
-    for (Body & obj : _objects)
+    /*for (Body & obj : _objects)
     {
         if (!obj.isAwake())
             continue;
@@ -54,11 +54,11 @@ void Space::step()
             // Narrow phase
             obj.collideWith(other);
         }
-    }
+    }*/
 
     // Finish frame by saving last position
-    for (Body & obj : _objects)
-        obj.finish();
+    /*for (Body & obj : _objects)
+        obj.finish();*/
 }
 
 #ifndef NDEBUG
