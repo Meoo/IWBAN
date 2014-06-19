@@ -36,6 +36,8 @@ private:
     Id              _id     = INVALID_ID;
     Serial          _serial;
 
+    std::string     _name;
+
     bool            _valid  = false;
     bool            _alive  = false;
 
@@ -106,6 +108,20 @@ public:
      * This value is undefined if the Entity is not valid.
      */
     Serial          getSerial() const { return _serial; }
+
+    /**
+     * Get this Entity's name.
+     *
+     * A name is used to target an Entity without knowing it's identifier.
+     */
+    const std::string getName() const { return _name; }
+
+    /**
+     * Set the name of this Entity.
+     *
+     * You cannot change the name of an Entity once it has been spawned in a World.
+     */
+    void            setName(const std::string & name) { BOOST_ASSERT(isValid()); _name = name; }
 
     /**
      * Return true if the Entity is in a valid state.

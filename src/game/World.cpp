@@ -106,7 +106,7 @@ void World::spawnNewEntities()
 
 void World::cleanDeadEntities()
 {
-
+    // despawnEntity(e)
 }
 
 void World::pumpEvents()
@@ -128,23 +128,56 @@ void World::spawnEntity(Entity * entity)
     BOOST_ASSERT_MSG(entity, "Entity cannot be null");
     BOOST_ASSERT_MSG(!_free_slots.empty(), "No free entity slot");
 
+    // Add to Entity table
     Entity::Id id = _free_slots.back();
     _free_slots.pop_back();
     _entities[id] = entity;
 
+    if (!entity->getName().empty())
+    {
+        // Add to Entity index
+        _entity_index.insert({entity->getName(), entity});
+    }
+
     entity->spawn(this, id, _next_serial++);
 }
 
-/*
-void World::unregisterEntity(Entity * entity)
+void World::despawnEntity(Entity * entity)
 {
     BOOST_ASSERT_MSG(entity, "Entity cannot be null");
     BOOST_ASSERT_MSG(_entities[entity->getId()] == entity, "Entity does not belong to this World");
 
+    // Remove from Entity table
     _free_slots.push_back(entity->getId());
     _entities[entity->getId()] = nullptr;
+
+    // Remove from Entity index
+    if (!entity->getName().empty())
+    {
+        // Make sure that one and only one is removed
+        bool removed = false;
+
+        auto range = _entity_index.equal_range(entity->getName());
+        for (auto it = range.first; it != range.second; ++it)
+        {
+            if (it->second == entity)
+            {
+                _entity_index.erase(it);
+                removed = true;
+                break;
+            }
+        }
+
+        if (!removed)
+            IWBAN_LOG_ERROR("Cannot remove Entity %u '%s' from index!\n",
+                            entity->getId(), entity->getName().c_str());
+    }
+
     entity->despawn();
-}*/
+
+    // TODO Delete entity ?
+    delete entity;
+}
 
 }
 // namespace game

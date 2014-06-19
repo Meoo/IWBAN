@@ -17,6 +17,7 @@
 
 #include <array>
 #include <list>
+#include <unordered_map>
 #include <set>
 
 namespace game
@@ -24,9 +25,27 @@ namespace game
 
 class World
 {
+public:
+    class EventEntry
+    {
+    public:
+        EntityHandle    source;
+        // TODO Target : name or handle
+
+        Event           event;
+    };
+    // class EventEntry
+
+    typedef std::list<EventEntry> EventList;
+
+    typedef std::array<Entity *, IWBAN_MAX_ENTITIES> EntityTable;
+    typedef std::unordered_multimap<std::string, Entity *> EntityIndex;
+
+
 private:
     // Data members
-    std::array<Entity *, IWBAN_MAX_ENTITIES> _entities;
+    EntityTable         _entities;
+    EntityIndex         _entity_index;
 
     std::vector<unsigned> _free_slots;
 
@@ -34,7 +53,7 @@ private:
 
     sys::FTime          _clock;
 
-    std::list<Event>    _event_list;
+    EventList           _event_list;
 
     gfx::Drawable::List _drawables;
 
@@ -43,6 +62,8 @@ public:
                 World() = default;
 
     Entity *    getEntityById(Entity::Id id);
+
+    std::vector<Entity *> getEntitiesByName(const std::string & name);
 
     void        update();
 
@@ -59,17 +80,13 @@ public:
 private:
     // Internal functions
     void    updateEntities();
-
     void    spawnNewEntities();
-
     void    cleanDeadEntities();
 
     void    pumpEvents();
 
-
     void    spawnEntity(Entity * entity);
-
-    /*TODO void    unregisterEntity(Entity * entity);*/
+    void    despawnEntity(Entity * entity);
 
 };
 // class World
