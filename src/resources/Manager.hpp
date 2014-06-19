@@ -13,8 +13,9 @@
 #include <system/exceptions/ResourceError.hpp>
 
 #include <boost/type_traits/is_base_of.hpp>
-#include <boost/unordered_map.hpp>
 #include <boost/utility/enable_if.hpp>
+
+#include <unordered_map>
 
 namespace res
 {
@@ -77,7 +78,7 @@ class Manager
 public:
     using   TPtr = typename Resource::PtrTpl<T>;
 
-    typedef boost::unordered::unordered_map<I, T *> ResMap;
+    typedef std::unordered_map<I, T *> ResMap;
 
 private:
     // Data members
