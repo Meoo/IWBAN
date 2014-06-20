@@ -17,12 +17,12 @@ namespace gui
 class Slider : public Element
 {
 public:
-    typedef std::function<void (unsigned)> ActionCallback;
+    typedef std::function<void (unsigned)> ValueCallback;
 
 
 private:
     // Data members
-    ActionCallback      _action;
+    ValueCallback       _action;
 
     sf::RectangleShape  _border;
     sf::RectangleShape  _center;
@@ -51,7 +51,7 @@ public:
 
     virtual bool isSelectable() const { return true; }
 
-    void setAction(const ActionCallback & func) { _action = func; }
+    void setAction(const ValueCallback & func) { _action = func; }
     virtual void dispatchAction(sys::ActionId action);
 
     // Accessors
