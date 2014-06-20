@@ -16,7 +16,7 @@
 namespace cfg
 {
 
-bool        fullscreen      = false;
+unsigned    fullscreen      = 0;
 bool        threading       = true;
 
 float       zoom_multiplier = 0.f;
@@ -44,7 +44,7 @@ void parseArgs(int argc, char ** argv)
 
 void save()
 {
-    // Get keyboard reference for SAVE macro
+    // Get keyboard and gamepad reference for SAVE macro
     sys::Keyboard & keyboard = sys::getKeyboard();
     sys::Gamepad & gamepad = sys::getGamepad();
 
@@ -83,7 +83,7 @@ void save()
 
 void load()
 {
-    // Get keyboard reference for SAVE macro
+    // Get keyboard and gamepad reference for LOAD macro
     sys::Keyboard & keyboard = sys::getKeyboard();
     sys::Gamepad & gamepad = sys::getGamepad();
 
@@ -130,7 +130,14 @@ void load()
     }
     f.close();
 
+
     // Check values
+
+    if (fullscreen > 2)
+    {
+        IWBAN_LOG_WARNING("Invalid value for 'fullscreen', setting to default\n");
+        particles = 0;
+    }
 
     if (language.size() != 2
         || !std::isalpha(language[0])

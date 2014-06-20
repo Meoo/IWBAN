@@ -45,15 +45,20 @@ void Display::open()
 {
     BOOST_ASSERT(!_ready);
 
-    if (cfg::fullscreen)
+    if (cfg::fullscreen == 1)
         // Fullscreen
         _window.create(sf::VideoMode::getFullscreenModes().at(0),
                 IWBAN_GAME_NAME, sf::Style::Fullscreen);
 
+    else if (cfg::fullscreen == 2)
+        // Borderless fullscreen
+        _window.create(sf::VideoMode::getFullscreenModes().at(0),
+                IWBAN_GAME_NAME, sf::Style::None);
+
     else
         // Windowed
         _window.create(sf::VideoMode(cfg::window_width, cfg::window_height),
-                IWBAN_GAME_NAME, sf::Style::Default);
+                IWBAN_GAME_NAME, sf::Style::Titlebar | sf::Style::Close);
 
     // Window properties
     _window.setFramerateLimit(cfg::framerate);
@@ -65,7 +70,8 @@ void Display::open()
     if (win_icon.getSize().x <= 0)
     {
         res::File icon_file = res::openFile("system/icon.png");
-        win_icon.loadFromMemory(icon_file.getData(), icon_file.getSize());
+        if (!win_icon.loadFromMemory(icon_file.getData(), icon_file.getSize()))
+            IWBAN_LOG_ERROR("Unable to load display's icon\n");
     }
     _window.setIcon(win_icon.getSize().x, win_icon.getSize().y,
                 win_icon.getPixelsPtr());
@@ -74,9 +80,13 @@ void Display::open()
     if (bg_tex.getSize().x <= 0)
     {
         res::File bg_file = res::openFile("system/background.png");
-        bg_tex.loadFromMemory(bg_file.getData(), bg_file.getSize());
-        bg_tex.setSmooth(true);
-        bg_tex.setRepeated(true);
+        if (bg_tex.loadFromMemory(bg_file.getData(), bg_file.getSize()))
+        {
+            bg_tex.setSmooth(true);
+            bg_tex.setRepeated(true);
+        }
+        else
+            IWBAN_LOG_ERROR("Unable to load display's background texture\n");
 
         bg_mesh[0].position = sf::Vector2f(0, 0);
         bg_mesh[1].position = sf::Vector2f(1, 0);

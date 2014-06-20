@@ -11,7 +11,12 @@
 namespace cfg
 {
 
-extern bool         fullscreen;
+/**
+ * Fullscreen mode.
+ *
+ * 0 = Windowed. 1 = Fullscreen. 2 = Borderless fullscreen.
+ */
+extern unsigned     fullscreen;
 extern bool         threading;
 
 extern float        zoom_multiplier;
