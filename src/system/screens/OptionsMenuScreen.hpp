@@ -23,6 +23,7 @@
 #include <gui/KeyLabel.hpp>
 #include <gui/Line.hpp>
 #include <gui/Menu.hpp>
+#include <gui/Selector.hpp>
 #include <gui/Separator.hpp>
 #include <gui/Slider.hpp>
 
@@ -36,8 +37,11 @@ class OptionsMenuScreen : public Screen
 private:
     // Data members
     gui::Menu * _menu;
+    gui::Menu * _video_menu;
     gui::Menu * _keyboard_menu;
     gui::Menu * _gamepad_menu;
+
+    gui::Selector * _mode;
 
     sf::Time     _gamepad_state_timer;
     gui::Label * _gamepad_state;
@@ -64,6 +68,7 @@ private:
     enum State
     {
         ST_OPTIONS,
+        ST_VIDEO,
         ST_KEYBOARD,
         ST_GAMEPAD
 
@@ -107,31 +112,78 @@ public:
                         new gui::Slider(ut::Vector(250, 22), 0, 100, 10, 50))
         }));
 
-        _menu->add(new gui::Line({
-            new gui::Frame(ut::Vector(200, 40), new gui::Choice("options.video")),
-            new gui::Separator(ut::Vector(400, 40))
-        }));
+        {
+            gui::Choice * video = new gui::Choice("options.video");
+            video->setAction([this](){ setState(ST_VIDEO); });
+            _menu->add(new gui::Line({
+                new gui::Frame(ut::Vector(200, 40), video),
+                new gui::Separator(ut::Vector(400, 40))
+            }));
+        }
 
-        gui::Choice * keyboard = new gui::Choice("options.keyboard");
-        keyboard->setAction([this](){ setState(ST_KEYBOARD); });
-        _menu->add(new gui::Line({
-            new gui::Frame(ut::Vector(200, 40), keyboard),
-            new gui::Separator(ut::Vector(400, 40))
-        }));
+        {
+            gui::Choice * keyboard = new gui::Choice("options.keyboard");
+            keyboard->setAction([this](){ setState(ST_KEYBOARD); });
+            _menu->add(new gui::Line({
+                new gui::Frame(ut::Vector(200, 40), keyboard),
+                new gui::Separator(ut::Vector(400, 40))
+            }));
+        }
 
-        gui::Choice * gamepad = new gui::Choice("options.gamepad");
-        gamepad->setAction([this](){ setState(ST_GAMEPAD); });
-        _gamepad_state = new gui::Label();
-        _gamepad_state->setCharacterSize(22);
-        _menu->add(new gui::Line({
-            new gui::Frame(ut::Vector(200, 40), gamepad),
-            new gui::Frame(ut::Vector(200, 40), _gamepad_state),
-            new gui::Separator(ut::Vector(200, 40))
-        }));
+        {
+            gui::Choice * gamepad = new gui::Choice("options.gamepad");
+            gamepad->setAction([this](){ setState(ST_GAMEPAD); });
+            _gamepad_state = new gui::Label();
+            _gamepad_state->setCharacterSize(22);
+            _menu->add(new gui::Line({
+                new gui::Frame(ut::Vector(200, 40), gamepad),
+                new gui::Frame(ut::Vector(200, 40), _gamepad_state),
+                new gui::Separator(ut::Vector(200, 40))
+            }));
+        }
 
         _menu->add(new gui::Separator(ut::Vector(400, 40)));
         _menu->add(new gui::Frame(ut::Vector(400, 40), new gui::Choice("options.save")));
         _menu->add(new gui::Frame(ut::Vector(400, 40), new gui::Choice("options.cancel")));
+
+
+        // ################################################################
+        // Video menu
+        // ################################################################
+
+        _video_menu = new gui::Menu();
+        _video_menu->setPosition(ut::Vector(0, 20));
+        _video_menu->setSize(ut::Vector(640, 400));
+        _video_menu->setCentered(true);
+
+        {
+            gui::Label * title = new gui::Label("options.video");
+            title->setCharacterSize(40);
+            _video_menu->add(new gui::Frame(ut::Vector(400, 70), title));
+        }
+
+        _mode = new gui::Selector();
+        _mode->addEntry(0, "video.windowed");
+        _mode->addEntry(1, "video.fullscreen");
+        _mode->addEntry(2, "video.borderless");
+        _mode->setAction([this](int mode){ cfg::fullscreen = mode; });
+        _video_menu->add(new gui::Line({
+            new gui::Frame(ut::Vector(200, 40), new gui::Choice("video.mode")),
+            new gui::Frame(ut::Vector(400, 40), _mode)
+        }));
+
+        {
+            gui::Choice * reset = new gui::Choice("options.defaults");
+            reset->setAction([this](){ /* TODO Video defaults */ });
+            _video_menu->add(new gui::Separator(ut::Vector(400, 10)));
+            _video_menu->add(new gui::Frame(ut::Vector(400, 40), reset));
+        }
+
+        {
+            gui::Choice * cancel = new gui::Choice("options.return");
+            cancel->setAction([this](){ setState(ST_OPTIONS); });
+            _video_menu->add(new gui::Frame(ut::Vector(400, 40), cancel));
+        }
 
 
         // ################################################################
@@ -310,6 +362,10 @@ protected:
                     // TODO Go back to main menu
                     break;
 
+                case ST_VIDEO:
+                    setState(ST_OPTIONS);
+                    break;
+
                 case ST_KEYBOARD:
                     setState(ST_OPTIONS);
                     break;
@@ -330,6 +386,10 @@ protected:
                     {
                     case ST_OPTIONS:
                         _menu->dispatchAction((ActionId) i);
+                        break;
+
+                    case ST_VIDEO:
+                        _video_menu->dispatchAction((ActionId) i);
                         break;
 
                     case ST_KEYBOARD:
@@ -389,6 +449,10 @@ protected:
         {
         case ST_OPTIONS:
             _menu->draw(draw);
+            break;
+
+        case ST_VIDEO:
+            _video_menu->draw(draw);
             break;
 
         case ST_KEYBOARD:
