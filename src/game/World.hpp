@@ -13,6 +13,8 @@
 #include <graphics/Drawable.hpp>
 #include <graphics/Renderer.hpp> // TODO Fwd decl?
 
+#include <physics/Space.hpp>
+
 #include <system/Time.hpp>
 
 #include <array>
@@ -30,9 +32,19 @@ public:
     {
     public:
         EntityHandle    source;
-        // TODO Target : name or handle
+
+        enum
+        {
+            TGT_NAME,
+            TGT_HANDLE
+
+        }               target_type;
+
+        std::string     target_name;
+        EntityHandle    target_handle;
 
         Event           event;
+
     };
     // class EventEntry
 
@@ -48,7 +60,6 @@ private:
     EntityIndex         _entity_index;
 
     std::vector<unsigned> _free_slots;
-
     Entity::Serial      _next_serial    = 1;
 
     sys::FTime          _clock;
@@ -56,6 +67,7 @@ private:
     EventList           _event_list;
 
     gfx::Drawable::List _drawables;
+    phy::Space          _space;
 
 
 public:

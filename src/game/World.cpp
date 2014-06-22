@@ -41,11 +41,17 @@ void World::update()
 
     spawnNewEntities();
 
+    // Update the physical space
+    _space.step();
+
     // Collision detection : Broad phase
+    _space.computePairs([this](const phy::Body & first_body,
+                               const phy::Body & second_body)
+    {
+        // Collision detection : Narrow phase
+        phy::Body::collide(first_body, second_body);
 
-
-    // Collision detection : Narrow phase
-
+    });
 
     // Collision response
 

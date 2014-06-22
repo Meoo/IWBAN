@@ -25,10 +25,11 @@ namespace phy
 class Space
 {
 public:
-    typedef std::function<void(Body*, Body*)> PairCallback;
+    // TODO const?
+    typedef std::function<void(const Body &, const Body &)> PairCallback;
 
-    typedef std::function<void(Body*)> RayCallback;
-    typedef std::function<void(Body*)> RectangleCallback;
+    typedef std::function<void(const Body &)> RayCallback;
+    typedef std::function<void(const Body &)> RectangleCallback;
 
 
 private:

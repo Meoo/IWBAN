@@ -134,6 +134,11 @@ public:
     void            drawDebug(gfx::DebugContext & debug_context) const;
 #endif
 
+    // Static functions
+    static bool     canCollide(const Body & first, const Body & second);
+
+    static void     collide(const Body & first, const Body & second);
+
 };
 // class Object
 
