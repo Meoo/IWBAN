@@ -64,13 +64,13 @@ public:
     // Functions
     const void * getData() const
     {
-        BOOST_ASSERT(isOpen());
+        IWBAN_PRE(isOpen());
         return _impl->getData();
     }
 
     std::size_t getSize() const
     {
-        BOOST_ASSERT(isOpen());
+        IWBAN_PRE(isOpen());
         return _impl->getSize();
     }
 

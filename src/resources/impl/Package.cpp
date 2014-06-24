@@ -81,7 +81,7 @@ PackageMap::iterator loadPackage(const std::string & package)
     auto ret = s_package_map.insert(std::make_pair(package, std::move(entry)));
 
     // TODO Better than that?
-    BOOST_ASSERT(ret.second == true);
+    IWBAN_ASSERT(ret.second);
 
     return ret.first;
 

@@ -40,7 +40,7 @@ private:
     sf::View            render_view;
 
     // Debug variable
-    IWBAN_DEBUG(bool    _ready);
+    IWBAN_DEBUG(bool    d_ready);
 
 
 public:

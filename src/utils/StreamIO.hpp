@@ -23,7 +23,7 @@ namespace ut
 template<typename T> inline
 typename std::add_rvalue_reference<T>::type read(std::istream & stream)
 {
-    BOOST_STATIC_ASSERT(std::is_integral<T>::value);
+    IWBAN_STATIC_ASSERT(std::is_integral<T>::value);
 
     T value;
     stream.read(reinterpret_cast<char *>(&value), sizeof(T));
@@ -51,7 +51,7 @@ std::string && read<std::string>(std::istream & stream)
 template<typename T> inline
 void write(std::ostream & stream, const T & value)
 {
-    BOOST_STATIC_ASSERT(std::is_integral<T>::value);
+    IWBAN_STATIC_ASSERT(std::is_integral<T>::value);
 
     stream.write(reinterpret_cast<const char *>(&value), sizeof(T));
 }

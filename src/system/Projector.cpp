@@ -15,7 +15,7 @@ namespace sys
 Projector::Projector(Screen * screen)
     : _current_screen(screen)
 {
-    BOOST_ASSERT_MSG(screen, "Screen cannot be null");
+    IWBAN_PRE_PTR(screen);
 
     _current_screen->onShow();
 }
@@ -27,7 +27,7 @@ Projector::~Projector()
 
 void Projector::setScreen(Screen * screen)
 {
-    BOOST_ASSERT_MSG(screen, "Screen cannot be null");
+    IWBAN_PRE_PTR(screen);
 
     if (_current_screen == screen) return;
 
@@ -47,7 +47,13 @@ void Projector::update(const sf::Time & update_time)
     Screen * next_screen = _current_screen->getNextScreen();
     if (next_screen)
     {
-        BOOST_ASSERT(next_screen != _current_screen);
+        // Ignore if the next screen is the same as the current
+        if (next_screen == _current_screen)
+        {
+            IWBAN_LOG_ERROR("Old and new screen are the same\n");
+            _current_screen->resetNextScreen();
+            return;
+        }
 
         IWBAN_LOG_INFO("Changing screen\n");
 

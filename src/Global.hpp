@@ -91,4 +91,22 @@
 #  define IWBAN_DEBUG(x) x
 #endif
 
+// ---- ---- ---- ----
+
+// Precondition asserts
+#define IWBAN_PRE(x)                    BOOST_ASSERT(x)
+#define IWBAN_PRE_PTR(x)                BOOST_ASSERT((x) != nullptr)
+#define IWBAN_PRE_RANGE(x, min, max)    BOOST_ASSERT((x) >= min && (x) < max)
+#define IWBAN_PRE_MSG(x, msg)           BOOST_ASSERT_MSG(x, msg)
+
+// Normal asserts
+#define IWBAN_ASSERT(x)                 BOOST_ASSERT(x)
+#define IWBAN_ASSERT_MSG(x, msg)        BOOST_ASSERT_MSG(x, msg)
+
+// Assert, and always execute (even in release mode)
+#define IWBAN_VERIFY(x)                 BOOST_VERIFY(x)
+
+// Static assert
+#define IWBAN_STATIC_ASSERT(x)          BOOST_STATIC_ASSERT(x)
+
 #endif // _IWBAN_GLOBAL_HPP_

@@ -20,7 +20,8 @@ Keyboard::Keyboard(Controls & controls)
 
 void Keyboard::mapKeyToAction(sf::Keyboard::Key key, ActionId action)
 {
-    BOOST_ASSERT(key < sf::Keyboard::KeyCount && action < ACT_COUNT);
+    IWBAN_PRE_RANGE(key, 0, sf::Keyboard::KeyCount);
+    IWBAN_PRE(action < ACT_COUNT);
 
     // Ignore navigation actions
     if (action == ACT_ACCEPT || action == ACT_CANCEL || action == ACT_MENU)
@@ -57,7 +58,7 @@ void Keyboard::mapKeyToAction(sf::Keyboard::Key key, ActionId action)
 
 void Keyboard::unmapKey(sf::Keyboard::Key key)
 {
-    BOOST_ASSERT(key < sf::Keyboard::KeyCount);
+    IWBAN_PRE_RANGE(key, 0, sf::Keyboard::KeyCount);
 
     ActionId action = _key_to_action[key];
 
@@ -70,7 +71,7 @@ void Keyboard::unmapKey(sf::Keyboard::Key key)
 
 void Keyboard::unmapAction(ActionId action)
 {
-    BOOST_ASSERT(action < ACT_COUNT);
+    IWBAN_PRE(action < ACT_COUNT);
 
     sf::Keyboard::Key key = _action_to_key[action];
 
@@ -100,14 +101,14 @@ void Keyboard::reloadDefaults()
 
 sf::Keyboard::Key Keyboard::getKeyFromAction(ActionId action)
 {
-    BOOST_ASSERT(action < ACT_COUNT);
+    IWBAN_PRE(action < ACT_COUNT);
 
     return _action_to_key[action];
 }
 
 void Keyboard::onKeyPressed(sf::Keyboard::Key key)
 {
-    BOOST_ASSERT(key >= 0 && key < sf::Keyboard::KeyCount);
+    IWBAN_PRE_RANGE(key, 0, sf::Keyboard::KeyCount);
 
     // Catch the first key pressed if asked for
     if (_catch_hook)
@@ -178,7 +179,7 @@ void Keyboard::onKeyPressed(sf::Keyboard::Key key)
 
 void Keyboard::onKeyReleased(sf::Keyboard::Key key)
 {
-    BOOST_ASSERT(key >= 0 && key < sf::Keyboard::KeyCount);
+    IWBAN_PRE_RANGE(key, 0, sf::Keyboard::KeyCount);
 
     // Find the action ID from either static configuration
     // or key mappings

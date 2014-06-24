@@ -36,14 +36,14 @@ namespace sys
 Display::Display()
     : bg_mesh(sf::Quads, 4)
 {
-    IWBAN_DEBUG(_ready = false);
+    IWBAN_DEBUG(d_ready = false);
 }
 
 // ---- ---- ---- ----
 
 void Display::open()
 {
-    BOOST_ASSERT(!_ready);
+    IWBAN_PRE(!d_ready);
 
     if (cfg::fullscreen == 1)
         // Fullscreen
@@ -97,7 +97,7 @@ void Display::open()
         bg_view.setSize(1, 1);
     }
 
-    IWBAN_DEBUG(_ready = true);
+    IWBAN_DEBUG(d_ready = true);
 }
 // Display::open()
 
@@ -105,18 +105,18 @@ void Display::open()
 
 void Display::close()
 {
-    BOOST_ASSERT(_ready);
+    IWBAN_PRE(d_ready);
 
     _window.close();
 
-    IWBAN_DEBUG(_ready = false);
+    IWBAN_DEBUG(d_ready = false);
 }
 
 // ---- ---- ---- ----
 
 void Display::run(sys::Projector & projector)
 {
-    BOOST_ASSERT(_ready);
+    IWBAN_PRE(d_ready);
 
     updateSceneView();
 

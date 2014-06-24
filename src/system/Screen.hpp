@@ -53,7 +53,7 @@ protected:
      * The screen will be changed right after the function onUpdate() returns.
      */
     void    setNextScreen(Screen * next_screen)
-        { BOOST_ASSERT(next_screen); _next_screen = next_screen; }
+        { IWBAN_PRE_PTR(next_screen); _next_screen = next_screen; }
 
     /**
      * Mark this Screen to be released when the screen changes.
@@ -62,7 +62,7 @@ protected:
      *      or an assertion will be raised.
      */
     void    dispose()
-        { BOOST_ASSERT(_next_screen); _disposable = true; }
+        { IWBAN_PRE(_next_screen); _disposable = true; }
 
 
 private:

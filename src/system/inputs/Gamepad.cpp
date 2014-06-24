@@ -20,7 +20,8 @@ Gamepad::Gamepad(Controls & controls)
 
 void Gamepad::mapButtonToAction(Button button, ActionId action)
 {
-    BOOST_ASSERT(button < sf::Joystick::ButtonCount && action < ACT_COUNT);
+    IWBAN_PRE(button < sf::Joystick::ButtonCount);
+    IWBAN_PRE(action < ACT_COUNT);
 
     // Ignore navigation actions
     if (action == ACT_ACCEPT || action == ACT_CANCEL || action == ACT_MENU)
@@ -40,7 +41,7 @@ void Gamepad::mapButtonToAction(Button button, ActionId action)
 
 void Gamepad::unmapButton(Button button)
 {
-    BOOST_ASSERT(button < sf::Joystick::ButtonCount);
+    IWBAN_PRE(button < sf::Joystick::ButtonCount);
 
     ActionId action = _button_to_action[button];
 
@@ -53,7 +54,7 @@ void Gamepad::unmapButton(Button button)
 
 void Gamepad::unmapAction(ActionId action)
 {
-    BOOST_ASSERT(action < ACT_COUNT);
+    IWBAN_PRE(action < ACT_COUNT);
 
     Button button = _action_to_button[action];
 
@@ -85,14 +86,14 @@ void Gamepad::reloadDefaults()
 
 unsigned Gamepad::getButtonFromAction(ActionId action)
 {
-    BOOST_ASSERT(action < ACT_COUNT);
+    IWBAN_PRE(action < ACT_COUNT);
 
     return _action_to_button[action];
 }
 
 void Gamepad::onButtonPressed(unsigned button)
 {
-    BOOST_ASSERT(button < sf::Joystick::ButtonCount);
+    IWBAN_PRE(button < sf::Joystick::ButtonCount);
 
     if (_catch_hook)
     {
@@ -129,7 +130,7 @@ void Gamepad::onButtonPressed(unsigned button)
 
 void Gamepad::onButtonReleased(unsigned button)
 {
-    BOOST_ASSERT(button < sf::Joystick::ButtonCount);
+    IWBAN_PRE(button < sf::Joystick::ButtonCount);
 
     // Navigation configuration is fixed
     switch (button)
