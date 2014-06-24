@@ -27,38 +27,19 @@ class Shape;
 
 namespace impl
 {
-    class ListTag {};
-
-    typedef boost::intrusive::list_base_hook<
-        boost::intrusive::tag<ListTag> > ObjectHook;
-
-    typedef boost::intrusive::list<Body,
-        boost::intrusive::base_hook<ObjectHook> > ObjectList;
-
-
-    // ---- ---- ---- ----
-
+    // Use intrusive linked lists for child list
     class ChildTag {};
-
-    // Child-list must support auto-unlink feature ...
     typedef boost::intrusive::list_base_hook<
-        boost::intrusive::base_hook<ChildTag>,
-        boost::intrusive::link_mode<boost::intrusive::auto_unlink> > ChildHook;
-
-    // ... so constant size = false is required too
+        boost::intrusive::base_hook<ChildTag> >     ChildHook;
     typedef boost::intrusive::list<Body,
-        boost::intrusive::base_hook<ChildHook>,
-        boost::intrusive::constant_time_size<false> > ChildList;
-
+        boost::intrusive::base_hook<ChildHook> >    ChildList;
 }
 // namespace impl
 
-// Boost's hooks must use public inheritance
-class Body : public impl::ObjectHook,
-             public impl::ChildHook
+// TODO Boost's hooks must use public inheritance?
+class Body : public impl::ChildHook
 {
 public:
-    typedef impl::ObjectList    List;
     typedef impl::ChildList     ChildList;
 
     class State
@@ -106,12 +87,15 @@ public:
 
     void            step();
 
+    // TODO Add wake everytime any property is modified
     // Getters / setters
     const Shape *   getShape() const                { return _shape; }
     void            setShape(const Shape * shape)   { BOOST_ASSERT(shape); _shape = shape; }
 
     Body *          getParent()                     { return _parent; }
-    const Body *    getParent() const               { return _parent; }  // TODO Handle child list too
+    const Body *    getParent() const               { return _parent; }
+
+    // TODO Handle child list too, and wake
     void            setParent(Body * parent)        { _parent = parent; }
 
     float           getMass() const                 { return _mass; }
@@ -123,9 +107,9 @@ public:
     CollisionGroup  getCollisionMask() const                { return _collision_mask; }
     void            setCollisionMask(CollisionGroup mask)   { _collision_mask = mask; }
 
-    bool            isAwake() const         { return _awake; }
-    void            sleep()                 { _awake = false; }
-    void            wake()                  { _awake = true; }
+    bool            isAwake() const                 { return _awake; }
+    void            sleep()                         { _awake = false; }
+    void            wake()                          { _awake = true; }
 
     ut::Rectangle   getBoundingBox() const;
 
@@ -135,8 +119,19 @@ public:
 #endif
 
     // Static functions
+    /**
+     * Check if two bodies can collide.
+     *
+     * Use this function to check roughly if two objects can collide before
+     * using #collide to perform a more precise collision detection.
+     */
     static bool     canCollide(const Body & first, const Body & second);
 
+    /**
+     * Perform fine collision detection.
+     *
+     * You should call #canCollide on the two bodies first.
+     */
     static void     collide(const Body & first, const Body & second);
 
 };

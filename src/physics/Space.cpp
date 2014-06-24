@@ -16,15 +16,21 @@ Space::Space()
 {
 }
 
-void Space::add(Body * object)
+void Space::add(Body * body)
 {
-    //object->updateLastPosition();
-    _objects.push_back(*object);
+    IWBAN_PRE_PTR(body);
+
+    // TODO object->updateLastPosition(); ?
+    auto ret = _bodies.insert(body);
+
+    IWBAN_ASSERT(ret.second);
 }
 
-void Space::remove(const Body * object)
+void Space::remove(Body * body)
 {
-    _objects.erase(_objects.iterator_to(*object));
+    IWBAN_PRE_PTR(body);
+
+    IWBAN_VERIFY(_bodies.erase(body));
 }
 
 void Space::step()
@@ -32,8 +38,8 @@ void Space::step()
     /*for (Body & obj : _objects)
         obj.prepare();*/
 
-    for (Body & obj : _objects)
-        obj.step();
+    for (Body * body : _bodies)
+        body->step();
 
     // TODO Build QuadTree
 
@@ -64,8 +70,8 @@ void Space::step()
 #ifndef NDEBUG
 void Space::drawDebug(gfx::DebugContext & debug_context) const
 {
-    for (const Body & obj : _objects)
-        obj.drawDebug(debug_context);
+    for (const Body * body : _bodies)
+        body->drawDebug(debug_context);
 }
 #endif
 

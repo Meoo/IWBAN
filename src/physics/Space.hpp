@@ -14,6 +14,7 @@
 #include <utils/Vector.hpp>
 
 #include <functional>
+#include <set>
 
 #ifndef NDEBUG
 #  include <graphics/contexts/debug/DebugContext.hpp>
@@ -25,16 +26,17 @@ namespace phy
 class Space
 {
 public:
-    // TODO const?
     typedef std::function<void(const Body &, const Body &)> PairCallback;
 
     typedef std::function<void(const Body &)> RayCallback;
     typedef std::function<void(const Body &)> RectangleCallback;
 
+    typedef std::set<Body *>    BodyList;
+
 
 private:
     // Data members
-    Body::List    _objects;
+    BodyList    _bodies;
 
 
 public:
@@ -42,8 +44,8 @@ public:
          Space();
 
     // Functions
-    void add(Body * object);
-    void remove(const Body * object);
+    void add(Body * body);
+    void remove(Body * body);
 
     void step();
 
