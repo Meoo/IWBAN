@@ -49,7 +49,7 @@ public:
 
     void step();
 
-    void computePairs(const PairCallback & callback) const;
+    void computePairs(const PairCallback & callback) const { /* TODO */ }
 
     void testRay(const ut::Vector & begin, const ut::Vector & end,
                  const RayCallback & callback) const;
