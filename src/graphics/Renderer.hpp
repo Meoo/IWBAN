@@ -9,6 +9,7 @@
 #include <Global.hpp>
 
 #include <graphics/contexts/DrawContext.hpp>
+#include <graphics/contexts/GuiContext.hpp>
 #include <graphics/contexts/LightContext.hpp>
 
 #ifndef NDEBUG
@@ -28,20 +29,25 @@ private:
 
     Context *           _current_context;
 
-    DrawContext *       _draw_context;
+    DrawContext *       _draw_context = nullptr;
     bool                _draw_enabled;
 
-    LightContext *      _light_context;
+    LightContext *      _light_context = nullptr;
     bool                _light_enabled;
 
+    GuiContext *        _gui_context = nullptr;
+    bool                _gui_enabled;
+
 #ifndef NDEBUG
-    DebugContext *      _debug_context;
+    DebugContext *      _debug_context = nullptr;
     bool                _debug_enabled;
 #endif
 
+    bool                _flushed;
+
     sf::Shader          _light_mix;
 
-    IWBAN_DEBUG(bool    _active);
+    IWBAN_DEBUG(bool    d_active);
 
 
 public:
@@ -49,12 +55,16 @@ public:
     Renderer(sf::RenderTarget & target);
 
     // Functions
-    DrawContext & openDrawContext();
+    DrawContext &   openDrawContext();
 
-    LightContext & openLightContext(const sf::Color & ambient_light);
+    LightContext &  openLightContext(const sf::Color & ambient_light);
+
+    // Gui context must be opened last
+    GuiContext &    openGuiContext();
 
 #ifndef NDEBUG
-    DebugContext & openDebugContext();
+    // Debug context can be opened at any time (even after Gui)
+    DebugContext &  openDebugContext();
 #endif
 
     void reloadConfiguration();
@@ -62,6 +72,11 @@ public:
     void begin();
 
     void end();
+
+
+private:
+    // Flush draw and light contexts to the screen
+    void flushDrawLight();
 
 };
 // class Renderer

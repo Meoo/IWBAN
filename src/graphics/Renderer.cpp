@@ -17,9 +17,9 @@ namespace gfx
 {
 
 Renderer::Renderer(sf::RenderTarget & target)
-    : _target(target), _current_context(0), _draw_context(0), _light_context(0)
+    : _target(target)
 {
-    IWBAN_DEBUG(_active = false);
+    IWBAN_DEBUG(d_active = false);
 
     // TODO Use resource manager for shaders
     // Light mix
@@ -39,11 +39,12 @@ Renderer::Renderer(sf::RenderTarget & target)
 
 DrawContext & Renderer::openDrawContext()
 {
-    BOOST_ASSERT_MSG(_active, "Cannot open a context while the Renderer is inactive");
-    BOOST_ASSERT_MSG(!_draw_enabled, "Cannot open a context twice in a frame");
+    IWBAN_PRE(d_active);
+    IWBAN_PRE_MSG(!_draw_enabled, "Cannot open a context twice in a frame");
+    IWBAN_PRE_MSG(!_gui_enabled, "Cannot open draw context after gui context");
 
-    BOOST_ASSERT_MSG(!_current_context || !_current_context->isOpen(),
-                     "You must close the current context before opening another");
+    IWBAN_PRE_MSG(!_current_context || !_current_context->isOpen(),
+                  "You must close the current context before opening another");
 
     _draw_enabled = true;
     _draw_context->open();
@@ -53,11 +54,12 @@ DrawContext & Renderer::openDrawContext()
 
 LightContext & Renderer::openLightContext(const sf::Color & ambient_light)
 {
-    BOOST_ASSERT_MSG(_active, "Cannot open a context while the Renderer is inactive");
-    BOOST_ASSERT_MSG(!_light_enabled, "Cannot open a context twice in a frame");
+    IWBAN_PRE(d_active);
+    IWBAN_PRE_MSG(!_light_enabled, "Cannot open a context twice in a frame");
+    IWBAN_PRE_MSG(!_gui_enabled, "Cannot open light context after gui context");
 
-    BOOST_ASSERT_MSG(!_current_context || !_current_context->isOpen(),
-                     "You must close the current context before opening another");
+    IWBAN_PRE_MSG(!_current_context || !_current_context->isOpen(),
+                  "You must close the current context before opening another");
 
     _light_enabled = true;
     _light_context->open(ambient_light);
@@ -65,14 +67,31 @@ LightContext & Renderer::openLightContext(const sf::Color & ambient_light)
     return *_light_context;
 }
 
+GuiContext & Renderer::openGuiContext()
+{
+    IWBAN_PRE(d_active);
+    IWBAN_PRE_MSG(!_gui_enabled, "Cannot open a context twice in a frame");
+
+    IWBAN_PRE_MSG(!_current_context || !_current_context->isOpen(),
+                  "You must close the current context before opening another");
+
+    // Flush draw and light before drawing gui
+    flushDrawLight();
+
+    _gui_enabled = true;
+    _gui_context->open();
+    _current_context = _gui_context;
+    return *_gui_context;
+}
+
 #ifndef NDEBUG
 DebugContext & Renderer::openDebugContext()
 {
-    BOOST_ASSERT_MSG(_active, "Cannot open a context while the Renderer is inactive");
-    BOOST_ASSERT_MSG(!_debug_enabled, "Cannot open a context twice in a frame");
+    IWBAN_PRE(d_active);
+    IWBAN_PRE_MSG(!_debug_enabled, "Cannot open a context twice in a frame");
 
-    BOOST_ASSERT_MSG(!_current_context || !_current_context->isOpen(),
-                     "You must close the current context before opening another");
+    IWBAN_PRE_MSG(!_current_context || !_current_context->isOpen(),
+                  "You must close the current context before opening another");
 
     _debug_enabled = true;
     _debug_context->open();
@@ -83,10 +102,11 @@ DebugContext & Renderer::openDebugContext()
 
 void Renderer::reloadConfiguration()
 {
-    BOOST_ASSERT_MSG(!_active, "Cannot reload configuration while the Renderer is active");
+    IWBAN_PRE(!d_active);
 
     delete _draw_context;
     delete _light_context;
+    delete _gui_context;
 
     _draw_context = new DrawContext();
 
@@ -95,27 +115,48 @@ void Renderer::reloadConfiguration()
     else
         _light_context = new impl::QuickLightContext();
 
+    _gui_context = new GuiContext(_target);
+
     IWBAN_DEBUG(_debug_context = new DebugContext());
 }
 
 void Renderer::begin()
 {
-    BOOST_ASSERT_MSG(!_active, "Renderer is already active");
+    IWBAN_PRE(!d_active);
 
-    _draw_enabled = false;
-    _light_enabled = false;
+    _current_context = nullptr;
+
+    _draw_enabled   = false;
+    _light_enabled  = false;
+    _gui_enabled    = false;
 
     IWBAN_DEBUG(_debug_enabled = false);
 
-    IWBAN_DEBUG(_active = true);
+    _flushed        = false;
+
+    IWBAN_DEBUG(d_active = true);
 }
 
 void Renderer::end()
 {
-    BOOST_ASSERT_MSG(_active, "Renderer is already inactive");
+    IWBAN_PRE(d_active);
 
-    BOOST_ASSERT_MSG(!_current_context || !_current_context->isOpen(),
-                     "You must close the current context in order to finish rendering");
+    IWBAN_PRE_MSG(!_current_context || !_current_context->isOpen(),
+                  "You must close the current context in order to finish rendering");
+
+    flushDrawLight();
+
+#ifndef NDEBUG
+    if (_debug_enabled)
+        _target.draw(sf::Sprite(_debug_context->getTexture()));
+#endif
+
+    IWBAN_DEBUG(d_active = false);
+}
+
+void Renderer::flushDrawLight()
+{
+    if (_flushed) return;
 
     if (_draw_enabled)
     {
@@ -134,12 +175,7 @@ void Renderer::end()
         _target.draw(sprite, state);
     }
 
-#ifndef NDEBUG
-    if (_debug_enabled)
-        _target.draw(sf::Sprite(_debug_context->getTexture()));
-#endif
-
-    IWBAN_DEBUG(_active = false);
+    _flushed = true;
 }
 
 }

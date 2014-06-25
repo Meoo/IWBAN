@@ -34,7 +34,7 @@ DrawContext::DrawContext()
 void DrawContext::draw(const sf::Drawable & drawable,
                        const sf::RenderStates & states)
 {
-    BOOST_ASSERT(_open);
+    IWBAN_PRE(_open);
 
     _render_scene.draw(drawable, states);
 }
@@ -42,7 +42,7 @@ void DrawContext::draw(const sf::Drawable & drawable,
 void DrawContext::fill(const sf::Color & color,
                        const sf::RenderStates & states)
 {
-    BOOST_ASSERT(_open);
+    IWBAN_PRE(_open);
 
     sf::RectangleShape rect(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT));
     rect.setFillColor(color);
@@ -51,7 +51,7 @@ void DrawContext::fill(const sf::Color & color,
 
 void DrawContext::open()
 {
-    BOOST_ASSERT(!_open);
+    IWBAN_PRE(!_open);
 
 #ifndef NDEBUG
     _render_scene.clear(sf::Color(
@@ -65,7 +65,7 @@ void DrawContext::open()
 
 void DrawContext::close()
 {
-    BOOST_ASSERT(_open);
+    IWBAN_PRE(_open);
 
     _render_scene.display();
 
