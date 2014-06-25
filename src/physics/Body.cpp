@@ -145,10 +145,6 @@ void Body::drawDebug(gfx::DebugContext & debug_context) const
 
 bool Body::canCollide(const Body & first, const Body & secnd)
 {
-/* TODO    // Do not perform narrow phase if both objects do not react to collisions
-    if (!first.getBehavior() && !second.getBehavior())
-        return false;
-
     // Collision groups
     CollisionGroup first_mask = secnd.getSolidityGroup() & first.getCollisionMask();
     CollisionGroup secnd_mask = first.getSolidityGroup() & secnd.getCollisionMask();
@@ -158,7 +154,7 @@ bool Body::canCollide(const Body & first, const Body & secnd)
 
     // Check intersection between objects (before a more precise computation)
     if (!ut::hasIntersection(first.getBoundingBox(), secnd.getBoundingBox()))
-        return false;*/
+        return false;
 
     return true;
 }
