@@ -23,7 +23,6 @@
 #include <gui/KeyLabel.hpp>
 #include <gui/Line.hpp>
 #include <gui/Menu.hpp>
-#include <gui/Selector.hpp>
 #include <gui/Separator.hpp>
 #include <gui/Slider.hpp>
 
@@ -40,8 +39,6 @@ private:
     gui::Menu * _video_menu;
     gui::Menu * _keyboard_menu;
     gui::Menu * _gamepad_menu;
-
-    gui::Selector * _mode;
 
     sf::Time     _gamepad_state_timer;
     gui::Label * _gamepad_state;
@@ -162,7 +159,7 @@ public:
             _video_menu->add(new gui::Frame(ut::Vector(400, 70), title));
         }
 
-        _mode = new gui::Selector();
+        /* TODO _mode = new gui::Selector();
         _mode->addEntry(0, "video.windowed");
         _mode->addEntry(1, "video.fullscreen");
         _mode->addEntry(2, "video.borderless");
@@ -170,7 +167,7 @@ public:
         _video_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("video.mode")),
             new gui::Frame(ut::Vector(400, 40), _mode)
-        }));
+        }));*/
 
         {
             gui::Choice * reset = new gui::Choice("options.defaults");
