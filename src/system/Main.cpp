@@ -67,7 +67,7 @@ int main(int argc, char ** argv)
         }
         catch (const sys::Exception & exception)
         {
-            IWBAN_LOG_ERROR("%s : %s\n", exception.title(), exception.what());
+            IWBAN_LOG_CRITICAL("%s : %s\n", exception.title(), exception.what());
 
             // IWBAN exception caught
             projector.setScreen(
@@ -75,7 +75,7 @@ int main(int argc, char ** argv)
         }
         catch (const std::exception & exception)
         {
-            IWBAN_LOG_ERROR("Exception : %s\n", exception.what());
+            IWBAN_LOG_CRITICAL("Exception : %s\n", exception.what());
 
             // Standard exception caught
             projector.setScreen(
@@ -83,7 +83,7 @@ int main(int argc, char ** argv)
         }
         catch (...)
         {
-            IWBAN_LOG_ERROR("Unknown exception caught\n");
+            IWBAN_LOG_CRITICAL("Unknown exception caught\n");
 
             // Unknown exception caught
             projector.setScreen(
