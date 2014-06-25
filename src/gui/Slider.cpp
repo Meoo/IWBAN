@@ -84,6 +84,14 @@ void Slider::setPosition(const ut::Vector & position)
     _center.setPosition(position);
 }
 
+void Slider::refresh()
+{
+    _center.setSize({
+        (_size.x * (_value - _value_min)) / (_value_max - _value_min),
+        _size.y
+    });
+}
+
 void Slider::updateValue()
 {
     _center.setSize({

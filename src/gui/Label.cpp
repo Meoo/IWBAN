@@ -18,7 +18,8 @@ Label::Label()
 }
 
 Label::Label(const std::string & string_key)
-    : _text(res::getLocale().getString(string_key),
+    : _key(string_key),
+      _text(res::getLocale().getString(string_key),
             res::getLocale().getFont())
 {
 }
@@ -27,10 +28,11 @@ void Label::draw(gfx::GuiContext & context) const
 {
     sf::Text text(_text);
     sf::FloatRect rect = text.getLocalBounds();
+    unsigned sz = text.getCharacterSize();
 
     // Cast to int then back to float to get pixel-aligned
-    text.setPosition((int) (_position.x + _margin.x - rect.left),
-                     (int) (_position.y + _margin.y - rect.top));
+    text.setPosition((int) (_position.x - rect.width / 2 - rect.left),
+                     (int) (_position.y - sz / 2 - rect.top));
 
     if (_shadow)
     {
@@ -45,15 +47,16 @@ void Label::draw(gfx::GuiContext & context) const
     context.draw(text);
 }
 
-ut::Vector Label::getSize() const
-{
-    sf::FloatRect rect = _text.getLocalBounds();
-    return ut::Vector(rect.width, rect.height) + _margin * 2;
-}
-
 void Label::setText(const std::string & string_key)
 {
+    _key = string_key;
     _text.setString(res::getLocale().getString(string_key));
+}
+
+void Label::refresh()
+{
+    if (!_key.empty())
+        _text.setString(res::getLocale().getString(_key));
 }
 
 }

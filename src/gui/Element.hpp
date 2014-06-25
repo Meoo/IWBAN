@@ -19,29 +19,16 @@ namespace gui
 
 class Element
 {
-private:
-    // Data members
-    bool    _selected = false;
-
-
 public:
     // Virtual destructor
-    virtual ~Element() {}
+    virtual         ~Element() {}
 
     // Functions
     virtual void    draw(gfx::GuiContext & context) const = 0;
 
-    virtual ut::Vector getSize() const = 0;
-
     virtual void    setPosition(const ut::Vector & position) = 0;
 
-    virtual bool    isSelectable() const    { return false; }
-    bool            isSelected() const      { return _selected; }
-
-    virtual void    select()   { BOOST_ASSERT(isSelectable()); _selected = true; }
-    virtual void    deselect() { BOOST_ASSERT(isSelectable()); _selected = false; }
-
-    virtual void    dispatchAction(sys::ActionId action) {}
+    virtual void    refresh() {}
 
 };
 // class Element

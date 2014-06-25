@@ -13,42 +13,39 @@
 namespace gui
 {
 
-// A text in a menu
 class Label : public Element
 {
 private:
     // Data members
-    sf::Text            _text;
+    std::string     _key;
+    sf::Text        _text;
 
-    bool                _shadow = true;
+    bool            _shadow = true;
 
-    ut::Vector          _position;
-    ut::Vector          _margin;
+    ut::Vector      _position;
 
 
 public:
     // Constructors
-    Label();
+                Label();
 
-    explicit Label(const std::string & string_key);
+    explicit    Label(const std::string & string_key);
 
     // Virtual destructor
-    ~Label() {}
+    virtual     ~Label() {}
 
     // Functions
     virtual void draw(gfx::GuiContext & context) const;
 
-    void setShadow(bool shadow) { _shadow = shadow; }
-
-    virtual ut::Vector getSize() const;
-
     virtual void setPosition(const ut::Vector & position) { _position = position; }
 
-    void setText(const std::string & string_key);
+    void        setShadow(bool shadow) { _shadow = shadow; }
 
-    void setTextColor(const sf::Color & color) { _text.setColor(color); }
+    void        setText(const std::string & string_key);
+    void        setTextColor(const sf::Color & color) { _text.setColor(color); }
+    void        setCharacterSize(unsigned size) { _text.setCharacterSize(size); }
 
-    void setCharacterSize(unsigned size) { _text.setCharacterSize(size); }
+    virtual void refresh();
 
 };
 // class Label

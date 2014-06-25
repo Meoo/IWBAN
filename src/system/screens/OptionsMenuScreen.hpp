@@ -17,14 +17,14 @@
 #include <system/inputs/Gamepad.hpp>
 #include <system/inputs/Keyboard.hpp>
 
-#include <gui/ButtonLabel.hpp>
+/*#include <gui/ButtonLabel.hpp>
 #include <gui/Choice.hpp>
 #include <gui/Frame.hpp>
 #include <gui/KeyLabel.hpp>
 #include <gui/Line.hpp>
 #include <gui/Menu.hpp>
 #include <gui/Separator.hpp>
-#include <gui/Slider.hpp>
+#include <gui/Slider.hpp>*/
 
 #include <resources/Locale.hpp>
 
@@ -35,7 +35,7 @@ class OptionsMenuScreen : public Screen
 {
 private:
     // Data members
-    gui::Menu * _menu;
+/*    gui::Menu * _menu;
     gui::Menu * _video_menu;
     gui::Menu * _keyboard_menu;
     gui::Menu * _gamepad_menu;
@@ -57,7 +57,7 @@ private:
     gui::Slider      * _thresh;
     gui::ButtonLabel * _btn_jump;
     gui::ButtonLabel * _btn_fire;
-    gui::ButtonLabel * _btn_retry;
+    gui::ButtonLabel * _btn_retry;*/
 
     // Block controls if waiting for an input
     bool            _waiting_input = false;
@@ -86,7 +86,7 @@ public:
         // Options menu
         // ################################################################
 
-        _menu = new gui::Menu();
+/*        _menu = new gui::Menu();
         _menu->setPosition(ut::Vector(0, 20));
         _menu->setSize(ut::Vector(640, 400));
         _menu->setCentered(true);
@@ -159,7 +159,7 @@ public:
             _video_menu->add(new gui::Frame(ut::Vector(400, 70), title));
         }
 
-        /* TODO _mode = new gui::Selector();
+        / * TODO _mode = new gui::Selector();
         _mode->addEntry(0, "video.windowed");
         _mode->addEntry(1, "video.fullscreen");
         _mode->addEntry(2, "video.borderless");
@@ -167,11 +167,11 @@ public:
         _video_menu->add(new gui::Line({
             new gui::Frame(ut::Vector(200, 40), new gui::Choice("video.mode")),
             new gui::Frame(ut::Vector(400, 40), _mode)
-        }));*/
+        }));* /
 
         {
             gui::Choice * reset = new gui::Choice("options.defaults");
-            reset->setAction([this](){ /* TODO Video defaults */ });
+            reset->setAction([this](){ / * TODO Video defaults * / });
             _video_menu->add(new gui::Separator(ut::Vector(400, 10)));
             _video_menu->add(new gui::Frame(ut::Vector(400, 40), reset));
         }
@@ -314,16 +314,16 @@ public:
         gui::Choice * gcancel = new gui::Choice("options.return");
         gcancel->setAction([this](){ setState(ST_OPTIONS); });
         _gamepad_menu->add(new gui::Frame(ut::Vector(400, 40), gcancel));
-
+*/
     }
 
     // Destructor
     virtual ~OptionsMenuScreen()
     {
         // Choices are released by _menu
-        delete _menu;
+/*        delete _menu;
         delete _keyboard_menu;
-        delete _gamepad_menu;
+        delete _gamepad_menu;*/
     }
 
 
@@ -331,7 +331,7 @@ protected:
     // Callbacks
     virtual void onUpdate(const sf::Time & update_time)
     {
-        if (_state == ST_OPTIONS && _gamepad_state_timer < update_time)
+/*        if (_state == ST_OPTIONS && _gamepad_state_timer < update_time)
         {
             if (sf::Joystick::isConnected(0))
             {
@@ -433,7 +433,7 @@ protected:
                     updateKeyboardKeys();
                 }
             }
-        } // else if (!_waiting_input)
+        } // else if (!_waiting_input)*/
     }
 
     virtual void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
@@ -445,7 +445,7 @@ protected:
         draw.close();
 
 
-        gfx::GuiContext & gui = renderer.openGuiContext();
+/*        gfx::GuiContext & gui = renderer.openGuiContext();
 
         switch (_state)
         {
@@ -466,7 +466,7 @@ protected:
             break;
         }
 
-        gui.close();
+        gui.close();*/
     }
 
     virtual void onShow()
@@ -482,7 +482,7 @@ protected:
         _state = state;
     }
 
-    void hookKeyboard(gui::KeyLabel * key_label, ActionId action)
+/*    void hookKeyboard(gui::KeyLabel * key_label, ActionId action)
     {
         _waiting_input = true;
         key_label->setText("keyboard.presskey");
@@ -555,7 +555,7 @@ protected:
         _btn_retry->setButton(getGamepad().getButtonFromAction(ACT_RETRY));
 
         _gamepad_menu->updateChilds();
-    }
+    }*/
 
 };
 // class OptionsMenuScreen

@@ -13,9 +13,8 @@
 #include <system/screens/OptionsMenuScreen.hpp>
 #include <system/screens/IntroScreen.hpp>
 
-#include <gui/Menu.hpp>
-#include <gui/Choice.hpp>
-#include <gui/Frame.hpp>
+#include <gui/Button.hpp>
+#include <gui/Navigation.hpp>
 
 #include <resources/Locale.hpp>
 
@@ -26,9 +25,9 @@ class MainMenuScreen : public Screen
 {
 private:
     // Data members
-    gui::Menu * _menu;
+    gui::Navigation _navi;
 
-    gui::Choice * _newgame, * _continue, * _options, * _quit;
+    gui::Button _newgame, _continue, _options, _quit;
 
 
 public:
@@ -39,28 +38,30 @@ public:
 
         res::getLocale().loadFile("system/menu.txt");
 
-        _menu = new gui::Menu();
-        _menu->setPosition(ut::Vector(0, 240));
-        _menu->setSize(ut::Vector(640, 200));
-        _menu->setCentered(true);
+        _newgame.setText("menu.newgame");
+        _newgame.setCallback([this](){ onNewGame(); });
+        _newgame.setPosition({320, 240});
 
-        _menu->add(new gui::Frame(choice_box, _newgame = new gui::Choice("menu.newgame")));
-        _menu->add(new gui::Frame(choice_box, _continue = new gui::Choice("menu.continue")));
-        _menu->add(new gui::Frame(choice_box, _options = new gui::Choice("menu.options")));
-        _menu->add(new gui::Frame(choice_box, _quit = new gui::Choice("menu.quit")));
+        _continue.setText("menu.continue");
+        _continue.setCallback([this](){ onContinue(); });
+        _continue.setPosition({320, 280});
 
-        _newgame->setAction([this](){ onNewGame(); });
-        _continue->setAction([this](){ onContinue(); });
-        _options->setAction([this](){ onOptions(); });
-        _quit->setAction([this](){ onQuit(); });
+        _options.setText("menu.options");
+        _options.setCallback([this](){ onOptions(); });
+        _options.setPosition({320, 320});
+
+        _quit.setText("menu.quit");
+        _quit.setCallback([this](){ onQuit(); });
+        _quit.setPosition({320, 360});
+
+        _navi.setHead(&_newgame);
+        _navi.addVertical(&_newgame, &_continue);
+        _navi.addVertical(&_continue, &_options);
+        _navi.addVertical(&_options, &_quit);
     }
 
     // Destructor
-    virtual ~MainMenuScreen()
-    {
-        // Choices are released by _menu
-        delete _menu;
-    }
+    virtual ~MainMenuScreen() {}
 
 
 protected:
@@ -69,7 +70,7 @@ protected:
     {
         for (unsigned i = 0; i < ACT_COUNT; ++i)
             if (getControls().getAction((ActionId) i).isJustActivated())
-                _menu->dispatchAction((ActionId) i);
+                _navi.dispatchAction((ActionId) i);
     }
 
     virtual void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
@@ -83,16 +84,16 @@ protected:
 
         gfx::GuiContext & gui = renderer.openGuiContext();
 
-        _menu->draw(gui);
+        _newgame.draw(gui);
+        _continue.draw(gui);
+        _options.draw(gui);
+        _quit.draw(gui);
 
         gui.close();
-
     }
 
     void onNewGame()
     {
-        _newgame->setTextColor(sf::Color::Red);
-
         // TODO Go to new game screen
         setNextScreen(new IntroScreen());
         dispose();
@@ -100,13 +101,12 @@ protected:
 
     void onContinue()
     {
-        _continue->setTextColor(sf::Color::Red);
+        // TODO Continue?
+        _continue.setTextColor(sf::Color::Red);
     }
 
     void onOptions()
     {
-        _options->setTextColor(sf::Color::Red);
-
         // TODO Go to options screen
         setNextScreen(new OptionsMenuScreen());
         dispose();
@@ -114,7 +114,8 @@ protected:
 
     void onQuit()
     {
-        _quit->setTextColor(sf::Color::Red);
+        // TODO Quit
+        _quit.setTextColor(sf::Color::Red);
     }
 
 };

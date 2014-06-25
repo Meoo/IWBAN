@@ -15,10 +15,6 @@
 #include <physics/Body.hpp>
 #include <physics/shapes/Box.hpp>
 
-#include <gui/Menu.hpp>
-#include <gui/Choice.hpp>
-#include <gui/Frame.hpp>
-
 namespace sys
 {
 
