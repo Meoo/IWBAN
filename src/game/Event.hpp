@@ -43,7 +43,7 @@ public:
 
     uint32_t                int_param;
 
-    std::unique_ptr<void>   ptr_param;
+    std::unique_ptr<char>   ptr_param;
 
 };
 // class Event
