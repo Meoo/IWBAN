@@ -20,7 +20,7 @@ Menu::~Menu()
         delete elem;
 }
 
-void Menu::draw(gfx::DrawContext & context) const
+void Menu::draw(gfx::GuiContext & context) const
 {
     for (Element * elem : _elements)
     {

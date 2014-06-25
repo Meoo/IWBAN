@@ -33,7 +33,7 @@ public:
     virtual ~Line();
 
     // Functions
-    virtual void draw(gfx::DrawContext & context) const;
+    virtual void draw(gfx::GuiContext & context) const;
 
     virtual ut::Vector getSize() const;
 

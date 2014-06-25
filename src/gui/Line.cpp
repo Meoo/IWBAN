@@ -26,7 +26,7 @@ Line::~Line()
         delete elem;
 }
 
-void Line::draw(gfx::DrawContext & context) const
+void Line::draw(gfx::GuiContext & context) const
 {
     for (Element * elem : _content)
         elem->draw(context);

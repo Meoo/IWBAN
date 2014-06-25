@@ -36,7 +36,7 @@ public:
     ~Label() {}
 
     // Functions
-    virtual void draw(gfx::DrawContext & context) const;
+    virtual void draw(gfx::GuiContext & context) const;
 
     void setShadow(bool shadow) { _shadow = shadow; }
 

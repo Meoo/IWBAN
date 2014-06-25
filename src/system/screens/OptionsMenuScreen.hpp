@@ -442,26 +442,31 @@ protected:
 
         draw.fill(sf::Color(16, 16, 16));
 
+        draw.close();
+
+
+        gfx::GuiContext & gui = renderer.openGuiContext();
+
         switch (_state)
         {
         case ST_OPTIONS:
-            _menu->draw(draw);
+            _menu->draw(gui);
             break;
 
         case ST_VIDEO:
-            _video_menu->draw(draw);
+            _video_menu->draw(gui);
             break;
 
         case ST_KEYBOARD:
-            _keyboard_menu->draw(draw);
+            _keyboard_menu->draw(gui);
             break;
 
         case ST_GAMEPAD:
-            _gamepad_menu->draw(draw);
+            _gamepad_menu->draw(gui);
             break;
         }
 
-        draw.close();
+        gui.close();
     }
 
     virtual void onShow()

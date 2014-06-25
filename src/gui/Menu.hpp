@@ -39,7 +39,7 @@ public:
     virtual ~Menu();
 
     // Functions
-    virtual void draw(gfx::DrawContext & context) const;
+    virtual void draw(gfx::GuiContext & context) const;
 
     // Elements added to a Menu are owned, and will be deleted when
     // the menu is released.

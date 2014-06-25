@@ -33,7 +33,7 @@ public:
     virtual ~Frame();
 
     // Functions
-    virtual void draw(gfx::DrawContext & context) const;
+    virtual void draw(gfx::GuiContext & context) const;
 
     virtual ut::Vector getSize() const      { return _size; }
     void setSize(const ut::Vector & size);

@@ -8,7 +8,7 @@
 
 #include <Global.hpp>
 
-#include <graphics/contexts/DrawContext.hpp>
+#include <graphics/contexts/GuiContext.hpp>
 
 #include <system/Controls.hpp>
 
@@ -29,7 +29,7 @@ public:
     virtual ~Element() {}
 
     // Functions
-    virtual void    draw(gfx::DrawContext & context) const = 0;
+    virtual void    draw(gfx::GuiContext & context) const = 0;
 
     virtual ut::Vector getSize() const = 0;
 

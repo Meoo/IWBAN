@@ -24,7 +24,7 @@ Slider::Slider(const ut::Vector & size,
     updateValue();
 }
 
-void Slider::draw(gfx::DrawContext & context) const
+void Slider::draw(gfx::GuiContext & context) const
 {
     if (_shadow)
     {

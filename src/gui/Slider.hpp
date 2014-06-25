@@ -10,6 +10,8 @@
 
 #include <gui/Element.hpp>
 
+#include <functional>
+
 namespace gui
 {
 
@@ -44,7 +46,7 @@ public:
                     int min, int max, int step, int value);
 
     // Functions
-    virtual void draw(gfx::DrawContext & context) const;
+    virtual void draw(gfx::GuiContext & context) const;
 
     virtual void select();
     virtual void deselect();

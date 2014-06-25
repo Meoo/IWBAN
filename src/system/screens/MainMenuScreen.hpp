@@ -78,9 +78,15 @@ protected:
 
         draw.fill(sf::Color(196, 196, 196));
 
-        _menu->draw(draw);
-
         draw.close();
+
+
+        gfx::GuiContext & gui = renderer.openGuiContext();
+
+        _menu->draw(gui);
+
+        gui.close();
+
     }
 
     void onNewGame()

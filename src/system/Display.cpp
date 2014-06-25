@@ -58,7 +58,7 @@ void Display::open()
     else
         // Windowed
         _window.create(sf::VideoMode(cfg::window_width, cfg::window_height),
-                IWBAN_GAME_NAME, sf::Style::Titlebar | sf::Style::Close);
+                IWBAN_GAME_NAME, sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize);
 
     // Window properties
     _window.setFramerateLimit(cfg::framerate);

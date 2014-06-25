@@ -23,7 +23,7 @@ Label::Label(const std::string & string_key)
 {
 }
 
-void Label::draw(gfx::DrawContext & context) const
+void Label::draw(gfx::GuiContext & context) const
 {
     sf::Text text(_text);
     sf::FloatRect rect = text.getLocalBounds();

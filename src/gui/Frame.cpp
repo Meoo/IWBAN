@@ -22,7 +22,7 @@ Frame::~Frame()
     delete _content;
 }
 
-void Frame::draw(gfx::DrawContext & context) const
+void Frame::draw(gfx::GuiContext & context) const
 {
     _content->draw(context);
 }
