@@ -8,6 +8,7 @@
 
 #include <Global.hpp>
 
+#include <physics/CollisionData.hpp>
 #include <physics/CollisionGroup.hpp>
 
 #include <utils/Rectangle.hpp>
@@ -59,7 +60,7 @@ private:
     Body *          _parent         = nullptr;
     ChildList       _childs;
 
-    bool            _active_state   = false;
+    unsigned        _active_state   = 0;
     State           _states[2];
 
     ut::Vector      _acceleration;
@@ -89,8 +90,11 @@ public:
 
     // TODO Add wake everytime any property is modified
     // Getters / setters
+    const ut::Vector & getPosition() const          { return _states[_active_state].position; }
+    const ut::Vector & getVelocity() const          { return _states[_active_state].velocity; }
+
     const Shape *   getShape() const                { return _shape; }
-    void            setShape(const Shape * shape)   { BOOST_ASSERT(shape); _shape = shape; }
+    void            setShape(const Shape * shape)   { IWBAN_PRE_PTR(shape); _shape = shape; }
 
     Body *          getParent()                     { return _parent; }
     const Body *    getParent() const               { return _parent; }
@@ -132,7 +136,7 @@ public:
      *
      * You should call #canCollide on the two bodies first.
      */
-    static void     collide(const Body & first, const Body & second);
+    static bool     collide(const Body & first, const Body & second, CollisionData & data);
 
 };
 // class Object

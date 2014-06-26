@@ -1,12 +1,10 @@
 /**
- * @file   Simulator.cpp
+ * @file   Space.cpp
  * @author Bastien Brunnenstein
  */
 
 #include <Global.hpp>
 
-#include <physics/CollisionData.hpp>
-#include <physics/Shape.hpp>
 #include <physics/Space.hpp>
 
 namespace phy

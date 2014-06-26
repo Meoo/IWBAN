@@ -9,6 +9,7 @@
 #include <Global.hpp>
 
 #include <physics/Body.hpp>
+#include <physics/Shape.hpp>
 
 #include <utils/Rectangle.hpp>
 #include <utils/Vector.hpp>

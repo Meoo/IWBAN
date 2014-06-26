@@ -159,28 +159,12 @@ bool Body::canCollide(const Body & first, const Body & secnd)
     return true;
 }
 
-void Body::collide(const Body & first, const Body & secnd)
+bool Body::collide(const Body & first, const Body & secnd, CollisionData & data)
 {
-/* TODO    CollisionData data;
     ut::Vector offset = secnd.getPosition() - first.getPosition();
 
     // Compute the collision data between the two objects
-    if (phy::collideShapes(first.getShape(), secnd.getShape(), offset, data))
-    {
-        // TODO Response
-        data.origin += first.getPosition();
-
-        if (first.getBehavior() && (first_mask != COL_NONE))
-        {
-            first.getBehavior()->onCollide(first, secnd, data);
-        }
-
-        if (secnd.getBehavior() && (secnd_mask != COL_NONE))
-        {
-            data.revert();
-            secnd.getBehavior()->onCollide(secnd, first, data);
-        }
-    }*/
+    return phy::Shape::collide(*first.getShape(), *secnd.getShape(), offset, data);
 }
 
 }

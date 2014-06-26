@@ -49,12 +49,12 @@ void World::update()
                                const phy::Body & second_body)
     {
         // Collision detection : Narrow phase
-        phy::Body::collide(first_body, second_body);
-
+        phy::CollisionData data;
+        if(phy::Body::collide(first_body, second_body, data))
+        {
+            // Collision response
+        }
     });
-
-    // Collision response
-
 
     // Pump events
     pumpEvents();

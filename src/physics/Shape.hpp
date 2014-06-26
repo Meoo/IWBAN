@@ -35,44 +35,17 @@ public:
                            const ut::Vector & origin, const sf::Color & color) const = 0;
 #endif
 
+    // Static function
+    /**
+     * Test collision of two shapes.
+     *
+     * @param offset position of second from first.
+     */
+    static bool collide(const Shape & first, const Shape & second,
+                        const ut::Vector & offset, CollisionData & result);
+
 };
 // class Shape
-
-// TODO Change name?
-// TODO Real implementation
-// offset is position of second from first
-inline
-bool collideShapes(const Shape * first, const Shape * second,
-                   const ut::Vector & offset, CollisionData & result)
-{
-    // TODO collide
-    const ut::Rectangle & first_bb = first->getBoundingBox();
-    ut::Rectangle second_bb = second->getBoundingBox();
-    second_bb.x += offset.x;
-    second_bb.y += offset.y;
-
-    ut::Rectangle rec = ut::intersect(first_bb, second_bb);
-
-    if (rec.isEmpty())
-        return false;
-
-    ut::Vector orig;
-    orig.x = rec.x + rec.w / 2;
-    orig.y = rec.y + rec.h / 2;
-    result.origin = orig;
-
-    if (first_bb.x > second_bb.x)
-        result.intersect.x = rec.w;
-    else
-        result.intersect.x = - rec.w;
-
-    if (first_bb.y > second_bb.y)
-        result.intersect.y = rec.h;
-    else
-        result.intersect.y = - rec.h;
-
-    return true;
-}
 
 }
 // namespace phy
