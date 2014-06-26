@@ -23,6 +23,7 @@ public:
 
 private:
     // Data members
+    Projector * _projector      = nullptr;
     Screen *    _next_screen    = nullptr;
     bool        _disposable     = false;
 
@@ -44,6 +45,9 @@ protected:
     virtual void    onHide() {}
 
     // Internal functions
+    Projector *         getProjector()          { return _projector; }
+    const Projector *   getProjector() const    { return _projector; }
+
     /**
      * Set next screen to be projected.
      *
@@ -53,7 +57,10 @@ protected:
      * The screen will be changed right after the function onUpdate() returns.
      */
     void    setNextScreen(Screen * next_screen)
-        { IWBAN_PRE_PTR(next_screen); _next_screen = next_screen; }
+    {
+        IWBAN_PRE_PTR(next_screen);
+        _next_screen = next_screen;
+    }
 
     /**
      * Mark this Screen to be released when the screen changes.
@@ -62,11 +69,31 @@ protected:
      *      or an assertion will be raised.
      */
     void    dispose()
-        { IWBAN_PRE(_next_screen); _disposable = true; }
+    {
+        IWBAN_PRE_PTR(_next_screen);
+        _disposable = true;
+    }
 
 
 private:
     // Private functions for Projector
+    void        show(Projector * proj)
+    {
+        IWBAN_PRE_PTR(proj);
+        IWBAN_PRE(!_projector);
+
+        _projector = proj;
+        onShow();
+    }
+
+    void        hide()
+    {
+        IWBAN_PRE_PTR(_projector);
+
+        onHide();
+        _projector = nullptr;
+    }
+
     void        resetNextScreen()       { _next_screen = nullptr; }
     Screen *    getNextScreen() const   { return _next_screen; }
     bool        isDisposable() const    { return _disposable; }

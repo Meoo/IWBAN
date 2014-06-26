@@ -17,12 +17,12 @@ Projector::Projector(Screen * screen)
 {
     IWBAN_PRE_PTR(screen);
 
-    _current_screen->onShow();
+    _current_screen->show(this);
 }
 
 Projector::~Projector()
 {
-    _current_screen->onHide();
+    _current_screen->hide();
 }
 
 void Projector::setScreen(Screen * screen)
