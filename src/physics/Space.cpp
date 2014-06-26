@@ -33,38 +33,52 @@ void Space::remove(Body * body)
     IWBAN_VERIFY(_bodies.erase(body));
 }
 
-void Space::step()
+void Space::refresh()
 {
-    /*for (Body & obj : _objects)
-        obj.prepare();*/
+    // TODO Refresh quadtree
+}
 
-    for (Body * body : _bodies)
-        body->step();
+void Space::computePairs(const PairCallback & callback) const
+{
+    IWBAN_PRE(callback);
 
-    // TODO Build QuadTree
+    // TODO Use QuadTree
 
-    /*for (Body & obj : _objects)
+    for (auto it = _bodies.begin(); it != _bodies.end(); ++it)
     {
-        if (!obj.isAwake())
-            continue;
-
-        // TODO Broad phase
-
-        // TODO Get objects in QuadTree near obj
-
-        for (Body & other : _objects)
+        auto it2 = it;
+        ++it2;
+        for (; it2 != _bodies.end(); ++it2)
         {
-            if (&obj == &other)
-                continue;
-
-            // Narrow phase
-            obj.collideWith(other);
+            if (Body::canCollide(**it, **it2))
+                callback(**it, **it2);
         }
-    }*/
+    }
+}
 
-    // Finish frame by saving last position
-    /*for (Body & obj : _objects)
-        obj.finish();*/
+void Space::testRay(const ut::Vector & begin, const ut::Vector & end,
+                    const RayCallback & callback) const
+{
+    IWBAN_PRE(callback);
+
+    // TODO testRay
+}
+
+void Space::testRectangle(const ut::Rectangle & rect,
+                          const RectangleCallback & callback) const
+{
+    IWBAN_PRE(callback);
+
+    // TODO testRectangle
+}
+
+void Space::testShape(const Shape & shape,
+                      const ShapeCallback & callback) const
+{
+    IWBAN_PRE(callback);
+
+    // TODO testShape
+    // Do not forget Body::canCollide
 }
 
 #ifndef NDEBUG

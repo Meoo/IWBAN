@@ -30,6 +30,7 @@ public:
 
     typedef std::function<void(const Body &)> RayCallback;
     typedef std::function<void(const Body &)> RectangleCallback;
+    typedef std::function<void(const Body &)> ShapeCallback;
 
     typedef std::set<Body *>    BodyList;
 
@@ -47,15 +48,35 @@ public:
     void add(Body * body);
     void remove(Body * body);
 
-    void step();
+    /**
+     * Refresh the space.
+     *
+     * This function should be called after the bodies have been updated.
+     */
+    void refresh();
 
-    void computePairs(const PairCallback & callback) const { /* TODO */ }
+    /**
+     * Find every pair of bodies that can collide.
+     *
+     * This function ensure that every pair passed to the callback
+     * has been checked with Body::canCollide.
+     */
+    void computePairs(const PairCallback & callback) const;
 
     void testRay(const ut::Vector & begin, const ut::Vector & end,
                  const RayCallback & callback) const;
 
     void testRectangle(const ut::Rectangle & rect,
                        const RectangleCallback & callback) const;
+
+    /**
+     * Find bodies that can collide given shape.
+     *
+     * This function ensure taht every body passed to the callback
+     * has been checked with Body::canCollide.
+     */
+    void testShape(const Shape & shape,
+                   const ShapeCallback & callback) const;
 
 #ifndef NDEBUG
     void drawDebug(gfx::DebugContext & debug_context) const;
