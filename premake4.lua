@@ -10,17 +10,6 @@ if not _OPTIONS["output_directory"] then
   _OPTIONS["output_directory"] = "bin"
 end
 
--- GNU GProf option
-newoption {
-  trigger     = "gprof",
-  value       = "bool",
-  description = "[Default=false] Enable GNU Profiler file generation",
-  allowed = {
-    { "true",   "GNU Profiler enabled" },
-    { "false",  "GNU Profiler disabled" },
-  }
-}
-
 -- Static stdlib linkage option
 newoption {
   trigger     = "stdlib_static",
