@@ -20,12 +20,12 @@ Entity * World::getEntityById(Entity::Id id)
                   && id != Entity::INVALID_ID, "Invalid value for id param");
 
     if (id == Entity::INVALID_ID)
-        return 0;
+        return nullptr;
 
     for (unsigned i = 0; i < IWBAN_MAX_ENTITIES; ++i)
         _free_slots.push_back(IWBAN_MAX_ENTITIES - i - 1);
 
-    return 0;
+    return nullptr;
 }
 
 void World::update()
@@ -52,7 +52,8 @@ void World::update()
         phy::CollisionData data;
         if(phy::Body::collide(first_body, second_body, data))
         {
-            // Collision response
+            // TODO Collision response
+
         }
     });
 
@@ -81,17 +82,53 @@ void World::queueEvent(Entity * source, Entity * target, Event && event)
     queueDelayedEvent(source, target, std::move(event), 0);
 }
 
+void World::queueEvent(Entity * source, const std::string & target_name, Event && event)
+{
+    queueDelayedEvent(source, target_name, std::move(event), 0);
+}
+
 void World::queueDelayedEvent(Entity * source, Entity * target,
                               Event && event, sys::FTimeOffset delay)
 {
-    //Event event_table(event);
-    //sys::FTime time = _clock + delay;
+    // TODO Can be a warning
+    IWBAN_PRE_PTR(source);
+    IWBAN_PRE_PTR(target);
+
+    sys::FTime time = _clock + delay;
+
+    EventEntry entry(std::move(event));
+    entry.source.reset(source);
+    entry.target_type = EventEntry::TGT_HANDLE;
+    entry.target_handle.reset(target);
+    entry.time = time;
 
     // Insert before the first event who have a higher time
     // TODO Start from the end of the list to improve performances a little
-    /*_event_list.insert(std::find_if(_event_list.begin(), _event_list.end(),
-            [time](auto it) { return it->time > time; }
-        ), std::move(event_table));*/
+    _event_list.insert(std::find_if(_event_list.begin(), _event_list.end(),
+            [time](const EventEntry & e) { return e.time > time; }
+        ), std::move(entry));
+}
+
+void World::queueDelayedEvent(Entity * source, const std::string & target_name,
+                              Event && event, sys::FTimeOffset delay)
+{
+    // TODO Can be a warning
+    IWBAN_PRE_PTR(source);
+    IWBAN_PRE(!target_name.empty());
+
+    sys::FTime time = _clock + delay;
+
+    EventEntry entry(std::move(event));
+    entry.source.reset(source);
+    entry.target_type = EventEntry::TGT_NAME;
+    entry.target_name = target_name;
+    entry.time = time;
+
+    // Insert before the first event who have a higher time
+    // TODO Start from the end of the list to improve performances a little
+    _event_list.insert(std::find_if(_event_list.begin(), _event_list.end(),
+            [time](const EventEntry & e) { return e.time > time; }
+        ), std::move(entry));
 }
 
 // ---- ---- ---- ----
@@ -117,16 +154,42 @@ void World::cleanDeadEntities()
 
 void World::pumpEvents()
 {
-    /*Event e;
-    while ((e = _event_list.front()).time <= _clock)
+    while (_event_list.front().time <= _clock)
     {
-         _event_list.pop_front();
+        EventEntry e = std::move(_event_list.front());
+        _event_list.pop_front();
 
-         // TODO Process event
-         Entity * source;
-         Entity * target;
+        // Process event
+        Entity * source = e.source.get();
 
-    }*/
+        if (e.target_type == EventEntry::TGT_HANDLE)
+        {
+            Entity * target = e.target_handle.get();
+
+            if (!target)
+            {
+                IWBAN_LOG_DEBUG("Processed event with lost target\n");
+                return;
+            }
+
+            target->onEvent(source, e.event);
+        }
+        else // target_type == TGT_NAME
+        {
+            auto range = _entity_index.equal_range(e.target_name);
+
+            if (range.first == range.second)
+            {
+                IWBAN_LOG_DEBUG("Processed event with no matching target\n");
+                return;
+            }
+
+            for (auto it = range.first; it != range.second; ++it)
+            {
+                it->second->onEvent(source, e.event);
+            }
+        }
+    }
 }
 
 void World::spawnEntity(Entity * entity)
@@ -174,6 +237,7 @@ void World::despawnEntity(Entity * entity)
             }
         }
 
+        // TODO An exception may be appropriate here
         if (!removed)
             IWBAN_LOG_ERROR("Cannot remove Entity %u '%s' from index!\n",
                             entity->getId(), entity->getName().c_str());

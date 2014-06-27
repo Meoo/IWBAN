@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <utils/Vector.hpp>
+
 #include <memory>
 
 namespace game
@@ -39,10 +41,10 @@ public:
 
     EventId                 event_id;
 
-    //EntityHandle    source;
+    //EntityHandle    entity_param;
 
     uint32_t                int_param;
-
+    ut::Vector              vector_param;
     std::unique_ptr<char>   ptr_param;
 
 };

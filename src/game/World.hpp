@@ -43,7 +43,11 @@ public:
         std::string     target_name;
         EntityHandle    target_handle;
 
+        sys::FTime      time;
+
         Event           event;
+
+        EventEntry(Event && e) : event(std::move(e)) {}
 
     };
     // class EventEntry
@@ -82,8 +86,11 @@ public:
     void        render(gfx::Renderer & renderer) const;
 
     void        queueEvent(Entity * source, Entity * target, Event && event);
+    void        queueEvent(Entity * source, const std::string & target_name, Event && event);
 
     void        queueDelayedEvent(Entity * source, Entity * target,
+                                  Event && event, sys::FTimeOffset delay);
+    void        queueDelayedEvent(Entity * source, const std::string & target_name,
                                   Event && event, sys::FTimeOffset delay);
 
     sys::FTime  getClock() const { return _clock; }

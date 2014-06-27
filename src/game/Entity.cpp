@@ -16,7 +16,7 @@ void EntityHandle::reset(Entity * entity)
 {
     if (entity)
     {
-        BOOST_ASSERT_MSG(entity->isValid(), "Cannot create a handle to an invalid Entity");
+        IWBAN_PRE(entity->isValid());
 
         _world  = &(entity->getWorld());
         _id     = entity->getId();

@@ -12,6 +12,8 @@
 
 #include <graphics/Renderer.hpp>
 
+#include <physics/CollisionData.hpp>
+
 #include <system/Time.hpp>
 
 namespace game
@@ -54,13 +56,13 @@ public:
     // Functions
     void            sendEvent(Entity * source, EventId id)
     {
-        BOOST_ASSERT(isValid());
+        IWBAN_PRE(isValid());
         // TODO getWorld().queueEvent(source, this, id);
     }
 
     void            sendDelayedEvent(Entity * source, EventId id, sys::FTimeOffset delay)
     {
-        BOOST_ASSERT(isValid());
+        IWBAN_PRE(isValid());
         // TODO getWorld().queueDelayedEvent(source, this, id, delay);
     }
 
@@ -89,7 +91,7 @@ public:
     }
 
     // Accessors
-    World &         getWorld()  const { BOOST_ASSERT(isValid()); return *_world; }
+    World &         getWorld()  const { IWBAN_PRE(isValid()); return *_world; }
 
     /**
      * Get the unique identifier for this Entity.
@@ -121,7 +123,7 @@ public:
      *
      * You cannot change the name of an Entity once it has been spawned in a World.
      */
-    void            setName(const std::string & name) { BOOST_ASSERT(isValid()); _name = name; }
+    void            setName(const std::string & name) { IWBAN_PRE(!isValid()); _name = name; }
 
     /**
      * Return true if the Entity is in a valid state.
@@ -176,8 +178,21 @@ protected:
      */
     virtual void    onDeath() = 0;
 
+    /**
+     * Function called when a Body owned by this entity collide with
+     * another Body.
+     *
+     * Physics computations are processed after update and before events.
+     */
+    virtual void    onCollide(const phy::CollisionData & data) = 0;
 
-    virtual void    onEvent(const Event & event) = 0 ;
+    /**
+     * Function called when an event is received.
+     *
+     * Source can be null (it may have died or it was not specified).
+     * Events are processed after update and physics update.
+     */
+    virtual void    onEvent(Entity * source, const Event & event) = 0;
 
     // Protected functions for child classes
     /**
@@ -185,7 +200,7 @@ protected:
      */
     void            scheduleNextUpdate(sys::FTimeOffset delay)
     {
-        BOOST_ASSERT(isValid());
+        IWBAN_PRE(isValid());
         // TODO _next_update = getWorld().getClock() + delay;
     }
 
@@ -194,7 +209,7 @@ private:
     // Private functions for World
     void            spawn(World * world, Id id, Serial serial)
     {
-        BOOST_ASSERT_MSG(!isValid(), "Entity is already spawned");
+        IWBAN_PRE(!isValid());
 
         _world = world;
         _serial = serial;
@@ -205,6 +220,8 @@ private:
 
     void            despawn()
     {
+        IWBAN_PRE(isValid());
+
         onDespawn();
         _valid = false;
         _alive = false;
@@ -213,6 +230,9 @@ private:
 
     void            birth()
     {
+        IWBAN_PRE(isValid());
+        IWBAN_PRE(!isAlive());
+
         _alive = true;
         onBirth();
     }
