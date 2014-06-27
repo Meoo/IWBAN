@@ -31,9 +31,9 @@ void Projector::setScreen(Screen * screen)
 
     if (_current_screen == screen) return;
 
-    _current_screen->onHide();
+    _current_screen->hide();
     _current_screen = screen;
-    _current_screen->onShow();
+    _current_screen->show(this);
 }
 
 void Projector::update(const sf::Time & update_time)
