@@ -126,7 +126,7 @@ FileImpl * Package::openFile(const std::string & filename)
     if (it != _index.end())
         return new PackagedFile(_source, it->second);
 
-    return 0;
+    return nullptr;
 }
 
 // ---- ---- ---- ----
@@ -147,7 +147,7 @@ FileImpl * openFileInPackage(const std::string & package,
     if (it->second.unlocalized)
         return it->second.unlocalized->openFile(filename);
 
-    return 0;
+    return nullptr;
 }
 
 }

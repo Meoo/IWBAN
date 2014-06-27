@@ -75,7 +75,7 @@ namespace
 
         if (!first_job)
         {
-            job->next = 0;
+            job->next = nullptr;
             first_job = job;
             last_job = job;
         }
@@ -86,7 +86,7 @@ namespace
         }
         else
         {
-            job->next = 0;
+            job->next = nullptr;
             last_job->next = job;
             last_job = job;
         }
@@ -97,11 +97,11 @@ namespace
     {
         UniqueLock lock(jobs_mutex);
 
-        if (first_job == 0)
+        if (first_job == nullptr)
         {
             jobs_condition.wait(lock);
-            if (first_job == 0)
-                return 0;
+            if (first_job == nullptr)
+                return nullptr;
         }
 
         Job * job = first_job;
@@ -158,8 +158,8 @@ void initialize(bool enable_threading)
     }
 
     // Jobs
-    first_job = 0;
-    last_job = 0;
+    first_job = nullptr;
+    last_job = nullptr;
     first_free_job = job_pool;
 
     for (unsigned ji = 0; ji < (JOBS_MAX - 1); ++ji)
