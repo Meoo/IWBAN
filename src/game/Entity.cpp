@@ -12,6 +12,20 @@
 namespace game
 {
 
+void Entity::sendEvent(Entity * source, Event && event)
+{
+    IWBAN_PRE(isValid());
+    getWorld().queueEvent(source, this, std::move(event));
+}
+
+void Entity::sendDelayedEvent(Entity * source, Event && event, sys::FTimeOffset delay)
+{
+    IWBAN_PRE(isValid());
+    getWorld().queueDelayedEvent(source, this, std::move(event), delay);
+}
+
+// ---- ---- ---- ----
+
 void EntityHandle::reset(Entity * entity)
 {
     if (entity)

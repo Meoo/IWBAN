@@ -9,6 +9,7 @@
 #include <Global.hpp>
 
 #include <game/Entity.hpp>
+#include <game/Event.hpp>
 
 #include <graphics/Drawable.hpp>
 #include <graphics/Renderer.hpp> // TODO Fwd decl?

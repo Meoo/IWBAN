@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <game/Entity.hpp>
+
 #include <utils/Vector.hpp>
 
 #include <memory>
@@ -41,10 +43,9 @@ public:
 
     EventId                 event_id;
 
-    //EntityHandle    entity_param;
-
     uint32_t                int_param;
     ut::Vector              vector_param;
+    EntityHandle            entity_param;
     std::unique_ptr<char>   ptr_param;
 
 };

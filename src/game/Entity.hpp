@@ -8,8 +8,6 @@
 
 #include <Global.hpp>
 
-#include <game/Event.hpp>
-
 #include <graphics/Renderer.hpp>
 
 #include <physics/CollisionData.hpp>
@@ -19,6 +17,7 @@
 namespace game
 {
 
+class Event;
 class World;
 
 class Entity
@@ -54,17 +53,9 @@ public:
     virtual         ~Entity() {}
 
     // Functions
-    void            sendEvent(Entity * source, EventId id)
-    {
-        IWBAN_PRE(isValid());
-        // TODO getWorld().queueEvent(source, this, id);
-    }
+    void            sendEvent(Entity * source, Event && event);
 
-    void            sendDelayedEvent(Entity * source, EventId id, sys::FTimeOffset delay)
-    {
-        IWBAN_PRE(isValid());
-        // TODO getWorld().queueDelayedEvent(source, this, id, delay);
-    }
+    void            sendDelayedEvent(Entity * source, Event && event, sys::FTimeOffset delay);
 
     /**
      * Kill the Entity.
