@@ -17,6 +17,7 @@ Space::Space()
 void Space::add(Body * body)
 {
     IWBAN_PRE_PTR(body);
+    IWBAN_PRE(body->getOwner());
 
     // TODO object->updateLastPosition(); ?
     auto ret = _bodies.insert(body);
@@ -28,6 +29,7 @@ void Space::remove(Body * body)
 {
     IWBAN_PRE_PTR(body);
 
+    body->unlinkChilds();
     IWBAN_VERIFY(_bodies.erase(body));
 }
 

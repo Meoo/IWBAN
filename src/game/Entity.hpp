@@ -10,8 +10,6 @@
 
 #include <graphics/Renderer.hpp>
 
-#include <physics/CollisionData.hpp>
-
 #include <system/Time.hpp>
 
 namespace game
@@ -168,14 +166,6 @@ protected:
      * This function is not called if the Entity is killed using #exile.
      */
     virtual void    onDeath() = 0;
-
-    /**
-     * Function called when a Body owned by this entity collide with
-     * another Body.
-     *
-     * Physics computations are processed after update and before events.
-     */
-    virtual void    onCollide(const phy::CollisionData & data) = 0;
 
     /**
      * Function called when an event is received.

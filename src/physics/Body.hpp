@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <game/entities/SolidEntity.hpp>
+
 #include <physics/CollisionData.hpp>
 #include <physics/CollisionGroup.hpp>
 
@@ -48,6 +50,7 @@ public:
     public:
         ut::Vector  position;
         ut::Vector  velocity;
+        ut::Vector  immediate_velocity;
 
     };
     // class State
@@ -55,6 +58,8 @@ public:
 
 private:
     // Data members
+    game::SolidEntity * _owner      = nullptr;
+
     const Shape *   _shape;
 
     Body *          _parent         = nullptr;
@@ -81,6 +86,10 @@ private:
 public:
     // Constructor
     explicit        Body(const Shape * shape);
+                    Body(game::SolidEntity * owner, const Shape * shape);
+
+    // Destructor
+                    ~Body();
 
     // Functions
     void            move(const ut::Vector & delta);
@@ -88,10 +97,15 @@ public:
 
     void            step();
 
+    void            unlinkChilds();
+
     // TODO Add wake everytime any property is modified
     // Getters / setters
     const ut::Vector & getPosition() const          { return _states[_active_state].position; }
     const ut::Vector & getVelocity() const          { return _states[_active_state].velocity; }
+
+    const game::SolidEntity *   getOwner() const    { return _owner; }
+    game::SolidEntity *         getOwner()          { return _owner; }
 
     const Shape *   getShape() const                { return _shape; }
     void            setShape(const Shape * shape)   { IWBAN_PRE_PTR(shape); _shape = shape; }
@@ -99,8 +113,7 @@ public:
     Body *          getParent()                     { return _parent; }
     const Body *    getParent() const               { return _parent; }
 
-    // TODO Handle child list too, and wake
-    void            setParent(Body * parent)        { _parent = parent; }
+    void            setParent(Body * parent);
 
     float           getMass() const                 { return _mass; }
     void            setMass(float mass)             { _mass = mass; }
