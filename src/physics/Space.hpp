@@ -27,11 +27,11 @@ namespace phy
 class Space
 {
 public:
-    typedef std::function<void(const Body &, const Body &)> PairCallback;
+    typedef std::function<void(Body &, Body &)> PairCallback;
 
-    typedef std::function<void(const Body &)> RayCallback;
-    typedef std::function<void(const Body &)> RectangleCallback;
-    typedef std::function<void(const Body &)> ShapeCallback;
+    typedef std::function<void(Body &)> RayCallback;
+    typedef std::function<void(Body &)> RectangleCallback;
+    typedef std::function<void(Body &)> ShapeCallback;
 
     typedef std::set<Body *>    BodyList;
 
@@ -57,10 +57,10 @@ public:
     void refresh();
 
     /**
-     * Find every pair of bodies that can collide.
+     * Find every pair of bodies that could collide.
      *
-     * This function ensure that every pair passed to the callback
-     * has been checked with Body::canCollide.
+     * This is a broad phase collision detection. Pairs found by this
+     * function may not be able to collide.
      */
     void computePairs(const PairCallback & callback) const;
 
@@ -72,9 +72,6 @@ public:
 
     /**
      * Find bodies that can collide given shape.
-     *
-     * This function ensure taht every body passed to the callback
-     * has been checked with Body::canCollide.
      */
     void testShape(const Shape & shape,
                    const ShapeCallback & callback) const;

@@ -65,8 +65,8 @@ private:
     Body *          _parent         = nullptr;
     ChildList       _childs;
 
-    unsigned        _active_state   = 0;
-    State           _states[2];
+    State           _prev_state;
+    State           _next_state;
 
     ut::Vector      _acceleration;
 
@@ -95,14 +95,15 @@ public:
     void            move(const ut::Vector & delta);
     void            moveTo(const ut::Vector & position);
 
+    void            prepare();
     void            step();
 
     void            unlinkChilds();
 
     // TODO Add wake everytime any property is modified
     // Getters / setters
-    const ut::Vector & getPosition() const          { return _states[_active_state].position; }
-    const ut::Vector & getVelocity() const          { return _states[_active_state].velocity; }
+    const ut::Vector & getPosition() const          { return _prev_state.position; }
+    const ut::Vector & getVelocity() const          { return _prev_state.velocity; }
 
     const game::SolidEntity *   getOwner() const    { return _owner; }
     game::SolidEntity *         getOwner()          { return _owner; }
@@ -137,15 +138,7 @@ public:
 
     // Static functions
     /**
-     * Check if two bodies can collide.
-     *
-     * Use this function to check roughly if two objects can collide before
-     * using #collide to perform a more precise collision detection.
-     */
-    static bool     canCollide(const Body & first, const Body & second);
-
-    /**
-     * Perform fine collision detection.
+     * Compute the collision data between two bodies.
      *
      * You should call #canCollide on the two bodies first.
      */

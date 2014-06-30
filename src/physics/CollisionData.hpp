@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <physics/CollisionGroup.hpp>
+
 #include <utils/Vector.hpp>
 
 namespace phy
@@ -16,14 +18,11 @@ namespace phy
 class CollisionData
 {
 public:
-    ut::Vector  origin;
-    ut::Vector  intersect;
+    CollisionGroup  first_mask;
+    CollisionGroup  second_mask;
 
-    void revert()
-    {
-        intersect.x = - intersect.x;
-        intersect.y = - intersect.y;
-    }
+    ut::Vector      origin;
+    ut::Vector      mtv;    // Minimum Translation Vector
 
 };
 // class CollisionData

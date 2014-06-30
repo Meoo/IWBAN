@@ -35,6 +35,12 @@ void Space::remove(Body * body)
 
 void Space::refresh()
 {
+    for (Body * body : _bodies)
+        body->prepare();
+
+    for (Body * body : _bodies)
+        body->step();
+
     // TODO Refresh quadtree
 }
 
@@ -50,8 +56,7 @@ void Space::computePairs(const PairCallback & callback) const
         ++it2;
         for (; it2 != _bodies.end(); ++it2)
         {
-            if (Body::canCollide(**it, **it2))
-                callback(**it, **it2);
+            callback(**it, **it2);
         }
     }
 }
@@ -78,7 +83,6 @@ void Space::testShape(const Shape & shape,
     IWBAN_PRE(callback);
 
     // TODO testShape
-    // Do not forget Body::canCollide
 }
 
 #ifndef NDEBUG

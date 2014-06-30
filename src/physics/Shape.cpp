@@ -30,14 +30,14 @@ bool Shape::collide(const Shape & first, const Shape & secnd,
     result.origin = orig;
 
     if (first_bb.x > secnd_bb.x)
-        result.intersect.x = rec.w;
+        result.mtv.x = rec.w;
     else
-        result.intersect.x = - rec.w;
+        result.mtv.x = - rec.w;
 
     if (first_bb.y > secnd_bb.y)
-        result.intersect.y = rec.h;
+        result.mtv.y = rec.h;
     else
-        result.intersect.y = - rec.h;
+        result.mtv.y = - rec.h;
 
     return true;
 }

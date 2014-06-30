@@ -32,52 +32,37 @@ Body::~Body()
 
 void Body::move(const ut::Vector & delta)
 {
-    //_position += delta;
+    _next_state.immediate_velocity += delta;
     wake();
 }
 
 void Body::moveTo(const ut::Vector & position)
 {
-    //_position = position;
+    _next_state.immediate_velocity += (position - _next_state.position);
     wake();
 }
 
-/*void Body::prepare()
+void Body::prepare()
 {
-    _updated = false;
+    _prev_state = _next_state;
 
-    if (_behavior)
-        _behavior->prepare(*this);
-}*/
+    _next_state.velocity += _acceleration;
+    _next_state.immediate_velocity = ut::Vector();
+
+    _prev_state.immediate_velocity += _prev_state.velocity;
+}
 
 void Body::step()
 {
-    /*if (_updated) return;
+    _next_state.position += _prev_state.immediate_velocity;
 
-    if (getParent())
-        getParent()->step();
-
-    if (isAwake())
+    Body * parent = getParent();
+    while (parent)
     {
-        if (_behavior)
-        {
-            _behavior->step(*this);
-            stepChilds(*this, _behavior);
-        }
-        else
-            sleep();
+        _next_state.position += parent->_prev_state.immediate_velocity;
+        parent = parent->getParent();
     }
-
-    _updated = true;*/
 }
-
-/*void Body::finish()
-{
-    updateLastPosition();
-
-    if (_behavior)
-        _behavior->finish(*this);
-}*/
 
 void Body::unlinkChilds()
 {
@@ -146,7 +131,7 @@ void Body::drawDebug(gfx::DebugContext & debug_context) const
 }
 #endif
 
-bool Body::canCollide(const Body & first, const Body & secnd)
+bool Body::collide(const Body & first, const Body & secnd, CollisionData & data)
 {
     // Collision groups
     CollisionGroup first_mask = secnd.getSolidityGroup() & first.getCollisionMask();
@@ -159,14 +144,11 @@ bool Body::canCollide(const Body & first, const Body & secnd)
     if (!ut::hasIntersection(first.getBoundingBox(), secnd.getBoundingBox()))
         return false;
 
-    return true;
-}
-
-bool Body::collide(const Body & first, const Body & secnd, CollisionData & data)
-{
-    ut::Vector offset = secnd.getPosition() - first.getPosition();
+    data.first_mask  = first_mask;
+    data.second_mask = secnd_mask;
 
     // Compute the collision data between the two objects
+    ut::Vector offset = secnd.getPosition() - first.getPosition();
     return phy::Shape::collide(*first.getShape(), *secnd.getShape(), offset, data);
 }
 

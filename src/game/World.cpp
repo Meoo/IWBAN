@@ -45,15 +45,25 @@ void World::update()
     _space.refresh();
 
     // Collision detection : Broad phase
-    _space.computePairs([this](const phy::Body & first_body,
-                               const phy::Body & second_body)
+    _space.computePairs([this](phy::Body & first_body,
+                               phy::Body & second_body)
     {
         // Collision detection : Narrow phase
         phy::CollisionData data;
-        if(phy::Body::collide(first_body, second_body, data))
+        if (phy::Body::collide(first_body, second_body, data))
         {
             // TODO Collision response
+            if (data.first_mask != phy::COL_NONE)
+                if (SolidEntity * first_own = first_body.getOwner())
+                {
+                    first_own->onCollide(data);
+                }
 
+            if (data.second_mask != phy::COL_NONE)
+                if (SolidEntity * second_own = second_body.getOwner())
+                {
+                    second_own->onCollide(data);
+                }
         }
     });
 
