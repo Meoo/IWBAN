@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <system/Time.hpp>
+
 #include <SFML/System.hpp>
 
 namespace sys
@@ -48,21 +50,21 @@ public:
 
     private:
         // Data members
-        unsigned    _activity;
+        unsigned    _activity   = 0;
 
-        unsigned    _uptime;    // in updates
-        unsigned    _downtime;  // in updates
+        FTime       _uptime     = 0;
+        FTime       _downtime   = 0;
 
 
     public:
         // Constructor
-                    Action() : _activity(0), _uptime(0), _downtime(0) {}
+                    Action() = default;
 
         // Accessors
         bool        isActive() const            { return _activity > 0; }
 
-        sf::Time    getUptime() const           { return sf::seconds(_uptime * IWBAN_UPDATE_TIME); }
-        sf::Time    getDowntime() const         { return sf::seconds(_downtime * IWBAN_UPDATE_TIME); }
+        sf::Time    getUptime() const           { return sf::Int64(_uptime) * IWBAN_UPDATE_TIME; }
+        sf::Time    getDowntime() const         { return sf::Int64(_downtime) * IWBAN_UPDATE_TIME; }
 
         bool        isJustActivated() const     { return isActive() && _uptime == 0; }
         bool        isJustDeactivated() const   { return !isActive() && _downtime == 0; }

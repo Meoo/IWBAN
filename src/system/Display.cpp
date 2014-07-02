@@ -122,7 +122,7 @@ void Display::run(sys::Projector & projector)
 
     // Scene data
     gfx::Renderer   renderer(_window);
-    sf::Time        next_update(sf::seconds(IWBAN_UPDATE_TIME));
+    sf::Time        next_update(IWBAN_UPDATE_TIME);
 
 #ifdef PERF_MONITORING
     // FPS counter
@@ -258,7 +258,7 @@ void Display::run(sys::Projector & projector)
             }
 
             // Prevent "Game is slowing down" warning on resume
-            next_update = update_time + sf::seconds(IWBAN_UPDATE_TIME);
+            next_update = update_time + IWBAN_UPDATE_TIME;
 
         } // if (pause)
         else
@@ -268,12 +268,12 @@ void Display::run(sys::Projector & projector)
             int update_count = 0;
             sf::Time update_time;
             while ((update_time = getGlobalTime()) > (update_count == 0 ?
-                    next_update : next_update + sf::seconds(IWBAN_UPDATE_TIME / 4)))
+                    next_update : next_update + (IWBAN_UPDATE_TIME / sf::Int64(4))))
             {
                 // Scene update
                 projector.update(update_time);
 
-                next_update += sf::seconds(IWBAN_UPDATE_TIME);
+                next_update += IWBAN_UPDATE_TIME;
 
                 // Prevent game lock by limiting consecutive updates
                 if (++update_count >= IWBAN_MAX_UPDATES_FRAME)
@@ -284,7 +284,7 @@ void Display::run(sys::Projector & projector)
                     sf::Time time (getGlobalTime());
                     if (time > next_update)
                     {
-                        next_update = time + sf::seconds(IWBAN_UPDATE_TIME);
+                        next_update = time + IWBAN_UPDATE_TIME;
                         IWBAN_LOG_WARNING("Game is slowing down!\n");
                     }
 

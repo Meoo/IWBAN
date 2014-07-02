@@ -6,6 +6,8 @@
 #ifndef _IWBAN_STATICCONFIG_HPP_
 #define _IWBAN_STATICCONFIG_HPP_
 
+#include <SFML/System.hpp>
+
 
 #define IWBAN_GAME_NAME         "I Wanna Be The Ninja Master"
 #define IWBAN_VERSION           "D.1"
@@ -29,7 +31,7 @@
 
 
 #define IWBAN_UPDATE_RATE       60 // Hz
-#define IWBAN_UPDATE_TIME       (1.f/IWBAN_UPDATE_RATE) // s
+#define IWBAN_UPDATE_TIME       sf::seconds(1.f/IWBAN_UPDATE_RATE) // s
 
 // Maximum number of updates in a single frame
 // If framerate goes under _UPDATE_RATE / _MAX_UPDATES_FRAME, the game will slow down
