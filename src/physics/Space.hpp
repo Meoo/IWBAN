@@ -49,12 +49,8 @@ public:
     void add(Body * body);
     void remove(Body * body);
 
-    /**
-     * Refresh the space.
-     *
-     * This function should be called after the bodies have been updated.
-     */
-    void refresh();
+    // TODO update
+    void update(const sf::Time & delta, int passes);
 
     /**
      * Find every pair of bodies that could collide.

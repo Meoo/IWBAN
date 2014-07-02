@@ -32,36 +32,14 @@ Body::~Body()
 
 void Body::move(const ut::Vector & delta)
 {
-    _next_state.immediate_velocity += delta;
+    // TODO _next_state.immediate_velocity += delta;
     wake();
 }
 
 void Body::moveTo(const ut::Vector & position)
 {
-    _next_state.immediate_velocity += (position - _next_state.position);
+    // TODO _next_state.immediate_velocity += (position - _next_state.position);
     wake();
-}
-
-void Body::prepare()
-{
-    _prev_state = _next_state;
-
-    _next_state.velocity += _acceleration;
-    _next_state.immediate_velocity = ut::Vector();
-
-    _prev_state.immediate_velocity += _prev_state.velocity;
-}
-
-void Body::step()
-{
-    _next_state.position += _prev_state.immediate_velocity;
-
-    Body * parent = getParent();
-    while (parent)
-    {
-        _next_state.position += parent->_prev_state.immediate_velocity;
-        parent = parent->getParent();
-    }
 }
 
 void Body::unlinkChilds()
@@ -105,19 +83,57 @@ void Body::setParent(Body * parent)
     wake();
 }*/
 
-ut::Rectangle Body::getBoundingBox() const
-{
-    ut::Rectangle r = getShape()->getBoundingBox();
-    /*r.x += _position.x;
-    r.y += _position.y;*/
-    return r;
-}
-
 /*void Body::setVelocity(const ut::Vector & velocity)
 {
     _velocity = velocity;
     wake();
 }*/
+
+ut::Rectangle Body::getBoundingBox() const
+{
+    ut::Rectangle r = getShape()->getBoundingBox();
+    r.x += _position.x;
+    r.y += _position.y;
+    return r;
+}
+
+void Body::preUpdate(const sf::Time & delta)
+{
+    _pressure = ut::Vector();
+    _delta = ut::Vector();
+    _velocity += _acceleration * step_delta;
+}
+
+void Body::postUpdate(const sf::Time & delta)
+{
+    _immediate_force = ut::Vector();
+}
+
+void Body::preStep(const sf::Time & step_delta)
+{
+    ut::Vector movement = (_velocity + _immediate_force) * step_delta;
+    _position += movement;
+    _delta += movement;
+
+    // Update the whole child tree
+    moveTree(movement);
+}
+
+void Body::postStep(const sf::Time & step_delta)
+{
+}
+
+void Body::moveTree(const ut::Vector & movement)
+{
+    for (Body & child : _childs)
+    {
+        child._position += movement;
+        child._delta += movement;
+
+        // Recursion
+        child.moveTree(movement);
+    }
+}
 
 #ifndef NDEBUG
 void Body::drawDebug(gfx::DebugContext & debug_context) const

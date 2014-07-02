@@ -45,16 +45,6 @@ class Body : public impl::ChildHook
 public:
     typedef impl::ChildList     ChildList;
 
-    class State
-    {
-    public:
-        ut::Vector  position;
-        ut::Vector  velocity;
-        ut::Vector  immediate_velocity;
-
-    };
-    // class State
-
 
 private:
     // Data members
@@ -65,13 +55,18 @@ private:
     Body *          _parent         = nullptr;
     ChildList       _childs;
 
-    State           _prev_state;
-    State           _next_state;
-
+    ut::Vector      _position;
+    ut::Vector      _velocity;
     ut::Vector      _acceleration;
+    ut::Vector      _immediate_force;
+
+    ut::Vector      _delta;
+    ut::Vector      _pressure;
 
     // Mass <= 0 means infinite (cannot be moved by other bodies)
     float           _mass           = 0;
+    float           _damping        = 0;
+    float           _air_resist     = 0;
 
     CollisionGroup  _solidity_group = COL_NONE;
     CollisionGroup  _collision_mask = COL_NONE;
@@ -95,15 +90,12 @@ public:
     void            move(const ut::Vector & delta);
     void            moveTo(const ut::Vector & position);
 
-    void            prepare();
-    void            step();
-
     void            unlinkChilds();
 
     // TODO Add wake everytime any property is modified
     // Getters / setters
-    const ut::Vector & getPosition() const          { return _prev_state.position; }
-    const ut::Vector & getVelocity() const          { return _prev_state.velocity; }
+    const ut::Vector & getPosition() const          { return _position; }
+    const ut::Vector & getVelocity() const          { return _velocity; }
 
     const game::SolidEntity *   getOwner() const    { return _owner; }
     game::SolidEntity *         getOwner()          { return _owner; }
@@ -130,6 +122,14 @@ public:
     void            wake()                          { _awake = true; }
 
     ut::Rectangle   getBoundingBox() const;
+
+    void            preUpdate(const sf::Time & delta);
+    void            postUpdate(const sf::Time & delta);
+
+    void            preStep(const sf::Time & step_delta);
+    void            postStep(const sf::Time & step_delta);
+
+    void            moveTree(const ut::Vector & movement);
 
 
 #ifndef NDEBUG

@@ -33,15 +33,52 @@ void Space::remove(Body * body)
     IWBAN_VERIFY(_bodies.erase(body));
 }
 
-void Space::refresh()
+void Space::update(const sf::Time & delta, int passes)
 {
-    for (Body * body : _bodies)
-        body->prepare();
+    IWBAN_PRE(delta.asSeconds() > 0);
+    IWBAN_PRE(passes > 0);
 
-    for (Body * body : _bodies)
-        body->step();
+    sf::Time step_delta = delta / sf::Int64(passes);
 
-    // TODO Refresh quadtree
+    // Pre update
+    for (Body * body : _bodies)
+        body->preUpdate(delta);
+
+    for (int i = 0; i < passes; ++i)
+    {
+        // Pre step
+        for (Body * body : _bodies)
+            body->preStep(step_delta);
+
+        // Collision detection : Broad phase
+        computePairs([this](phy::Body & first_body,
+                            phy::Body & second_body)
+        {
+            // Collision detection : Narrow phase
+            phy::CollisionData data;
+            if (phy::Body::collide(first_body, second_body, data))
+            {
+                // TODO Collision response
+                if (data.first_mask != phy::COL_NONE)
+                {
+                }
+
+                if (data.second_mask != phy::COL_NONE)
+                {
+                }
+            }
+        });
+
+        // TODO Refresh quadtree
+
+        // Post step
+        for (Body * body : _bodies)
+            body->postStep(step_delta);
+    }
+
+    // Post update
+    for (Body * body : _bodies)
+        body->postUpdate(delta);
 }
 
 void Space::computePairs(const PairCallback & callback) const
