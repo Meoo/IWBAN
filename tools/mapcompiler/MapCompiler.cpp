@@ -13,6 +13,8 @@ namespace tx = tinyxml2;
 
 typedef std::map<std::string, std::string> Properties;
 
+class Tile;
+
 class Tileset
 {
 public:
@@ -120,11 +122,11 @@ int process_file(const char * filename)
         return -1;
     }
 
-    const char * width      = map->Attribute("width"); // in tiles
-    const char * height     = map->Attribute("height"); // in tiles
+    //const char * width      = map->Attribute("width"); // in tiles
+    //const char * height     = map->Attribute("height"); // in tiles
 
-    const char * tilewidth  = map->Attribute("tilewidth"); // in pixels
-    const char * tileheight = map->Attribute("tileheight"); // in pixels
+    //const char * tilewidth  = map->Attribute("tilewidth"); // in pixels
+    //const char * tileheight = map->Attribute("tileheight"); // in pixels
 
     Properties map_props;
     parse_properties(map, map_props);
@@ -152,7 +154,7 @@ int process_file(const char * filename)
         std::cout << "LAYER" << std::endl;
 
         // Properties
-        const char * layer_name = layer->Attribute("name");
+        //const char * layer_name = layer->Attribute("name");
 
         Properties layer_props;
         parse_properties(map, layer_props);
@@ -192,7 +194,7 @@ int process_file(const char * filename)
         std::cout << "OBJLAY" << std::endl;
 
         // Properties
-        const char * objlay_name = objlay->Attribute("name");
+        //const char * objlay_name = objlay->Attribute("name");
 
         Properties objlay_props;
         parse_properties(objlay, objlay_props);
@@ -203,8 +205,8 @@ int process_file(const char * filename)
             // Object
             std::cout << "OBJ" << std::endl;
 
-            const char * obj_name = obj->Attribute("name");
-            const char * obj_type = obj->Attribute("type");
+            //const char * obj_name = obj->Attribute("name");
+            //const char * obj_type = obj->Attribute("type");
 
             // Properties
             Properties obj_props;
