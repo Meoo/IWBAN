@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <config/DisplayConfig.hpp>
+
 #include <SFML/System.hpp>
 
 namespace sys
@@ -22,7 +24,7 @@ typedef int      FTimeOffset;
 
 constexpr FTimeOffset fseconds(float seconds)
 {
-    return static_cast<FTimeOffset>(seconds * IWBAN_FRAME_RATE);
+    return static_cast<FTimeOffset>(seconds * IWBAN_UPDATE_RATE);
 }
 
 // ---- ---- ---- ----

@@ -29,7 +29,7 @@ private:
 public:
     // Constructor
     explicit SplashScreen(Screen * next_screen,
-                          sf::Time duration = sf::seconds(IWBAN_SPLASH_DURATION))
+                          sf::Time duration = IWBAN_SPLASH_DURATION)
         : _next_screen(next_screen), _duration(duration) {}
 
 

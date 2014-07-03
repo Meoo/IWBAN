@@ -5,11 +5,12 @@
 
 #include <Global.hpp>
 
+#include <config/DisplayConfig.hpp>
+#include <config/Settings.hpp>
+
 #include <graphics/Renderer.hpp>
 #include <graphics/contexts/impl/QuickLightContext.hpp>
 #include <graphics/contexts/impl/SmoothLightContext.hpp>
-
-#include <config/Settings.hpp>
 
 #include <resources/File.hpp>
 

@@ -7,6 +7,7 @@
 
 #include <Global.hpp>
 
+#include <config/DisplayConfig.hpp>
 #include <config/Settings.hpp>
 
 #include <graphics/contexts/debug/DebugContext.hpp>
