@@ -39,13 +39,11 @@ public:
 
 protected:
     // Callbacks
-    /**
-     * Function called when a Body owned by this entity collide with
-     * another Body.
-     *
-     * Physics computations are processed after update and before events.
-     */
-    virtual void    onCollide(const phy::CollisionData & data) = 0;
+    virtual void    onStartTouch() = 0;
+
+    virtual void    onTouch() = 0;
+
+    virtual void    onEndTouch() = 0;
 
     virtual void    onChildAdded(const phy::Body & parent, const phy::Body & child) = 0;
 

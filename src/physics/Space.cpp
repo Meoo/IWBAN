@@ -17,12 +17,14 @@ Space::Space()
 void Space::add(Body * body)
 {
     IWBAN_PRE_PTR(body);
-    IWBAN_PRE(body->getOwner());
 
     // TODO object->updateLastPosition(); ?
+#ifndef NDEBUG
     auto ret = _bodies.insert(body);
-
     IWBAN_ASSERT(ret.second);
+#else
+    _bodies.insert(body);
+#endif
 }
 
 void Space::remove(Body * body)
@@ -30,6 +32,7 @@ void Space::remove(Body * body)
     IWBAN_PRE_PTR(body);
 
     body->unlinkChilds();
+
     IWBAN_VERIFY(_bodies.erase(body));
 }
 
@@ -50,26 +53,70 @@ void Space::update(const sf::Time & delta, int passes)
         for (Body * body : _bodies)
             body->preStep(step_delta);
 
+        std::vector<CollisionData> collisions;
+
         // Collision detection : Broad phase
-        computePairs([this](phy::Body & first_body,
+        computePairs([this, &collisions]
+                           (phy::Body & first_body,
                             phy::Body & second_body)
         {
             // Collision detection : Narrow phase
-            phy::CollisionData data;
-            if (phy::Body::collide(first_body, second_body, data))
-            {
-                // TODO Collision response
-                if (data.first_mask != phy::COL_NONE)
-                {
-                }
-
-                if (data.second_mask != phy::COL_NONE)
-                {
-                }
-            }
+            CollisionData data;
+            if (Body::collide(first_body, second_body, data))
+                collisions.push_back(std::move(data));
         });
 
-        // TODO Refresh quadtree
+        // TODO Collision response
+        for (const CollisionData & collision : collisions)
+        {
+            // We can const cast because we know we own them
+            Body * first = const_cast<Body*>(collision.first);
+            Body * secnd = const_cast<Body*>(collision.second);
+
+            if (first->getMass() == 0)
+            {
+                CollisionResult res_secnd;
+                res_secnd.body = first;
+                res_secnd.mask = collision.second_mask;
+                res_secnd.origin = collision.origin;
+                res_secnd.force = ut::Vector() - collision.mtv; // TODO Unary minus Vector
+
+                secnd->respond(res_secnd);
+            }
+            else if (secnd->getMass() == 0)
+            {
+                CollisionResult res_first;
+                res_first.body = secnd;
+                res_first.mask = collision.first_mask;
+                res_first.origin = collision.origin;
+                res_first.force = collision.mtv;
+
+                first->respond(res_first);
+            }
+            else
+            {
+                ut::Vector p = collision.mtv / 2;
+
+                {
+                    CollisionResult res_first;
+                    res_first.body = secnd;
+                    res_first.mask = collision.first_mask;
+                    res_first.origin = collision.origin;
+                    res_first.force = p;
+
+                    first->respond(res_first);
+                }
+                {
+                    CollisionResult res_secnd;
+                    res_secnd.body = first;
+                    res_secnd.mask = collision.second_mask;
+                    res_secnd.origin = collision.origin;
+                    res_secnd.force = ut::Vector() - p; // TODO Unary minus Vector
+
+                    secnd->respond(res_secnd);
+                }
+            }
+        }
 
         // Post step
         for (Body * body : _bodies)
@@ -85,7 +132,7 @@ void Space::computePairs(const PairCallback & callback) const
 {
     IWBAN_PRE(callback);
 
-    // TODO Use QuadTree
+    // TODO Use & refresh QuadTree
 
     for (auto it = _bodies.begin(); it != _bodies.end(); ++it)
     {

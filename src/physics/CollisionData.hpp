@@ -15,9 +15,14 @@
 namespace phy
 {
 
+class Body;
+
 class CollisionData
 {
 public:
+    const Body *    first;
+    const Body *    second;
+
     CollisionGroup  first_mask;
     CollisionGroup  second_mask;
 
@@ -26,6 +31,20 @@ public:
 
 };
 // class CollisionData
+
+// ---- ---- ---- ----
+
+class CollisionResult
+{
+public:
+    const Body *    body;
+    CollisionGroup  mask;
+
+    ut::Vector      origin;
+    ut::Vector      force;
+
+};
+// class CollisionResult
 
 }
 // namespace phy

@@ -44,7 +44,7 @@ namespace impl
 class Body : public impl::ChildHook
 {
 public:
-	friend class Space;
+    friend class Space;
 
     typedef impl::ChildList     ChildList;
 
@@ -98,7 +98,13 @@ public:
     // TODO Add wake everytime any property is modified
     // Getters / setters
     const ut::Vector & getPosition() const          { return _position; }
+    void            setPosition(const ut::Vector & position) { _position = position; }
+
     const ut::Vector & getVelocity() const          { return _velocity; }
+    void            setVelocity(const ut::Vector & velocity) { _velocity = velocity; }
+
+    const ut::Vector & getAcceleration() const      { return _acceleration; }
+    void            setAcceleration(const ut::Vector & acceleration) { _acceleration = acceleration; }
 
     const game::SolidEntity *   getOwner() const    { return _owner; }
     game::SolidEntity *         getOwner()          { return _owner; }
@@ -133,6 +139,8 @@ private:
 
     void            preStep(const sf::Time & step_delta);
     void            postStep(const sf::Time & step_delta);
+
+    void            respond(const CollisionResult & result);
 
     // Private
     void            moveTree(const ut::Vector & movement);

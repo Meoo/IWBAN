@@ -123,6 +123,12 @@ void Body::postStep(const sf::Time & step_delta)
 {
 }
 
+void Body::respond(const CollisionResult & result)
+{
+    _position += result.force;
+    _velocity += result.force * 30;
+}
+
 void Body::moveTree(const ut::Vector & movement)
 {
     for (Body & child : _childs)
@@ -149,17 +155,25 @@ void Body::drawDebug(gfx::DebugContext & debug_context) const
 
 bool Body::collide(const Body & first, const Body & secnd, CollisionData & data)
 {
+    if (first.getMass() == 0 && secnd.getMass() == 0)
+        return false;
+
+    if (!first.isAwake() && !secnd.isAwake())
+        return false;
+
     // Collision groups
     CollisionGroup first_mask = secnd.getSolidityGroup() & first.getCollisionMask();
     CollisionGroup secnd_mask = first.getSolidityGroup() & secnd.getCollisionMask();
 
-    if (first_mask == COL_NONE && secnd_mask == COL_NONE)
-        return false;
+    /*if (first_mask == COL_NONE && secnd_mask == COL_NONE)
+        return false;*/
 
     // Check intersection between objects (before a more precise computation)
     if (!ut::hasIntersection(first.getBoundingBox(), secnd.getBoundingBox()))
         return false;
 
+    data.first       = &first;
+    data.second      = &secnd;
     data.first_mask  = first_mask;
     data.second_mask = secnd_mask;
 

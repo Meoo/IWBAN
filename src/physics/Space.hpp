@@ -52,14 +52,6 @@ public:
     // TODO update
     void update(const sf::Time & delta, int passes);
 
-    /**
-     * Find every pair of bodies that could collide.
-     *
-     * This is a broad phase collision detection. Pairs found by this
-     * function may not be able to collide.
-     */
-    void computePairs(const PairCallback & callback) const;
-
     void testRay(const ut::Vector & begin, const ut::Vector & end,
                  const RayCallback & callback) const;
 
@@ -75,6 +67,15 @@ public:
 #ifndef NDEBUG
     void drawDebug(gfx::DebugContext & debug_context) const;
 #endif
+
+private:
+    /**
+     * Find every pair of bodies that could collide.
+     *
+     * This is a broad phase collision detection. Pairs found by this
+     * function may not be able to collide.
+     */
+    void computePairs(const PairCallback & callback) const;
 
 };
 // class Space

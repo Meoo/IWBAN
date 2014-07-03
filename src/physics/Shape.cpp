@@ -7,6 +7,8 @@
 
 #include <physics/Shape.hpp>
 
+#include <cmath>
+
 namespace phy
 {
 
@@ -38,6 +40,11 @@ bool Shape::collide(const Shape & first, const Shape & secnd,
         result.mtv.y = rec.h;
     else
         result.mtv.y = - rec.h;
+
+    if (std::fabs(result.mtv.x) < std::fabs(result.mtv.y))
+        result.mtv.y = 0;
+    else
+        result.mtv.x = 0;
 
     return true;
 }
