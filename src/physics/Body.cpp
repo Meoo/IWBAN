@@ -101,7 +101,7 @@ void Body::preUpdate(const sf::Time & delta)
 {
     _pressure = ut::Vector();
     _delta = ut::Vector();
-    _velocity += _acceleration * step_delta;
+    _velocity += _acceleration * delta.asSeconds();
 }
 
 void Body::postUpdate(const sf::Time & delta)
@@ -111,7 +111,7 @@ void Body::postUpdate(const sf::Time & delta)
 
 void Body::preStep(const sf::Time & step_delta)
 {
-    ut::Vector movement = (_velocity + _immediate_force) * step_delta;
+    ut::Vector movement = (_velocity + _immediate_force) * step_delta.asSeconds();
     _position += movement;
     _delta += movement;
 

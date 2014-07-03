@@ -27,6 +27,7 @@ namespace phy
 
 class Body;
 class Shape;
+class Space;
 
 namespace impl
 {
@@ -43,6 +44,8 @@ namespace impl
 class Body : public impl::ChildHook
 {
 public:
+	friend class Space;
+
     typedef impl::ChildList     ChildList;
 
 
@@ -123,12 +126,15 @@ public:
 
     ut::Rectangle   getBoundingBox() const;
 
+private:
+    // Private for Space
     void            preUpdate(const sf::Time & delta);
     void            postUpdate(const sf::Time & delta);
 
     void            preStep(const sf::Time & step_delta);
     void            postStep(const sf::Time & step_delta);
 
+    // Private
     void            moveTree(const ut::Vector & movement);
 
 
@@ -136,6 +142,7 @@ public:
     void            drawDebug(gfx::DebugContext & debug_context) const;
 #endif
 
+public:
     // Static functions
     /**
      * Compute the collision data between two bodies.
