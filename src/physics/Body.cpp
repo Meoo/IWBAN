@@ -104,11 +104,6 @@ void Body::preUpdate(const sf::Time & delta)
     _velocity += _acceleration * delta.asSeconds();
 }
 
-void Body::postUpdate(const sf::Time & delta)
-{
-    _immediate_force = ut::Vector();
-}
-
 void Body::preStep(const sf::Time & step_delta)
 {
     ut::Vector movement = (_velocity + _immediate_force) * step_delta.asSeconds();
@@ -119,14 +114,20 @@ void Body::preStep(const sf::Time & step_delta)
     moveTree(movement);
 }
 
+void Body::respond(const CollisionResult & result)
+{
+    // TODO Physics response
+    _position += result.force;
+    _velocity += result.force * 30;
+}
+
 void Body::postStep(const sf::Time & step_delta)
 {
 }
 
-void Body::respond(const CollisionResult & result)
+void Body::postUpdate(const sf::Time & delta)
 {
-    _position += result.force;
-    _velocity += result.force * 30;
+    _immediate_force = ut::Vector();
 }
 
 void Body::moveTree(const ut::Vector & movement)
@@ -165,8 +166,8 @@ bool Body::collide(const Body & first, const Body & secnd, CollisionData & data)
     CollisionGroup first_mask = secnd.getSolidityGroup() & first.getCollisionMask();
     CollisionGroup secnd_mask = first.getSolidityGroup() & secnd.getCollisionMask();
 
-    /*if (first_mask == COL_NONE && secnd_mask == COL_NONE)
-        return false;*/
+    if (first_mask == COL_NONE && secnd_mask == COL_NONE)
+        return false;
 
     // Check intersection between objects (before a more precise computation)
     if (!ut::hasIntersection(first.getBoundingBox(), secnd.getBoundingBox()))

@@ -135,12 +135,12 @@ public:
 private:
     // Private for Space
     void            preUpdate(const sf::Time & delta);
-    void            postUpdate(const sf::Time & delta);
-
     void            preStep(const sf::Time & step_delta);
-    void            postStep(const sf::Time & step_delta);
 
     void            respond(const CollisionResult & result);
+
+    void            postStep(const sf::Time & step_delta);
+    void            postUpdate(const sf::Time & delta);
 
     // Private
     void            moveTree(const ut::Vector & movement);

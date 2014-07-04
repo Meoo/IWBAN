@@ -7,6 +7,9 @@
 
 #include <physics/Space.hpp>
 
+#include <algorithm>
+#include <vector>
+
 namespace phy
 {
 
@@ -73,6 +76,7 @@ void Space::update(const sf::Time & delta, int passes)
             Body * first = const_cast<Body*>(collision.first);
             Body * secnd = const_cast<Body*>(collision.second);
 
+            // TODO Compute strength a better way, and change strength variable name?
             if (first->getMass() == 0)
             {
                 CollisionResult res_secnd;
@@ -80,6 +84,7 @@ void Space::update(const sf::Time & delta, int passes)
                 res_secnd.mask = collision.second_mask;
                 res_secnd.origin = collision.origin;
                 res_secnd.force = ut::Vector() - collision.mtv; // TODO Unary minus Vector
+                res_secnd.strength = 1;
 
                 secnd->respond(res_secnd);
             }
@@ -90,6 +95,7 @@ void Space::update(const sf::Time & delta, int passes)
                 res_first.mask = collision.first_mask;
                 res_first.origin = collision.origin;
                 res_first.force = collision.mtv;
+                res_first.strength = 1;
 
                 first->respond(res_first);
             }
@@ -103,6 +109,7 @@ void Space::update(const sf::Time & delta, int passes)
                     res_first.mask = collision.first_mask;
                     res_first.origin = collision.origin;
                     res_first.force = p;
+                    res_first.strength = 0.5f;
 
                     first->respond(res_first);
                 }
@@ -112,6 +119,7 @@ void Space::update(const sf::Time & delta, int passes)
                     res_secnd.mask = collision.second_mask;
                     res_secnd.origin = collision.origin;
                     res_secnd.force = ut::Vector() - p; // TODO Unary minus Vector
+                    res_secnd.strength = 0.5f;
 
                     secnd->respond(res_secnd);
                 }
@@ -132,14 +140,28 @@ void Space::computePairs(const PairCallback & callback) const
 {
     IWBAN_PRE(callback);
 
-    // TODO Use & refresh QuadTree
+    // Sort by x position
+    std::vector<Body *> bodies(_bodies.begin(), _bodies.end());
+    std::stable_sort(bodies.begin(), bodies.end(),
+        [](Body * a, Body * b)
+        {
+            return (a->getBoundingBox().x) < (b->getBoundingBox().x);
+        });
 
-    for (auto it = _bodies.begin(); it != _bodies.end(); ++it)
+    for (auto it = bodies.begin(); it != bodies.end(); ++it)
     {
+        ut::Rectangle abb = (*it)->getBoundingBox();
+        float l = abb.x + abb.w;
+
         auto it2 = it;
         ++it2;
-        for (; it2 != _bodies.end(); ++it2)
+        for (; it2 != bodies.end(); ++it2)
         {
+            // Stop when the right bound of
+            ut::Rectangle bbb = (*it2)->getBoundingBox();
+            if (bbb.x > l)
+                break;
+
             callback(**it, **it2);
         }
     }

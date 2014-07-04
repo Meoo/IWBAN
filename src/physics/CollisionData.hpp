@@ -42,6 +42,7 @@ public:
 
     ut::Vector      origin;
     ut::Vector      force;
+    float           strength;
 
 };
 // class CollisionResult
