@@ -33,8 +33,8 @@ void doubleBubbleSort(I begin, I end, C comparator = C())
         {
             if (comparator(*j, *i))
             {
-                std::swap(i, j);
-                done = i;
+                std::swap(*i, *j);
+                done = j;
             }
 
             i = j++;
@@ -52,10 +52,10 @@ void doubleBubbleSort(I begin, I end, C comparator = C())
         i = j--; // end
         while (i != begin)
         {
-            if (comparator(*i, *j))
+            if (comparator(*j, *i))
             {
-                std::swap(i, j);
-                done = j;
+                std::swap(*i, *j);
+                done = i;
             }
 
             j = i--;
