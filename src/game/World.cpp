@@ -36,7 +36,6 @@ void World::update()
     // TODO We do not do it after update so we can still render entities that just died (MAYBE?)
     cleanDeadEntities();
 
-    // Update entities
     updateEntities();
 
     spawnNewEntities();
@@ -44,22 +43,24 @@ void World::update()
     // Update the physical space
     _space.update(IWBAN_UPDATE_TIME, 4);
 
-    // Pump events
     pumpEvents();
+
+    // Sort the drawables
+    ut::doubleBubbleSort(_drawables.begin(), _drawables.end(),
+        [](const gfx::Drawable * a, const gfx::Drawable * b)
+        {
+            return a->getDepth() < b->getDepth();
+        });
 
 }
 
 void World::render(gfx::Renderer & renderer) const
 {
-    // Sort the drawables
-    ut::doubleBubbleSort(_drawables.begin(), _drawables.end(),
-                         gfx::Drawable::Comparator());
-
     gfx::DrawContext & draw = renderer.openDrawContext();
 
     // Draw every drawable in the DrawContext
-    for (const gfx::Drawable & drawable : _drawables)
-        draw.draw(drawable);
+    for (const gfx::Drawable * drawable : _drawables)
+        draw.draw(*drawable);
 
     draw.close();
 }

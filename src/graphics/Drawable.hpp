@@ -8,21 +8,13 @@
 
 #include <Global.hpp>
 
-#include <boost/intrusive/list.hpp>
-
 #include <SFML/Graphics.hpp>
 
 namespace gfx
 {
 
-class Drawable : public sf::Drawable,
-                 public boost::intrusive::list_base_hook<>
+class Drawable : public sf::Drawable
 {
-public:
-    class Comparator;
-    typedef boost::intrusive::list<Drawable> List;
-
-
 private:
     // Data members
     int     _depth;
@@ -35,15 +27,6 @@ public:
     // Getters / setters
     int     getDepth() const    { return _depth; }
     void    setDepth(int depth) { _depth = depth; }
-
-
-    class Comparator
-    {
-    public:
-        bool operator () (const Drawable & a, const Drawable & b) const
-            { return a.getDepth() < b.getDepth(); }
-    };
-    // class Comparator
 
 };
 // class Drawable

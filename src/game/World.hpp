@@ -53,6 +53,8 @@ public:
     };
     // class EventEntry
 
+    typedef std::list<gfx::Drawable *> DrawableList;
+
     typedef std::list<EventEntry> EventList;
 
     typedef std::array<Entity *, IWBAN_MAX_ENTITIES> EntityTable;
@@ -71,7 +73,7 @@ private:
 
     EventList           _event_list;
 
-    gfx::Drawable::List _drawables;
+    DrawableList        _drawables;
     phy::Space          _space;
 
 

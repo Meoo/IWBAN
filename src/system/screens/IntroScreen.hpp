@@ -19,7 +19,7 @@
 
 #include <cstdlib>
 
-#define N 1500
+#define N 1000
 
 namespace sys
 {
@@ -31,6 +31,9 @@ protected:
 
     ut::Rectangle   rect;
     phy::Shape *    shape;
+
+    ut::Rectangle   rect2;
+    phy::Shape *    shape2;
 
     phy::Body *     bodies[N];
 
@@ -89,12 +92,14 @@ protected:
     virtual void    onShow()
     {
         rect.h = rect.w = 10;
+        rect2.h = rect2.w = 16;
         shape = new phy::Box(rect);
+        shape2 = new phy::Box(rect2);
 
         for (unsigned i = 0; i < N; ++i)
         {
-            bodies[i] = new phy::Body(shape);
-            bodies[i]->setPosition(ut::Vector(40 + i / 3, (i % 30) * 11 + 70));
+            bodies[i] = new phy::Body(i % 7 ? shape : shape2);
+            bodies[i]->setPosition(ut::Vector(40 + i / 2, (i % 20) * 14 + 70));
             bodies[i]->setVelocity(ut::Vector(std::rand() % 200 - 100, std::rand() % 200 - 100));
             bodies[i]->setAcceleration({0, 150});
             bodies[i]->setMass(1);
@@ -145,6 +150,7 @@ protected:
             //delete bod_shadows[i];
         }
         delete shape;
+        delete shape2;
 
         space.remove(pbody);
         delete pbody;
