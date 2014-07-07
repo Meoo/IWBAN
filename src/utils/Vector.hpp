@@ -10,6 +10,8 @@
 
 #include <SFML/System/Vector2.hpp>
 
+#include <cmath>
+
 namespace ut
 {
 
@@ -27,6 +29,16 @@ public:
 
     float x;
     float y;
+
+    constexpr bool isNull() const
+    {
+        return !x && !y;
+    }
+
+    constexpr float getLength() const
+    {
+        return std::sqrt(x * x + y * y);
+    }
 };
 
 constexpr Vector operator+(const Vector & a, const Vector & b)
@@ -37,6 +49,11 @@ constexpr Vector operator+(const Vector & a, const Vector & b)
 constexpr Vector operator-(const Vector & a, const Vector & b)
 {
     return Vector(a.x - b.x, a.y - b.y);
+}
+
+constexpr Vector operator-(const Vector & a)
+{
+    return Vector(- a.x, - a.y);
 }
 
 template<typename T>
@@ -63,6 +80,32 @@ inline Vector & operator-=(Vector & a, const Vector & b)
     a.x -= b.x;
     a.y -= b.y;
     return a;
+}
+
+constexpr float dot(const Vector & a, const Vector & b)
+{
+    return a.x * b.x + a.y * b.y;
+}
+
+// Project a on b
+inline Vector project(const Vector & a, const Vector & b)
+{
+    IWBAN_PRE(!b.isNull());
+
+    if (a.isNull())
+        return Vector();
+
+    float prod = dot(a, b) / (b.x * b.x + b.y * b.y);
+    return Vector(b.x * prod, b.y * prod);
+}
+
+inline Vector normalize(const Vector & a)
+{
+    // TODO Throw instead
+    IWBAN_PRE(!a.isNull());
+
+    float len = a.getLength();
+    return Vector(a.x / len, a.y / len);
 }
 
 }
