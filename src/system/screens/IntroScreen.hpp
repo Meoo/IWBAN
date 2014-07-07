@@ -19,7 +19,7 @@
 
 #include <cstdlib>
 
-#define N 1000
+#define N 150
 
 namespace sys
 {
@@ -99,12 +99,12 @@ protected:
         for (unsigned i = 0; i < N; ++i)
         {
             bodies[i] = new phy::Body(i % 7 ? shape : shape2);
-            bodies[i]->setPosition(ut::Vector(40 + i / 2, (i % 20) * 14 + 70));
+            bodies[i]->setPosition(ut::Vector(40 + i * 3, (i % 20) * 17 + 70));
             bodies[i]->setVelocity(ut::Vector(std::rand() % 200 - 100, std::rand() % 200 - 100));
             bodies[i]->setAcceleration({0, 150});
             bodies[i]->setMass(1);
-            bodies[i]->setCollisionMask(phy::COL_WORLD | (i % 2 ? phy::COL_ENEMY : phy::COL_PLAYER));
-            bodies[i]->setSolidityGroup(i % 2 ? phy::COL_ENEMY : phy::COL_PLAYER);
+            bodies[i]->setCollisionMask(phy::COL_WORLD | phy::COL_PLAYER);
+            bodies[i]->setSolidityGroup(phy::COL_PLAYER);
             space.add(bodies[i]);
 
             /*bod_shadows[i] = new gfx::ShadowVolume();
