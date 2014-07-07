@@ -32,19 +32,37 @@ bool Shape::collide(const Shape & first, const Shape & secnd,
     result.origin = orig;
 
     if (first_bb.x > secnd_bb.x)
+    {
         result.mtv.x = rec.w;
+        result.normal.x = 1;
+    }
     else
+    {
         result.mtv.x = - rec.w;
+        result.normal.x = -1;
+    }
 
     if (first_bb.y > secnd_bb.y)
+    {
         result.mtv.y = rec.h;
+        result.normal.y = 1;
+    }
     else
+    {
         result.mtv.y = - rec.h;
+        result.normal.y = -1;
+    }
 
     if (std::fabs(result.mtv.x) < std::fabs(result.mtv.y))
+    {
         result.mtv.y = 0;
+        result.normal.y = 0;
+    }
     else
+    {
         result.mtv.x = 0;
+        result.normal.x = 0;
+    }
 
     return true;
 }

@@ -80,22 +80,28 @@ void Space::update(const sf::Time & delta, int passes)
             if (first->getMass() == 0)
             {
                 CollisionResult res_secnd;
-                res_secnd.body = first;
-                res_secnd.mask = collision.second_mask;
-                res_secnd.origin = collision.origin;
-                res_secnd.force = ut::Vector() - collision.mtv; // TODO Unary minus Vector
-                res_secnd.strength = 1;
+                res_secnd.body      = first;
+                res_secnd.body_position = first->_position;
+                res_secnd.body_velocity = first->_velocity;
+                res_secnd.mask      = collision.second_mask;
+                res_secnd.origin    = collision.origin;
+                res_secnd.normal    = - collision.normal;
+                res_secnd.force     = - collision.mtv;
+                res_secnd.strength  = 1;
 
                 secnd->respond(res_secnd);
             }
             else if (secnd->getMass() == 0)
             {
                 CollisionResult res_first;
-                res_first.body = secnd;
-                res_first.mask = collision.first_mask;
-                res_first.origin = collision.origin;
-                res_first.force = collision.mtv;
-                res_first.strength = 1;
+                res_first.body      = secnd;
+                res_first.body_position = secnd->_position;
+                res_first.body_velocity = secnd->_velocity;
+                res_first.mask      = collision.first_mask;
+                res_first.origin    = collision.origin;
+                res_first.normal    = collision.normal;
+                res_first.force     = collision.mtv;
+                res_first.strength  = 1;
 
                 first->respond(res_first);
             }
@@ -103,26 +109,28 @@ void Space::update(const sf::Time & delta, int passes)
             {
                 ut::Vector p = collision.mtv / 2;
 
-                {
-                    CollisionResult res_first;
-                    res_first.body = secnd;
-                    res_first.mask = collision.first_mask;
-                    res_first.origin = collision.origin;
-                    res_first.force = p;
-                    res_first.strength = 0.5f;
+                CollisionResult res_first;
+                res_first.body      = secnd;
+                res_first.body_position = secnd->_position;
+                res_first.body_velocity = secnd->_velocity;
+                res_first.mask      = collision.first_mask;
+                res_first.origin    = collision.origin;
+                res_first.normal    = collision.normal;
+                res_first.force     = p;
+                res_first.strength  = 0.5f;
 
-                    first->respond(res_first);
-                }
-                {
-                    CollisionResult res_secnd;
-                    res_secnd.body = first;
-                    res_secnd.mask = collision.second_mask;
-                    res_secnd.origin = collision.origin;
-                    res_secnd.force = ut::Vector() - p; // TODO Unary minus Vector
-                    res_secnd.strength = 0.5f;
+                CollisionResult res_secnd;
+                res_secnd.body      = first;
+                res_secnd.body_position = first->_position;
+                res_secnd.body_velocity = first->_velocity;
+                res_secnd.mask      = collision.second_mask;
+                res_secnd.origin    = collision.origin;
+                res_secnd.normal    = - collision.normal;
+                res_secnd.force     = - p;
+                res_secnd.strength  = 0.5f;
 
-                    secnd->respond(res_secnd);
-                }
+                first->respond(res_first);
+                secnd->respond(res_secnd);
             }
         }
 

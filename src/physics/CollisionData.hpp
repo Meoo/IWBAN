@@ -27,6 +27,7 @@ public:
     CollisionGroup  second_mask;
 
     ut::Vector      origin;
+    ut::Vector      normal;
     ut::Vector      mtv;    // Minimum Translation Vector
 
 };
@@ -38,9 +39,13 @@ class CollisionResult
 {
 public:
     const Body *    body;
+    ut::Vector      body_position;
+    ut::Vector      body_velocity;
+
     CollisionGroup  mask;
 
     ut::Vector      origin;
+    ut::Vector      normal;
     ut::Vector      force;
     float           strength;
 
