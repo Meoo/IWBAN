@@ -21,14 +21,14 @@ namespace ut
 class Vector
 {
 public:
-    constexpr Vector() : x(0), y(0) {}
+    constexpr Vector() {}
     constexpr Vector(float x, float y) : x(x), y(y) {}
 
     constexpr Vector(const sf::Vector2f & vec) : x(vec.x), y(vec.y) {}
     operator sf::Vector2f() const { return sf::Vector2f(x, y); }
 
-    float x;
-    float y;
+    float x = 0;
+    float y = 0;
 
     constexpr bool isNull() const
     {

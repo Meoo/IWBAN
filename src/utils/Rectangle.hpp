@@ -8,16 +8,24 @@
 
 #include <Global.hpp>
 
+#include <SFML/Graphics/Rect.hpp>
+
 namespace ut
 {
 
 class Rectangle
 {
 public:
-    float x;
-    float y;
-    float w;
-    float h;
+    constexpr Rectangle() {}
+
+    constexpr Rectangle(const sf::FloatRect & rec)
+        : x(rec.left), y(rec.top), w(rec.width), h(rec.height) {}
+    operator sf::FloatRect() const { return sf::FloatRect(x, y, w, h); }
+
+    float x = 0;
+    float y = 0;
+    float w = 0;
+    float h = 0;
 
     bool isEmpty()
     {
