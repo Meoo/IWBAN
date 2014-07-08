@@ -47,7 +47,7 @@ void Label::draw(gfx::GuiContext & context) const
     context.draw(text);
 }
 
-void Label::setText(const std::string & string_key)
+void Label::loadText(const std::string & string_key)
 {
     _key = string_key;
     _text.setString(res::getLocale().getString(string_key));

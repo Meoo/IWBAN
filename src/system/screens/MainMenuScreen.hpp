@@ -38,19 +38,19 @@ public:
 
         res::getLocale().loadFile("system/menu.txt");
 
-        _newgame.setText("menu.newgame");
+        _newgame.loadText("menu.newgame");
         _newgame.setCallback([this](){ onNewGame(); });
         _newgame.setPosition({320, 240});
 
-        _continue.setText("menu.continue");
+        _continue.loadText("menu.continue");
         _continue.setCallback([this](){ onContinue(); });
         _continue.setPosition({320, 280});
 
-        _options.setText("menu.options");
+        _options.loadText("menu.options");
         _options.setCallback([this](){ onOptions(); });
         _options.setPosition({320, 320});
 
-        _quit.setText("menu.quit");
+        _quit.loadText("menu.quit");
         _quit.setCallback([this](){ onQuit(); });
         _quit.setPosition({320, 360});
 

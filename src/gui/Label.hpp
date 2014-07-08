@@ -41,7 +41,7 @@ public:
 
     void        setShadow(bool shadow) { _shadow = shadow; }
 
-    void        setText(const std::string & string_key);
+    void        loadText(const std::string & string_key);
     void        setTextColor(const sf::Color & color) { _text.setColor(color); }
     void        setCharacterSize(unsigned size) { _text.setCharacterSize(size); }
 

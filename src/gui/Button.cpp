@@ -92,7 +92,7 @@ void Button::dispatchAction(sys::ActionId action)
         _action();
 }
 
-void Button::setText(const std::string & string_key)
+void Button::loadText(const std::string & string_key)
 {
     _key = string_key;
     _text.setString(res::getLocale().getString(string_key));
