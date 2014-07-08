@@ -10,7 +10,7 @@
 
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
-#include <system/screens/OptionsMenuScreen.hpp>
+#include <system/screens/options/OptionsMenuScreen.hpp>
 #include <system/screens/IntroScreen.hpp>
 
 #include <gui/Button.hpp>
@@ -34,8 +34,6 @@ public:
     // Constructor
     MainMenuScreen()
     {
-        const ut::Vector choice_box(300, 40);
-
         res::getLocale().loadFile("system/menu.txt");
 
         _newgame.loadText("menu.newgame");

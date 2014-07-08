@@ -17,6 +17,7 @@ class Rectangle
 {
 public:
     constexpr Rectangle() {}
+    constexpr Rectangle(float x, float y, float w, float h) : x(x), y(y), w(w), h(h) {}
 
     constexpr Rectangle(const sf::FloatRect & rec)
         : x(rec.left), y(rec.top), w(rec.width), h(rec.height) {}

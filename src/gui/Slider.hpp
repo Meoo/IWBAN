@@ -33,14 +33,16 @@ private:
     ut::Vector          _position;
     ut::Vector          _size;
 
-    int                 _value;
-    int                 _value_min;
-    int                 _value_max;
-    int                 _step;
+    int                 _value     = 50;
+    int                 _value_min = 0;
+    int                 _value_max = 100;
+    int                 _step      = 10;
 
 
 public:
     // Constructor
+    Slider();
+
     Slider(const ut::Vector & size,
            int min, int max, int step, int value);
 
@@ -50,17 +52,18 @@ public:
     virtual void select();
     virtual void deselect();
 
+    virtual ut::Rectangle getBounds() const;
+
     void        setCallback(const ValueCallback & func) { _action = func; }
     virtual void dispatchAction(sys::ActionId action);
 
     void        setShadow(bool shadow) { _shadow = shadow; }
 
-    void        setSize(const ut::Vector & size) { _size = size; }
-
+    void        setSize(const ut::Vector & size);
     virtual void setPosition(const ut::Vector & position);
 
-    int getValue() const { return _value; }
-    void setValue(int value) { _value = value; updateValue(); }
+    int         getValue() const { return _value; }
+    void        setValue(int value) { _value = value; updateValue(); }
 
     virtual void    refresh();
 

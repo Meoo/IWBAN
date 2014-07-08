@@ -12,6 +12,7 @@ namespace gui
 
 void Navigation::dispatchAction(sys::ActionId action)
 {
+    // TODO Fix being able to select and use disabled options
     if (_selected)
     {
         NavigationEntry & entry = _table[_selected];

@@ -10,6 +10,17 @@
 namespace gui
 {
 
+Slider::Slider()
+{
+    _border.setOutlineThickness(-3);
+    _border.setOutlineColor(sf::Color(196, 196, 196));
+    _border.setFillColor(sf::Color::Transparent);
+
+    _center.setFillColor(sf::Color(128, 128, 128+32));
+
+    updateValue();
+}
+
 Slider::Slider(const ut::Vector & size,
                int min, int max, int step, int value)
     : _size(size), _value(value), _value_min(min), _value_max(max), _step(step)
@@ -50,6 +61,11 @@ void Slider::deselect()
     _center.setFillColor(sf::Color(128, 128, 128+32));
 }
 
+ut::Rectangle Slider::getBounds() const
+{
+    return ut::Rectangle(_position.x, _position.y, _size.x, _size.y);
+}
+
 void Slider::dispatchAction(sys::ActionId action)
 {
     if (action == sys::ACT_LEFT && _value > _value_min)
@@ -78,10 +94,19 @@ void Slider::dispatchAction(sys::ActionId action)
     }
 }
 
+void Slider::setSize(const ut::Vector & size)
+{
+    _size = size;
+    _border.setSize(size);
+    _border.setPosition(_position - _size / 2);
+    _center.setPosition(_position - _size / 2);
+}
+
 void Slider::setPosition(const ut::Vector & position)
 {
-    _border.setPosition(position);
-    _center.setPosition(position);
+    _position = position;
+    _border.setPosition(_position - _size / 2);
+    _center.setPosition(_position - _size / 2);
 }
 
 void Slider::refresh()
