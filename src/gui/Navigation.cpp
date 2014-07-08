@@ -49,6 +49,9 @@ void Navigation::dispatchMouseMove(const ut::Vector & position)
 {
     for (auto it : _table)
     {
+        if (!it.first->isEnabled())
+            continue;
+
         ut::Rectangle bounds = it.first->getBounds();
 
         if (position.x >= bounds.x
