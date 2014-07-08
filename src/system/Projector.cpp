@@ -73,5 +73,15 @@ void Projector::render(gfx::Renderer & renderer, const sf::Time & render_time) c
     _current_screen->onRender(renderer, render_time);
 }
 
+void Projector::mouseMove(const ut::Vector & position)
+{
+    _current_screen->onMouseMove(position);
+}
+
+void Projector::mouseClick(const ut::Vector & position)
+{
+    _current_screen->onMouseClick(position);
+}
+
 }
 // namespace sys

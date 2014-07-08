@@ -227,6 +227,15 @@ void Display::run(sys::Projector & projector)
                     getGamepad().onAxisMoved(event.joystickMove.axis, event.joystickMove.position);
                 break;
 
+            case sf::Event::MouseMoved:
+                projector.mouseMove(_window.mapPixelToCoords({event.mouseButton.x, event.mouseButton.y}));
+                break;
+
+            case sf::Event::MouseButtonPressed:
+                if (event.mouseButton.button == sf::Mouse::Left)
+                    projector.mouseClick(_window.mapPixelToCoords({event.mouseButton.x, event.mouseButton.y}));
+                break;
+
             case sf::Event::GainedFocus:
                 IWBAN_LOG_DEBUG("Focus gained\n");
                 break;

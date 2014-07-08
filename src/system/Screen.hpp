@@ -44,6 +44,9 @@ protected:
     virtual void    onShow() {}
     virtual void    onHide() {}
 
+    virtual void    onMouseMove(const ut::Vector & position) {}
+    virtual void    onMouseClick(const ut::Vector & position) {}
+
     // Internal functions
     Projector *         getProjector()          { return _projector; }
     const Projector *   getProjector() const    { return _projector; }

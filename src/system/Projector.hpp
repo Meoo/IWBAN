@@ -37,8 +37,10 @@ public:
     void    setScreen(Screen * screen);
 
     void    update(const sf::Time & update_time);
-
     void    render(gfx::Renderer & renderer, const sf::Time & render_time) const;
+
+    void    mouseMove(const ut::Vector & position);
+    void    mouseClick(const ut::Vector & position);
 
 };
 // class Projector
