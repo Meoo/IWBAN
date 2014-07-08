@@ -8,14 +8,9 @@
 
 #include <Global.hpp>
 
-#include <config/GamepadConfig.hpp>
-#include <config/KeyboardConfig.hpp>
-
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
 #include <system/Time.hpp>
-#include <system/inputs/Gamepad.hpp>
-#include <system/inputs/Keyboard.hpp>
 
 #include <gui/Button.hpp>
 #include <gui/Label.hpp>
