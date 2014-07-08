@@ -64,7 +64,7 @@ void Display::open()
     // Window properties
     _window.setFramerateLimit(cfg::framerate);
     _window.setVerticalSyncEnabled(cfg::vsync);
-    _window.setMouseCursorVisible(false);
+    //_window.setMouseCursorVisible(false);
     _window.setKeyRepeatEnabled(false);
 
     // Window icon
@@ -228,12 +228,12 @@ void Display::run(sys::Projector & projector)
                 break;
 
             case sf::Event::MouseMoved:
-                projector.mouseMove(_window.mapPixelToCoords({event.mouseButton.x, event.mouseButton.y}));
+                projector.mouseMove(_window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y)));
                 break;
 
             case sf::Event::MouseButtonPressed:
                 if (event.mouseButton.button == sf::Mouse::Left)
-                    projector.mouseClick(_window.mapPixelToCoords({event.mouseButton.x, event.mouseButton.y}));
+                    projector.mouseClick(_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y)));
                 break;
 
             case sf::Event::GainedFocus:

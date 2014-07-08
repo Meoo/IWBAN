@@ -45,6 +45,51 @@ void Navigation::dispatchAction(sys::ActionId action)
     }
 }
 
+void Navigation::dispatchMouseMove(const ut::Vector & position)
+{
+    for (auto it : _table)
+    {
+        ut::Rectangle bounds = it.first->getBounds();
+
+        if (position.x >= bounds.x
+         && position.y >= bounds.y
+         && position.x <= bounds.x + bounds.w
+         && position.y <= bounds.y + bounds.h)
+        {
+            if (_selected)
+            {
+                if (_selected == it.first)
+                    return;
+
+                _selected->deselect();
+                _selected = it.first;
+                _selected->select();
+            }
+            else
+            {
+                _selected = it.first;
+                _selected->select();
+            }
+            return;
+        }
+    }
+}
+
+void Navigation::dispatchMouseClick(const ut::Vector & position)
+{
+    if (_selected)
+    {
+        ut::Rectangle bounds = _selected->getBounds();
+        if (position.x >= bounds.x
+         && position.y >= bounds.y
+         && position.x <= bounds.x + bounds.w
+         && position.y <= bounds.y + bounds.h)
+        {
+            _selected->dispatchAction(sys::ACT_ACCEPT);
+        }
+    }
+}
+
 void Navigation::addVertical(Selectable * up, Selectable * down)
 {
     IWBAN_PRE_PTR(up);

@@ -92,6 +92,16 @@ protected:
         gui.close();
     }
 
+    virtual void onMouseMove(const ut::Vector & position)
+    {
+        _navi.dispatchMouseMove(position);
+    }
+
+    virtual void onMouseClick(const ut::Vector & position)
+    {
+        _navi.dispatchMouseClick(position);
+    }
+
     void onNewGame()
     {
         // TODO Go to new game screen

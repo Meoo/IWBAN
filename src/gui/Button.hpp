@@ -61,6 +61,8 @@ public:
     virtual void    select();
     virtual void    deselect();
 
+    virtual ut::Rectangle getBounds() const;
+
     virtual void    dispatchAction(sys::ActionId action);
 
     void        setCallback(const ActionCallback & func) { _action = func; }

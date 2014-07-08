@@ -74,6 +74,18 @@ void Button::deselect()
     setTextColor(_idle_color);
 }
 
+ut::Rectangle Button::getBounds() const
+{
+    sf::Text text(_text);
+    sf::FloatRect rect = text.getLocalBounds();
+    unsigned sz = text.getCharacterSize();
+
+    text.setPosition((int) (_position.x - rect.width / 2 - rect.left),
+                     (int) (_position.y - sz / 2 - rect.top));
+
+    return text.getGlobalBounds();
+}
+
 void Button::dispatchAction(sys::ActionId action)
 {
     if (action == sys::ACT_ACCEPT && _action)

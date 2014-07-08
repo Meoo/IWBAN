@@ -10,6 +10,8 @@
 
 #include <gui/Element.hpp>
 
+#include <utils/Rectangle.hpp>
+
 namespace gui
 {
 
@@ -24,6 +26,8 @@ public:
 
     virtual void    select() {}
     virtual void    deselect() {}
+
+    virtual ut::Rectangle getBounds() const = 0;
 
     virtual void    dispatchAction(sys::ActionId action) {}
 

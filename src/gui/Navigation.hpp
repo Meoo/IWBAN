@@ -45,6 +45,9 @@ public:
     // Functions
     void    dispatchAction(sys::ActionId action);
 
+    void    dispatchMouseMove(const ut::Vector & position);
+    void    dispatchMouseClick(const ut::Vector & position);
+
     // Add connections
     void    addVertical(Selectable * up, Selectable * down);
     void    addHorizontal(Selectable * left, Selectable * right);
