@@ -118,15 +118,16 @@ void Body::respond(const CollisionResult & result)
 {
     // TODO Physics response
     _position += result.force;
+    _delta += result.force;
 
     // Right hand normal
     ut::Vector rhnorm = ut::Vector(result.normal.y, - result.normal.x);
     ut::Vector deltav = (_velocity - result.body_velocity) * result.strength;
 
     ut::Vector up = ut::project(deltav, result.normal);
-    ut::Vector side = ut::project(deltav, rhnorm);
+    ut::Vector side = ut::project(_velocity, rhnorm);
 
-    _velocity = side * .97f - up * .3f;
+    _velocity = side * .99f - up * .3f;
 }
 
 void Body::postStep(const sf::Time & step_delta)
