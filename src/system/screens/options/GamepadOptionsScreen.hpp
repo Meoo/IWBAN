@@ -37,17 +37,20 @@ private:
 
     gui::Slider _sensibility;
 
+    Screen * _previous_menu;
+
 
 public:
     // Constructor
-    GamepadOptionsScreen()
+    GamepadOptionsScreen(Screen * previous_menu)
+        : _previous_menu(previous_menu)
     {
         res::getLocale().loadFile("system/gamepad.txt");
 
         // Title
         _title.loadText("options.gamepad");
         _title.setCharacterSize(50);
-        _title.setPosition({320, 40});
+        _title.setPosition({320, 50});
 
         // Quit
         _quit.loadText("options.return");
@@ -109,6 +112,17 @@ protected:
     // Callbacks
     virtual void onUpdate(const sf::Time & update_time)
     {
+        // If menu is pressed, return to previous menu
+        if (getControls().getAction(ACT_MENU).isJustActivated())
+        {
+            onQuit();
+            return;
+        }
+
+        for (unsigned i = 0; i < ACT_COUNT; ++i)
+            if (getControls().getAction((ActionId) i).isJustActivated())
+                _navi.dispatchAction((ActionId) i);
+
 /*        if (_state == ST_OPTIONS && _gamepad_state_timer < update_time)
         {
             if (sf::Joystick::isConnected(0))
@@ -244,8 +258,8 @@ protected:
 
     void onQuit()
     {
-        // TODO Quit
-        _quit.setTextColor(sf::Color::Red);
+        setNextScreen(_previous_menu);
+        _navi.reset();
     }
 
 /*    void updateThresh(unsigned value)

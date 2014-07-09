@@ -1,10 +1,10 @@
 /**
- * @file   VideoOptionsScreen.hpp
+ * @file   LanguageSelectionScreen.hpp
  * @author Bastien Brunnenstein
  */
 
-#ifndef _IWBAN_VIDEOOPTIONSSCREEN_HPP_
-#define _IWBAN_VIDEOOPTIONSSCREEN_HPP_
+#ifndef _IWBAN_LANGUAGESELECTIONSCREEN_HPP_
+#define _IWBAN_LANGUAGESELECTIONSCREEN_HPP_
 
 #include <Global.hpp>
 
@@ -18,7 +18,7 @@
 namespace sys
 {
 
-class VideoOptionsScreen : public Screen
+class LanguageSelectionScreen : public Screen
 {
 private:
     // Data members
@@ -33,11 +33,11 @@ private:
 
 public:
     // Constructor
-    VideoOptionsScreen(Screen * previous_menu)
+    LanguageSelectionScreen(Screen * previous_menu)
         : _previous_menu(previous_menu)
     {
         // Title
-        _title.loadText("options.video");
+        _title.loadText("options.language");
         _title.setCharacterSize(50);
         _title.setPosition({320, 50});
 
@@ -49,26 +49,10 @@ public:
         // Navigation
         _navi.setHead(&_quit);
 
-        /* TODO _mode = new gui::Selector();
-        _mode->addEntry(0, "video.windowed");
-        _mode->addEntry(1, "video.fullscreen");
-        _mode->addEntry(2, "video.borderless");
-        _mode->setAction([this](int mode){ cfg::fullscreen = mode; });
-        _video_menu->add(new gui::Line({
-            new gui::Frame(ut::Vector(200, 40), new gui::Choice("video.mode")),
-            new gui::Frame(ut::Vector(400, 40), _mode)
-        }));*/
-
-        /*{
-            gui::Choice * reset = new gui::Choice("options.defaults");
-            reset->setAction([this](){ / * TODO Video defaults * / });
-            _video_menu->add(new gui::Separator(ut::Vector(400, 10)));
-            _video_menu->add(new gui::Frame(ut::Vector(400, 40), reset));
-        }*/
     }
 
     // Destructor
-    virtual ~VideoOptionsScreen() {}
+    virtual ~LanguageSelectionScreen() {}
 
 
 protected:
@@ -122,9 +106,9 @@ protected:
     }
 
 };
-// class VideoOptionsScreen
+// class LanguageSelectionScreen
 
 }
 // namespace sys
 
-#endif // _IWBAN_VIDEOOPTIONSSCREEN_HPP_
+#endif // _IWBAN_LANGUAGESELECTIONSCREEN_HPP_

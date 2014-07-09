@@ -11,6 +11,10 @@
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
 #include <system/Time.hpp>
+#include <system/screens/options/GamepadOptionsScreen.hpp>
+#include <system/screens/options/KeyboardOptionsScreen.hpp>
+#include <system/screens/options/LanguageSelectionScreen.hpp>
+#include <system/screens/options/VideoOptionsScreen.hpp>
 
 #include <gui/Button.hpp>
 #include <gui/Label.hpp>
@@ -37,6 +41,11 @@ private:
 
     gui::Slider _volume;
 
+    LanguageSelectionScreen _language_selection = LanguageSelectionScreen(this);
+    VideoOptionsScreen      _video_options = VideoOptionsScreen(this);
+    KeyboardOptionsScreen   _keyboard_options = KeyboardOptionsScreen(this);
+    GamepadOptionsScreen    _gamepad_options = GamepadOptionsScreen(this);
+
 
 public:
     // Constructor
@@ -47,7 +56,7 @@ public:
         // Title
         _title.loadText("menu.options");
         _title.setCharacterSize(50);
-        _title.setPosition({320, 40});
+        _title.setPosition({320, 50});
 
         // Language
         _language_sub.loadText("options.language");
@@ -176,26 +185,22 @@ protected:
 
     void onLanguage()
     {
-        // TODO Video
-        _language_sub.setTextColor(sf::Color::Red);
+        setNextScreen(&_language_selection);
     }
 
     void onVideo()
     {
-        // TODO Video
-        _video_sub.setTextColor(sf::Color::Red);
+        setNextScreen(&_video_options);
     }
 
     void onKeyboard()
     {
-        // TODO Keyboard
-        _keyboard_sub.setTextColor(sf::Color::Red);
+        setNextScreen(&_keyboard_options);
     }
 
     void onGamepad()
     {
-        // TODO Gamepad
-        _gamepad_sub.setTextColor(sf::Color::Red);
+        setNextScreen(&_gamepad_options);
     }
 
     void onQuit()
