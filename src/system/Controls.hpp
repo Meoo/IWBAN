@@ -24,7 +24,6 @@ enum ActionId
 
     // Menu actions
     ACT_ACCEPT,
-    ACT_CANCEL,
     ACT_MENU,
 
     // Navigation actions

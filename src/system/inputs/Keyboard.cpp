@@ -24,7 +24,7 @@ void Keyboard::mapKeyToAction(sf::Keyboard::Key key, ActionId action)
     IWBAN_PRE(action < ACT_COUNT);
 
     // Ignore navigation actions
-    if (action == ACT_ACCEPT || action == ACT_CANCEL || action == ACT_MENU)
+    if (action == ACT_ACCEPT || action == ACT_MENU)
     {
         IWBAN_LOG_WARNING("Trying to set a navigation action\n");
         return;
@@ -34,7 +34,6 @@ void Keyboard::mapKeyToAction(sf::Keyboard::Key key, ActionId action)
     switch (key)
     {
     case IWBAN_KEYBOARD_ACCEPT:
-    case IWBAN_KEYBOARD_CANCEL:
     case IWBAN_KEYBOARD_MENU:
     case IWBAN_KEYBOARD_UP:
     case IWBAN_KEYBOARD_DOWN:
@@ -127,10 +126,6 @@ void Keyboard::onKeyPressed(sf::Keyboard::Key key)
         id = ACT_ACCEPT;
         break;
 
-    case IWBAN_KEYBOARD_CANCEL:
-        id = ACT_CANCEL;
-        break;
-
     case IWBAN_KEYBOARD_MENU:
         id = ACT_MENU;
         break;
@@ -163,10 +158,6 @@ void Keyboard::onKeyPressed(sf::Keyboard::Key key)
         _controls.getAction(ACT_ACCEPT).activate();
         break;
 
-    case ACT_FIRE:
-        _controls.getAction(ACT_CANCEL).activate();
-        break;
-
     case ACT_COUNT:
         // Do nothing
         break;
@@ -188,10 +179,6 @@ void Keyboard::onKeyReleased(sf::Keyboard::Key key)
     {
     case IWBAN_KEYBOARD_ACCEPT:
         id = ACT_ACCEPT;
-        break;
-
-    case IWBAN_KEYBOARD_CANCEL:
-        id = ACT_CANCEL;
         break;
 
     case IWBAN_KEYBOARD_MENU:
@@ -224,10 +211,6 @@ void Keyboard::onKeyReleased(sf::Keyboard::Key key)
     {
     case ACT_JUMP:
         _controls.getAction(ACT_ACCEPT).deactivate();
-        break;
-
-    case ACT_FIRE:
-        _controls.getAction(ACT_CANCEL).deactivate();
         break;
 
     case ACT_COUNT:

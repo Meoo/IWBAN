@@ -24,7 +24,7 @@ void Gamepad::mapButtonToAction(Button button, ActionId action)
     IWBAN_PRE(action < ACT_COUNT);
 
     // Ignore navigation actions
-    if (action == ACT_ACCEPT || action == ACT_CANCEL || action == ACT_MENU)
+    if (action == ACT_ACCEPT || action == ACT_MENU)
     {
         IWBAN_LOG_WARNING("Trying to set a navigation action\n");
         return;
@@ -109,10 +109,6 @@ void Gamepad::onButtonPressed(unsigned button)
         _controls.getAction(ACT_ACCEPT).activate();
         break;
 
-    case IWBAN_GAMEPAD_CANCEL:
-        _controls.getAction(ACT_CANCEL).activate();
-        break;
-
     case IWBAN_GAMEPAD_MENU:
         _controls.getAction(ACT_MENU).activate();
         break;
@@ -137,10 +133,6 @@ void Gamepad::onButtonReleased(unsigned button)
     {
     case IWBAN_GAMEPAD_ACCEPT:
         _controls.getAction(ACT_ACCEPT).deactivate();
-        break;
-
-    case IWBAN_GAMEPAD_CANCEL:
-        _controls.getAction(ACT_CANCEL).deactivate();
         break;
 
     case IWBAN_GAMEPAD_MENU:
@@ -194,6 +186,7 @@ void Gamepad::onAxisMoved(sf::Joystick::Axis axis, float position)
     // Vertical
     case sf::Joystick::PovY:
         position = - position; // For some reason PovY is inverted
+        // No break
 
     case sf::Joystick::Y:
 

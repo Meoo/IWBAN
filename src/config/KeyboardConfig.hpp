@@ -16,7 +16,6 @@
 
 // Fixed configuration
 #define IWBAN_KEYBOARD_ACCEPT   sf::Keyboard::Return
-#define IWBAN_KEYBOARD_CANCEL   sf::Keyboard::BackSpace
 #define IWBAN_KEYBOARD_MENU     sf::Keyboard::Escape
 
 #define IWBAN_KEYBOARD_UP       sf::Keyboard::Up
