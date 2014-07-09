@@ -74,6 +74,18 @@ protected:
     {
     }
 
+    virtual void onMouseClick(const ut::Vector & position)
+    {
+        if (_skippable
+         && position.x > 0 && position.y > 0
+         && position.x < IWBAN_FRAME_WIDTH
+         && position.y < IWBAN_FRAME_HEIGHT)
+        {
+            setNextScreen(_next_screen);
+            dispose();
+        }
+    }
+
     // Accessors
     void setSkippable(bool skippable) { _skippable = skippable; }
 
