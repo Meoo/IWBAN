@@ -41,7 +41,6 @@ protected:
         if (update_time - _begin_time >= _duration
          || (_skippable
            && (getControls().getAction(ACT_ACCEPT).isJustActivated()
-            || getControls().getAction(ACT_CANCEL).isJustActivated()
             || getControls().getAction(ACT_MENU).isJustActivated())))
         {
             setNextScreen(_next_screen);
