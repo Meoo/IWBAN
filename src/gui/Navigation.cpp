@@ -12,38 +12,52 @@ namespace gui
 
 void Navigation::dispatchAction(sys::ActionId action)
 {
-    // TODO Fix being able to select and use disabled options
     if (_selected)
     {
-        NavigationEntry & entry = _table[_selected];
+        Selectable * target = _selected;
 
-        if (action == sys::ACT_UP && entry.up)
+        // Loop until it find a suitable entry or reach an end
+        do
         {
-            _selected->deselect();
-            _selected = entry.up;
-            _selected->select();
+            switch (action)
+            {
+            case sys::ACT_UP:
+                target = _table[target].up;
+                break;
+
+            case sys::ACT_DOWN:
+                target = _table[target].down;
+                break;
+
+            case sys::ACT_LEFT:
+                target = _table[target].left;
+                break;
+
+            case sys::ACT_RIGHT:
+                target = _table[target].right;
+                break;
+
+            default:
+                // The action is not navigation, dispatch it and quit
+                _selected->dispatchAction(action);
+                return;
+            }
         }
-        else if (action == sys::ACT_DOWN && entry.down)
+        while (target && !target->isEnabled());
+
+        if (!target)
         {
-            _selected->deselect();
-            _selected = entry.down;
-            _selected->select();
-        }
-        else if (action == sys::ACT_LEFT && entry.left)
-        {
-            _selected->deselect();
-            _selected = entry.left;
-            _selected->select();
-        }
-        else if (action == sys::ACT_RIGHT && entry.right)
-        {
-            _selected->deselect();
-            _selected = entry.right;
-            _selected->select();
-        }
-        else
+            // Cannot move in choosen direction, dispatch the action instead
             _selected->dispatchAction(action);
+            return;
+        }
+
+        _selected->deselect();
+        _selected = target;
+        _selected->select();
     }
+    else
+        reset();
 }
 
 void Navigation::dispatchMouseMove(const ut::Vector & position)
@@ -166,10 +180,12 @@ void Navigation::setHead(Selectable * head)
 
 void Navigation::reset()
 {
+    if (_selected == _head) return;
+
     if (_selected)
         _selected->deselect();
 
-    // TODO head can de deactivated, error if failed?
+    // TODO head can de deactivated?, error if failed?
     if (_head)
         _head->select();
 }
