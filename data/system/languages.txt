@@ -1,5 +1,0 @@
-language.en     "English"
-language.fr     "Français"
-language.de     "Deutsch"
-language.it     "Italiano"
-language.es     "Español"
