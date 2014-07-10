@@ -42,7 +42,7 @@ SmoothLightContext::SmoothLightContext()
     else
         // TODO Should throw an exception? And maybe fall back to quick lighting
         // Using resource manager for shaders may resolve this issue
-        IWBAN_LOG_ERROR("Failed to load light blur shader\n");
+        IWBAN_LOG_ERROR("Failed to load light blur shader");
 
     _render_light.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT, true);
     _render_light_inter.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);

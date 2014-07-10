@@ -1,5 +1,3 @@
-language            "English"
-
 menu.newgame        "New Game"
 menu.continue       "Continue"
 menu.options        "Settings"
@@ -20,3 +18,17 @@ actions.up          "Up"
 actions.down        "Down"
 actions.left        "Left"
 actions.right       "Right"
+
+language.en         "English"
+language.fr         "Français"
+language.de         "Deutsch"
+language.it         "Italiano"
+language.es         "Español"
+
+keyboard.presskey   "Press a key"
+
+gamepad.connected       "Connected"
+gamepad.disconnected    "Disconnected"
+gamepad.sensibility     "Sensibility"
+
+gamepad.pressbutton     "Press a button"

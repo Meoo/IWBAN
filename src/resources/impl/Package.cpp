@@ -53,11 +53,11 @@ PackageMap::iterator loadPackage(const std::string & package)
 
         entry.unlocalized.reset(new res::impl::Package(unloc_path));
 
-        IWBAN_LOG_INFO("Package '%s' found\n", package.c_str());
+        IWBAN_LOG_INFO("Package '%s' found", package.c_str());
     }
     catch (sys::FileNotFound & ignored)
     {
-        IWBAN_LOG_INFO("Package '%s' not found\n", package.c_str());
+        IWBAN_LOG_INFO("Package '%s' not found", package.c_str());
     }
 
     // Localized
@@ -68,12 +68,12 @@ PackageMap::iterator loadPackage(const std::string & package)
 
         entry.localized.reset(new res::impl::Package(loc_path));
 
-        IWBAN_LOG_INFO("Package '%s.%s' found\n",
+        IWBAN_LOG_INFO("Package '%s.%s' found",
             package.c_str(), cfg::language.c_str());
     }
     catch (sys::FileNotFound & ignored)
     {
-        IWBAN_LOG_INFO("Package '%s.%s' not found\n",
+        IWBAN_LOG_INFO("Package '%s.%s' not found",
             package.c_str(), cfg::language.c_str());
     }
 

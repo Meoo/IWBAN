@@ -156,7 +156,7 @@ void World::pumpEvents()
 
             if (!target)
             {
-                IWBAN_LOG_DEBUG("Processed event with lost target\n");
+                IWBAN_LOG_DEBUG("Processed event with lost target");
                 return;
             }
 
@@ -168,7 +168,7 @@ void World::pumpEvents()
 
             if (range.first == range.second)
             {
-                IWBAN_LOG_DEBUG("Processed event with no matching target\n");
+                IWBAN_LOG_DEBUG("Processed event with no matching target");
                 return;
             }
 
@@ -227,7 +227,7 @@ void World::despawnEntity(Entity * entity)
 
         // TODO An exception may be appropriate here
         if (!removed)
-            IWBAN_LOG_ERROR("Cannot remove Entity %u '%s' from index!\n",
+            IWBAN_LOG_ERROR("Cannot remove Entity %u '%s' from index!",
                             entity->getId(), entity->getName().c_str());
     }
 

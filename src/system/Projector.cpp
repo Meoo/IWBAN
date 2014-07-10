@@ -50,12 +50,12 @@ void Projector::update(const sf::Time & update_time)
         // Ignore if the next screen is the same as the current
         if (next_screen == _current_screen)
         {
-            IWBAN_LOG_ERROR("Old and new screen are the same\n");
+            IWBAN_LOG_ERROR("Old and new screen are the same");
             _current_screen->resetNextScreen();
             return;
         }
 
-        IWBAN_LOG_INFO("Changing screen\n");
+        IWBAN_LOG_INFO("Changing screen");
 
         Screen * current = _current_screen;
 

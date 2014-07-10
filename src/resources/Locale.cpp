@@ -8,6 +8,8 @@
 #include <resources/FileStream.hpp>
 #include <resources/Locale.hpp>
 
+#include <system/exceptions/FileNotFound.hpp>
+
 #include <locale>
 
 namespace res
@@ -24,7 +26,7 @@ sf::String Locale::getString(const std::string & key) const
     Dictionnary::const_iterator it = _dict.find(key);
     if (it == _dict.end())
     {
-        IWBAN_LOG_ERROR("Missing key '%s' from dictionnary\n", key.c_str());
+        IWBAN_LOG_ERROR("Missing key '%s' from dictionnary", key.c_str());
         return sf::String(std::string("###") + key + "###");
     }
 
@@ -37,13 +39,26 @@ void Locale::loadFont(const std::string & filename)
     if (!_default_font.loadFromMemory(_default_font_file.getData(),
                                       _default_font_file.getSize()))
     {
-        IWBAN_LOG_ERROR("Unable to load font '%s'\n", filename.c_str());
+        IWBAN_LOG_ERROR("Unable to load font '%s'", filename.c_str());
     }
 }
 
 void Locale::loadFile(const std::string & filename)
 {
-    File file = openFile(filename);
+    _files.insert(filename);
+
+    File file;
+
+    try
+    {
+        file = openFile(filename);
+    }
+    catch (sys::FileNotFound & error)
+    {
+        IWBAN_LOG_ERROR("%s : %s", error.title(), error.what());
+        return;
+    }
+
     FileStream istr(file);
 
     istr >> std::ws;
@@ -56,7 +71,7 @@ void Locale::loadFile(const std::string & filename)
         istr >> id >> std::ws;
         if (istr.eof())
         {
-            IWBAN_LOG_ERROR("Unexpected EOF after key '%s' in '%s'\n",
+            IWBAN_LOG_ERROR("Unexpected EOF after key '%s' in '%s'",
                     id.c_str(), filename.c_str());
             return;
         }
@@ -91,6 +106,16 @@ void Locale::loadFile(const std::string & filename)
     }
 }
 // Locale::loadFile()
+
+void Locale::reload()
+{
+    IWBAN_LOG_INFO("Reloading locale");
+
+    _dict.clear();
+
+    for (const std::string & filename : _files)
+        loadFile(filename);
+}
 
 }
 // namespace res

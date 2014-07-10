@@ -30,7 +30,7 @@ void Controls::Action::deactivate()
             _downtime = -1;
     }
     else
-        IWBAN_LOG_WARNING("Deactivating an inactive action\n");
+        IWBAN_LOG_WARNING("Deactivating an inactive action");
 }
 
 void Controls::Action::update()

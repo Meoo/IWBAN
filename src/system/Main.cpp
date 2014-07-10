@@ -20,32 +20,32 @@
 
 int main(int argc, char ** argv)
 {
-    IWBAN_LOG_INFO("Version " IWBAN_VERSION " (" __USER__ ") - " __DATE__ " " __TIME__ "\n");
+    IWBAN_LOG_INFO("Version " IWBAN_VERSION " (" __USER__ ") - " __DATE__ " " __TIME__);
 
-    IWBAN_LOG_INFO("Loading configuration\n");
+    IWBAN_LOG_INFO("Loading configuration");
     cfg::load();
     cfg::parseArgs(argc, argv);
 
 
-    /*IWBAN_LOG_INFO("Initializing threads\n");
+    /*IWBAN_LOG_INFO("Initializing threads");
     res::async::initialize(cfg::threading);*/
 
 
-    IWBAN_LOG_INFO("Loading fonts\n");
+    IWBAN_LOG_INFO("Loading fonts");
     res::getLocale().loadFont(IWBAN_DEFAULT_FONT);
 
 
-    IWBAN_LOG_INFO("Opening display\n");
+    IWBAN_LOG_INFO("Opening display");
     sys::Display display;
     display.open();
 
 
-    IWBAN_LOG_INFO("Initializing projector\n");
+    IWBAN_LOG_INFO("Initializing projector");
     sys::Projector projector(new sys::SplashScreen(new sys::MainMenuScreen()));
 
 
     // Loop until the game is closed
-    IWBAN_LOG_INFO("Entering main loop\n");
+    IWBAN_LOG_INFO("Entering main loop");
     bool close = false;
     while (!close)
     {
@@ -59,7 +59,7 @@ int main(int argc, char ** argv)
         }
         catch (const sys::RestartApp & exception)
         {
-            IWBAN_LOG_INFO("Restarting application : %s\n", exception.what());
+            IWBAN_LOG_INFO("Restarting application : %s", exception.what());
 
             // Reload the display
             display.close();
@@ -67,7 +67,7 @@ int main(int argc, char ** argv)
         }
         catch (const sys::Exception & exception)
         {
-            IWBAN_LOG_CRITICAL("%s : %s\n", exception.title(), exception.what());
+            IWBAN_LOG_CRITICAL("%s : %s", exception.title(), exception.what());
 
             // IWBAN exception caught
             projector.setScreen(
@@ -75,7 +75,7 @@ int main(int argc, char ** argv)
         }
         catch (const std::exception & exception)
         {
-            IWBAN_LOG_CRITICAL("Exception : %s\n", exception.what());
+            IWBAN_LOG_CRITICAL("Exception : %s", exception.what());
 
             // Standard exception caught
             projector.setScreen(
@@ -83,7 +83,7 @@ int main(int argc, char ** argv)
         }
         catch (...)
         {
-            IWBAN_LOG_CRITICAL("Unknown exception caught\n");
+            IWBAN_LOG_CRITICAL("Unknown exception caught");
 
             // Unknown exception caught
             projector.setScreen(
@@ -91,15 +91,15 @@ int main(int argc, char ** argv)
         }
     }
 
-    IWBAN_LOG_INFO("Closing display\n");
+    IWBAN_LOG_INFO("Closing display");
     display.close();
 
 
-    /*IWBAN_LOG_INFO("Terminating threads\n");
+    /*IWBAN_LOG_INFO("Terminating threads");
     res::async::terminate();*/
 
 
-    IWBAN_LOG_INFO("Saving configuration\n");
+    IWBAN_LOG_INFO("Saving configuration");
     cfg::save();
 
     return 0;

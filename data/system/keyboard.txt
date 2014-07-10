@@ -101,5 +101,3 @@ keyboard.99     "F15"
 keyboard.100    "Pause"
 
 keyboard.101    "Unassigned"
-
-keyboard.presskey   "Press a key"

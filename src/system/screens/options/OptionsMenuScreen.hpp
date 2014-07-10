@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <config/Settings.hpp>
+
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
 #include <system/Time.hpp>
@@ -20,8 +22,6 @@
 #include <gui/Label.hpp>
 #include <gui/Navigation.hpp>
 #include <gui/Slider.hpp>
-
-#include <resources/Locale.hpp>
 
 namespace sys
 {
@@ -51,8 +51,6 @@ public:
     // Constructor
     OptionsMenuScreen()
     {
-        res::getLocale().loadFile("system/gamepad.txt");
-
         // Title
         _title.loadText("menu.options");
         _title.setCharacterSize(50);
@@ -63,7 +61,7 @@ public:
         _language_sub.setCallback([this](){ onLanguage(); });
         _language_sub.setPosition({140, 140});
 
-        _language.loadText("language");
+        _language.loadText(std::string("language.") + cfg::language);
         _language.setPosition({440, 140});
         _language.setCharacterSize(22);
         _language.setTextColor(sf::Color(220, 220, 220));

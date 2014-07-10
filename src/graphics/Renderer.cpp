@@ -33,7 +33,7 @@ Renderer::Renderer(sf::RenderTarget & target)
     }
     else
         // TODO Should throw?
-        IWBAN_LOG_ERROR("Failed to load light mix shader\n");
+        IWBAN_LOG_ERROR("Failed to load light mix shader");
 
     reloadConfiguration();
 }
