@@ -72,7 +72,7 @@ void Display::open()
     {
         res::File icon_file = res::openFile("system/icon.png");
         if (!win_icon.loadFromMemory(icon_file.getData(), icon_file.getSize()))
-            IWBAN_LOG_ERROR("Unable to load display's icon\n");
+            IWBAN_LOG_ERROR("Unable to load display's icon");
     }
     _window.setIcon(win_icon.getSize().x, win_icon.getSize().y,
                 win_icon.getPixelsPtr());
@@ -87,7 +87,7 @@ void Display::open()
             bg_tex.setRepeated(true);
         }
         else
-            IWBAN_LOG_ERROR("Unable to load display's background texture\n");
+            IWBAN_LOG_ERROR("Unable to load display's background texture");
 
         bg_mesh[0].position = sf::Vector2f(0, 0);
         bg_mesh[1].position = sf::Vector2f(1, 0);
@@ -169,7 +169,7 @@ void Display::run(sys::Projector & projector)
                 break;
 
             case sf::Event::Resized:
-                IWBAN_LOG_DEBUG("Window resized\n");
+                IWBAN_LOG_DEBUG("Window resized");
                 if (_window.getSize().x < IWBAN_FRAME_WIDTH ||
                     _window.getSize().y < IWBAN_FRAME_HEIGHT)
                 {
@@ -198,7 +198,7 @@ void Display::run(sys::Projector & projector)
                 {
                     pause = !pause;
                     play_next_frame = false;
-                    IWBAN_LOG_DEBUG("Pause %s\n", pause ? "enabled" : "disabled");
+                    IWBAN_LOG_DEBUG("Pause %s", pause ? "enabled" : "disabled");
                 }
                 if (event.key.code == sf::Keyboard::PageDown)
                     play_next_frame = true;
@@ -237,11 +237,11 @@ void Display::run(sys::Projector & projector)
                 break;
 
             case sf::Event::GainedFocus:
-                IWBAN_LOG_DEBUG("Focus gained\n");
+                IWBAN_LOG_DEBUG("Focus gained");
                 break;
 
             case sf::Event::LostFocus:
-                IWBAN_LOG_DEBUG("Focus lost\n");
+                IWBAN_LOG_DEBUG("Focus lost");
                 getControls().reset();
                 break;
 
@@ -262,7 +262,7 @@ void Display::run(sys::Projector & projector)
             // Press PageDown key to process a single step
             if (play_next_frame)
             {
-                IWBAN_LOG_DEBUG("Processing single frame\n");
+                IWBAN_LOG_DEBUG("Processing single frame");
                 projector.update(update_time);
                 play_next_frame = false;
             }
@@ -295,7 +295,7 @@ void Display::run(sys::Projector & projector)
                     if (time > next_update)
                     {
                         next_update = time + IWBAN_UPDATE_TIME;
-                        IWBAN_LOG_WARNING("Game is slowing down!\n");
+                        IWBAN_LOG_WARNING("Game is slowing down!");
                     }
 
                     break;

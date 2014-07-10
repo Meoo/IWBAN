@@ -51,7 +51,7 @@ void save()
     std::ofstream f(IWBAN_CONFIG_FILE);
     if (!f.is_open())
     {
-        IWBAN_LOG_ERROR("Unable to save configuration : " IWBAN_CONFIG_FILE "\n");
+        IWBAN_LOG_ERROR("Unable to save configuration : " IWBAN_CONFIG_FILE);
         return;
     }
 
@@ -72,7 +72,7 @@ void save()
     f.flush();
     if (!f.good())
     {
-        IWBAN_LOG_ERROR("An error occured while saving configuration\n");
+        IWBAN_LOG_ERROR("An error occured while saving configuration");
     }
     f.close();
 }
@@ -90,7 +90,7 @@ void load()
     std::ifstream f(IWBAN_CONFIG_FILE);
     if (!f.is_open())
     {
-        IWBAN_LOG_WARNING("Unable to load configuration : " IWBAN_CONFIG_FILE "\n");
+        IWBAN_LOG_WARNING("Unable to load configuration : " IWBAN_CONFIG_FILE);
         return;
     }
 
@@ -101,7 +101,7 @@ void load()
 
         if (!f.good()) // eof is an error
         {
-            IWBAN_LOG_ERROR("Unexpected error after key : '%s'\n", n.c_str());
+            IWBAN_LOG_ERROR("Unexpected error after key : '%s'", n.c_str());
             return;
         }
 
@@ -122,7 +122,7 @@ void load()
         if (f.bad() || f.fail()) // eof is not an error
         {
             IWBAN_LOG_ERROR("Unexpected error while reading value for key"
-                            " : '%s'\n", n.c_str());
+                            " : '%s'", n.c_str());
             return;
         }
 
@@ -135,7 +135,7 @@ void load()
 
     if (fullscreen > 2)
     {
-        IWBAN_LOG_WARNING("Invalid value for 'fullscreen', setting to default\n");
+        IWBAN_LOG_WARNING("Invalid value for 'fullscreen', setting to default");
         particles = 0;
     }
 
@@ -143,13 +143,13 @@ void load()
         || !std::isalpha(language[0])
         || !std::isalpha(language[1]))
     {
-        IWBAN_LOG_WARNING("Invalid value for 'language', setting to default\n");
+        IWBAN_LOG_WARNING("Invalid value for 'language', setting to default");
         language = "fr";
     }
 
     if (particles > 2)
     {
-        IWBAN_LOG_WARNING("Invalid value for 'particles', setting to default\n");
+        IWBAN_LOG_WARNING("Invalid value for 'particles', setting to default");
         particles = 2;
     }
 }

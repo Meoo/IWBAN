@@ -26,6 +26,7 @@
 
 #define _IWBAN_PRINT_LOG(...)                               \
     _IWBAN_DO(std::fprintf(_IWBAN_LOG_FILE, __VA_ARGS__);   \
+              std::fprintf(_IWBAN_LOG_FILE, "\n");          \
               std::fflush(_IWBAN_LOG_FILE))
 
 /**

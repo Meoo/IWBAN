@@ -26,7 +26,7 @@ void Keyboard::mapKeyToAction(sf::Keyboard::Key key, ActionId action)
     // Ignore navigation actions
     if (action == ACT_ACCEPT || action == ACT_MENU)
     {
-        IWBAN_LOG_WARNING("Trying to set a navigation action\n");
+        IWBAN_LOG_WARNING("Trying to set a navigation action");
         return;
     }
 
@@ -39,7 +39,7 @@ void Keyboard::mapKeyToAction(sf::Keyboard::Key key, ActionId action)
     case IWBAN_KEYBOARD_DOWN:
     case IWBAN_KEYBOARD_LEFT:
     case IWBAN_KEYBOARD_RIGHT:
-        IWBAN_LOG_WARNING("Trying to override a fixed navigation key\n");
+        IWBAN_LOG_WARNING("Trying to override a fixed navigation key");
         return;
 
     default:
@@ -248,7 +248,7 @@ std::istream & operator >> (std::istream & istr, Keyboard & keyboard)
     istr >> std::ws;
     if (istr.peek() != '{')
     {
-        IWBAN_LOG_ERROR("Error while reading keyboard configuration: { not found\n");
+        IWBAN_LOG_ERROR("Error while reading keyboard configuration: { not found");
         return istr;
     }
     istr.get();
@@ -268,13 +268,13 @@ std::istream & operator >> (std::istream & istr, Keyboard & keyboard)
 
         if (!istr.good())
         {
-            IWBAN_LOG_ERROR("Unexpected failure while reading keyboard configuration\n");
+            IWBAN_LOG_ERROR("Unexpected failure while reading keyboard configuration");
             return istr;
         }
 
         if (act >= ACT_COUNT || key >= sf::Keyboard::KeyCount)
         {
-            IWBAN_LOG_ERROR("Invalid values for action and key while reading keyboard configuration\n");
+            IWBAN_LOG_ERROR("Invalid values for action and key while reading keyboard configuration");
             continue;
         }
 

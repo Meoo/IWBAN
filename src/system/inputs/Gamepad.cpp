@@ -26,7 +26,7 @@ void Gamepad::mapButtonToAction(Button button, ActionId action)
     // Ignore navigation actions
     if (action == ACT_ACCEPT || action == ACT_MENU)
     {
-        IWBAN_LOG_WARNING("Trying to set a navigation action\n");
+        IWBAN_LOG_WARNING("Trying to set a navigation action");
         return;
     }
 
@@ -248,7 +248,7 @@ std::istream & operator >> (std::istream & istr, Gamepad & gamepad)
     istr >> std::ws;
     if (istr.peek() != '{')
     {
-        IWBAN_LOG_ERROR("Error while reading gamepad configuration: { not found\n");
+        IWBAN_LOG_ERROR("Error while reading gamepad configuration: { not found");
         return istr;
     }
     istr.get();
@@ -271,14 +271,14 @@ std::istream & operator >> (std::istream & istr, Gamepad & gamepad)
 
         if (!istr.good())
         {
-            IWBAN_LOG_ERROR("Unexpected failure while reading gamepad configuration\n");
+            IWBAN_LOG_ERROR("Unexpected failure while reading gamepad configuration");
             return istr;
         }
 
         if (act >= ACT_COUNT || button >= sf::Joystick::ButtonCount)
         {
             IWBAN_LOG_ERROR("Invalid values for action and key while reading"
-                            " gamepad configuration\n");
+                            " gamepad configuration");
             continue;
         }
 

@@ -51,12 +51,12 @@ class MaterialAllocator
 public:
     Material * construct(const Path & file)
     {
-        IWBAN_LOG_INFO("Loading material %s\n", file.c_str());
+        IWBAN_LOG_INFO("Loading material %s", file.c_str());
         Material * mat = new Material();
         if (!mat->loadFromFile(file))
         {
             #####// TO DO Throw? Crash?
-            IWBAN_LOG_ERROR("Could not load material %s\n", file.c_str());
+            IWBAN_LOG_ERROR("Could not load material %s", file.c_str());
             delete mat;
             mat = 0;
         }
@@ -144,7 +144,7 @@ inline Resource::Resource() : _references(0)
 
 inline Resource::~Resource()
 {
-    BOOST_ASSERT_MSG(_references.load(std::memory_order_relaxed) == 0,
+    IWBAN_ASSERT_MSG(_references.load(std::memory_order_relaxed) == 0,
                      "Resource deleted while pointers are still active");
 }
 

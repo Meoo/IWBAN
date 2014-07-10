@@ -44,7 +44,7 @@ File openFile(const std::string & filename)
 {
     namespace fs = boost::filesystem;
 
-    IWBAN_LOG_DEBUG("Opening file '%s'\n", filename.c_str());
+    IWBAN_LOG_DEBUG("Opening file '%s'", filename.c_str());
 
     // Search in packages
     std::size_t sep = filename.find_first_of('/');

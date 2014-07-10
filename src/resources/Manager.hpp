@@ -100,7 +100,7 @@ public:
         {
             if (it->second->getReferencesCount() != 0)
                 // TODO Show identifier if it's printable
-                IWBAN_LOG_ERROR("Cleaning resource with active references\n");
+                IWBAN_LOG_ERROR("Cleaning resource with active references");
 
             _allocator.destroy(it->second);
             it = _resource_map.erase(it);
