@@ -187,7 +187,10 @@ void Navigation::reset()
 
     // TODO head can de deactivated?, error if failed?
     if (_head)
+    {
+        _selected = _head;
         _head->select();
+    }
 }
 
 }
