@@ -8,6 +8,8 @@
 #include <resources/FileStream.hpp>
 #include <resources/Locale.hpp>
 
+#include <system/exceptions/FileNotFound.hpp>
+
 #include <locale>
 
 namespace res
@@ -43,7 +45,20 @@ void Locale::loadFont(const std::string & filename)
 
 void Locale::loadFile(const std::string & filename)
 {
-    File file = openFile(filename);
+    _files.insert(filename);
+
+    File file;
+
+    try
+    {
+        file = openFile(filename);
+    }
+    catch (sys::FileNotFound & error)
+    {
+        IWBAN_LOG_ERROR("%s : %s\n", error.title(), error.what());
+        return;
+    }
+
     FileStream istr(file);
 
     istr >> std::ws;
@@ -91,6 +106,14 @@ void Locale::loadFile(const std::string & filename)
     }
 }
 // Locale::loadFile()
+
+void Locale::reload()
+{
+    _dict.clear();
+
+    for (const std::string & filename : _files)
+        loadFile(filename);
+}
 
 }
 // namespace res

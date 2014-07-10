@@ -14,6 +14,7 @@
 #include <SFML/System.hpp>
 
 #include <map>
+#include <set>
 
 namespace res
 {
@@ -22,9 +23,11 @@ class Locale
 {
 private:
     typedef std::map<std::string, std::string> Dictionnary;
+    typedef std::set<std::string> FileList;
 
     // Data members
     Dictionnary _dict;
+    FileList    _files;
 
     // Font file must be kept open
     File        _default_font_file;
@@ -43,6 +46,9 @@ public:
     void loadFont(const std::string & filename);
 
     void loadFile(const std::string & filename);
+
+    // Reload all files
+    void reload();
 
 };
 // class Locale
