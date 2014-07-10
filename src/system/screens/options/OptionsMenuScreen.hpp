@@ -118,13 +118,14 @@ protected:
     {
         if (_gamepad_state_timer < update_time)
         {
-            if (sf::Joystick::isConnected(0))
+            bool connected = sf::Joystick::isConnected(0);
+            if (connected && !_gamepad_sub.isEnabled())
             {
                 _gamepad_state.loadText("gamepad.connected");
                 _gamepad_state.setTextColor(sf::Color(64, 128, 64));
                 _gamepad_sub.enable();
             }
-            else
+            else if (!connected && _gamepad_sub.isEnabled())
             {
                 _gamepad_state.loadText("gamepad.disconnected");
                 _gamepad_state.setTextColor(sf::Color(128, 64, 64));
