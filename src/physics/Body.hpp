@@ -76,6 +76,8 @@ public:
     void            move(const ut::Vector & delta);
     void            moveTo(const ut::Vector & position);
 
+    void            applyImmediateForce(const ut::Vector & force) { _immediate_force += force; }
+
     // TODO Add wake everytime any property is modified
     // Getters / setters
     const ut::Vector & getPosition() const          { return _position; }

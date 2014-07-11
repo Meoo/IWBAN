@@ -19,7 +19,7 @@
 
 #include <cstdlib>
 
-#define N 150
+#define N 108
 
 namespace sys
 {
@@ -49,6 +49,7 @@ protected:
     phy::Body *     hbody;
     phy::Body *     hbody2;
 
+    phy::Body *     hbodym;
 
     /*std::vector<gfx::ShadowVolume *> shadows;
 
@@ -58,6 +59,16 @@ protected:
     // Callbacks
     virtual void    onUpdate(const sf::Time & update_time)
     {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+            bodies[0]->applyImmediateForce(ut::Vector(-100, 0));
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+            bodies[0]->applyImmediateForce(ut::Vector(100, 0));
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+            bodies[0]->setVelocity(ut::Vector(0, -200));
+
+        bodies[1]->applyImmediateForce(ut::Vector(50, 0));
+
         space.update(IWBAN_UPDATE_TIME, 4);
 
         /*for (unsigned i = 0; i < N; ++i)
@@ -101,10 +112,10 @@ protected:
             bodies[i] = new phy::Body(i % 7 ? shape : shape2);
             bodies[i]->setPosition(ut::Vector(40 + i * 3, (i % 20) * 17 + 70));
             bodies[i]->setVelocity(ut::Vector(std::rand() % 200 - 100, std::rand() % 200 - 100));
-            bodies[i]->setAcceleration({0, 150});
+            bodies[i]->setAcceleration({0, 400});
             bodies[i]->setMass(1);
-            bodies[i]->setCollisionMask(phy::COL_WORLD | phy::COL_PLAYER);
-            bodies[i]->setSolidityGroup(phy::COL_PLAYER);
+            bodies[i]->setCollisionMask(phy::COL_WORLD | phy::COL_PLAYER | phy::COL_ENEMY);
+            bodies[i]->setSolidityGroup(i ? phy::COL_PLAYER : phy::COL_ENEMY);
             space.add(bodies[i]);
 
             /*bod_shadows[i] = new gfx::ShadowVolume();
@@ -115,12 +126,13 @@ protected:
             bod_shadows[i]->dbgAddVertex({0, 0});
             shadows.push_back(bod_shadows[i]);*/
         }
+        bodies[1]->setMass(20);
 
         prect.h = 32;
         prect.w = 640;
         pshape = new phy::Box(prect);
         pbody = new phy::Body(pshape);
-        pbody->setPosition({0, 480-32});
+        pbody->setPosition({320, 480-32});
         pbody->setSolidityGroup(phy::COL_WORLD);
         pbody2 = new phy::Body(pshape);
         pbody2->setPosition({0, 0});
@@ -137,8 +149,12 @@ protected:
         hbody2 = new phy::Body(hshape);
         hbody2->setPosition({640 - 32, 32});
         hbody2->setSolidityGroup(phy::COL_WORLD);
+        hbodym = new phy::Body(pshape);
+        hbodym->setPosition({-320, 480-32});
+        hbodym->setSolidityGroup(phy::COL_WORLD);
         space.add(hbody);
         space.add(hbody2);
+        space.add(hbodym);
     }
 
     virtual void    onHide()
@@ -160,6 +176,7 @@ protected:
         space.remove(hbody);
         delete hbody;
         delete hbody2;
+        delete hbodym;
         delete hshape;
     }
 
