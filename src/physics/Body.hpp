@@ -16,8 +16,6 @@
 #include <utils/Rectangle.hpp>
 #include <utils/Vector.hpp>
 
-#include <boost/intrusive/list.hpp>
-
 #ifndef NDEBUG
 #  include <graphics/contexts/debug/DebugContext.hpp>
 #endif
@@ -25,28 +23,13 @@
 namespace phy
 {
 
-class Body;
 class Shape;
 class Space;
 
-namespace impl
-{
-    // Use intrusive linked lists for child list
-    class ChildTag {};
-    typedef boost::intrusive::list_base_hook<
-        boost::intrusive::base_hook<ChildTag> >     ChildHook;
-    typedef boost::intrusive::list<Body,
-        boost::intrusive::base_hook<ChildHook> >    ChildList;
-}
-// namespace impl
-
-// TODO Boost's hooks must use public inheritance?
-class Body : public impl::ChildHook
+class Body
 {
 public:
     friend class Space;
-
-    typedef impl::ChildList     ChildList;
 
 
 private:
@@ -54,9 +37,6 @@ private:
     game::SolidEntity * _owner      = nullptr;
 
     const Shape *   _shape;
-
-    Body *          _parent         = nullptr;
-    ChildList       _childs;
 
     ut::Vector      _position;
     ut::Vector      _velocity;
@@ -74,6 +54,9 @@ private:
     CollisionGroup  _solidity_group = COL_NONE;
     CollisionGroup  _collision_mask = COL_NONE;
 
+    bool            _trigger        = false;
+    bool            _solid          = true;
+
     bool            _awake          = true;
 
     // TODO Object additional states
@@ -87,13 +70,11 @@ public:
                     Body(game::SolidEntity * owner, const Shape * shape);
 
     // Destructor
-                    ~Body();
+                    ~Body() {}
 
     // Functions
     void            move(const ut::Vector & delta);
     void            moveTo(const ut::Vector & position);
-
-    void            unlinkChilds();
 
     // TODO Add wake everytime any property is modified
     // Getters / setters
@@ -112,11 +93,6 @@ public:
     const Shape *   getShape() const                { return _shape; }
     void            setShape(const Shape * shape)   { IWBAN_PRE_PTR(shape); _shape = shape; }
 
-    Body *          getParent()                     { return _parent; }
-    const Body *    getParent() const               { return _parent; }
-
-    void            setParent(Body * parent);
-
     float           getMass() const                 { return _mass; }
     void            setMass(float mass)             { _mass = mass; }
 
@@ -132,6 +108,7 @@ public:
 
     ut::Rectangle   getBoundingBox() const;
 
+
 private:
     // Private for Space
     void            preUpdate(const sf::Time & delta);
@@ -142,13 +119,10 @@ private:
     void            postStep(const sf::Time & step_delta);
     void            postUpdate(const sf::Time & delta);
 
-    // Private
-    void            moveTree(const ut::Vector & movement);
-
-
 #ifndef NDEBUG
     void            drawDebug(gfx::DebugContext & debug_context) const;
 #endif
+
 
 public:
     // Static functions

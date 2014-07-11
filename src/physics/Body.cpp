@@ -24,12 +24,6 @@ Body::Body(game::SolidEntity * owner, const Shape * shape)
     IWBAN_PRE_PTR(shape);
 }
 
-Body::~Body()
-{
-    unlinkChilds();
-    setParent(nullptr);
-}
-
 void Body::move(const ut::Vector & delta)
 {
     // TODO _next_state.immediate_velocity += delta;
@@ -40,40 +34,6 @@ void Body::moveTo(const ut::Vector & position)
 {
     // TODO _next_state.immediate_velocity += (position - _next_state.position);
     wake();
-}
-
-void Body::unlinkChilds()
-{
-    for (Body & child : _childs)
-        child._parent = nullptr;
-
-    _childs.clear();
-}
-
-void Body::setParent(Body * parent)
-{
-    if (parent == _parent) return;
-
-    if (_parent)
-        // Get the iterator from parent list and unlink it
-        _parent->_childs.erase(_parent->_childs.iterator_to(*this));
-
-    if (parent)
-        parent->_childs.push_back(*this);
-
-    _parent = parent;
-
-    wake();
-
-#ifndef NDEBUG
-    // This piece of code is horrible, but works as intended
-    const Body * p = parent;
-    while (p->getParent())
-    {
-        IWBAN_ASSERT_MSG(p != this, "Circular parenting detected!");
-        p = p->getParent();
-    }
-#endif
 }
 
 /*void Body::setPosition(const ut::Vector & position)
@@ -109,9 +69,6 @@ void Body::preStep(const sf::Time & step_delta)
     ut::Vector movement = (_velocity + _immediate_force) * step_delta.asSeconds();
     _position += movement;
     _delta += movement;
-
-    // Update the whole child tree
-    moveTree(movement);
 }
 
 void Body::respond(const CollisionResult & result)
@@ -137,18 +94,6 @@ void Body::postStep(const sf::Time & step_delta)
 void Body::postUpdate(const sf::Time & delta)
 {
     _immediate_force = ut::Vector();
-}
-
-void Body::moveTree(const ut::Vector & movement)
-{
-    for (Body & child : _childs)
-    {
-        child._position += movement;
-        child._delta += movement;
-
-        // Recursion
-        child.moveTree(movement);
-    }
 }
 
 #ifndef NDEBUG

@@ -34,8 +34,6 @@ void Space::remove(Body * body)
 {
     IWBAN_PRE_PTR(body);
 
-    body->unlinkChilds();
-
     IWBAN_VERIFY(_bodies.erase(body));
 }
 
