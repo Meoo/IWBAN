@@ -15,9 +15,6 @@
 namespace ut
 {
 
-// TODO Sort Vector / Rect classes out
-
-
 class Vector
 {
 public:
@@ -90,6 +87,7 @@ constexpr float dot(const Vector & a, const Vector & b)
 // Project a on b
 inline Vector project(const Vector & a, const Vector & b)
 {
+    // TODO Throw instead
     IWBAN_PRE(!b.isNull());
 
     if (a.isNull())

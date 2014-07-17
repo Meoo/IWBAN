@@ -33,14 +33,14 @@ private:
     // Data members
     World *         _world  = nullptr;
     Id              _id     = INVALID_ID;
-    Serial          _serial;
+    Serial          _serial = 0;
 
     std::string     _name;
 
     bool            _valid  = false;
     bool            _alive  = false;
 
-    sys::FTime      _next_update;
+    sys::FTime      _next_update = 0;
 
 
 public:
@@ -55,6 +55,7 @@ public:
 
     void            sendDelayedEvent(Entity * source, Event && event, sys::FTimeOffset delay);
 
+    // TODO Kill and exile should be protected?
     /**
      * Kill the Entity.
      *
@@ -182,7 +183,7 @@ protected:
     void            scheduleNextUpdate(sys::FTimeOffset delay)
     {
         IWBAN_PRE(isValid());
-        // TODO _next_update = getWorld().getClock() + delay;
+        // TODO World is frwd decl! _next_update = getWorld().getClock() + delay;
     }
 
 

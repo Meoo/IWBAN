@@ -35,9 +35,12 @@ namespace sys
 {
 
 Display::Display()
-    : bg_mesh(sf::Quads, 4)
+    : _background_mesh(sf::Quads, 4)
 {
     IWBAN_DEBUG(d_ready = false);
+
+    _background_view.setCenter(0.5f, 0.5f);
+    _background_view.setSize(1, 1);
 }
 
 // ---- ---- ---- ----
@@ -68,34 +71,31 @@ void Display::open()
     _window.setKeyRepeatEnabled(false);
 
     // Window icon
-    if (win_icon.getSize().x <= 0)
+    if (_window_icon.getSize().x <= 0)
     {
         res::File icon_file = res::openFile("system/icon.png");
-        if (!win_icon.loadFromMemory(icon_file.getData(), icon_file.getSize()))
+        if (!_window_icon.loadFromMemory(icon_file.getData(), icon_file.getSize()))
             IWBAN_LOG_ERROR("Unable to load display's icon");
     }
-    _window.setIcon(win_icon.getSize().x, win_icon.getSize().y,
-                win_icon.getPixelsPtr());
+    _window.setIcon(_window_icon.getSize().x, _window_icon.getSize().y,
+                _window_icon.getPixelsPtr());
 
     // Background data
-    if (bg_tex.getSize().x <= 0)
+    if (_background_texture.getSize().x <= 0)
     {
         res::File bg_file = res::openFile("system/background.png");
-        if (bg_tex.loadFromMemory(bg_file.getData(), bg_file.getSize()))
+        if (_background_texture.loadFromMemory(bg_file.getData(), bg_file.getSize()))
         {
-            bg_tex.setSmooth(true);
-            bg_tex.setRepeated(true);
+            _background_texture.setSmooth(true);
+            _background_texture.setRepeated(true);
         }
         else
             IWBAN_LOG_ERROR("Unable to load display's background texture");
 
-        bg_mesh[0].position = sf::Vector2f(0, 0);
-        bg_mesh[1].position = sf::Vector2f(1, 0);
-        bg_mesh[2].position = sf::Vector2f(1, 1);
-        bg_mesh[3].position = sf::Vector2f(0, 1);
-
-        bg_view.setCenter(0.5f, 0.5f);
-        bg_view.setSize(1, 1);
+        _background_mesh[0].position = sf::Vector2f(0, 0);
+        _background_mesh[1].position = sf::Vector2f(1, 0);
+        _background_mesh[2].position = sf::Vector2f(1, 1);
+        _background_mesh[3].position = sf::Vector2f(0, 1);
     }
 
     IWBAN_DEBUG(d_ready = true);
@@ -311,26 +311,26 @@ void Display::run(sys::Projector & projector)
         sf::Time render_time = getGlobalTime();
 
         // Background rendering
-        if (marginX > 0 || marginY > 0)
+        if (_draw_background)
         {
-            _window.setView(bg_view);
+            _window.setView(_background_view);
 
             float t = render_time.asSeconds();
             float t2 = - t/2;
 
-            bg_mesh[0].texCoords.x = t;
-            bg_mesh[1].texCoords.x = winW2 + t;
-            bg_mesh[2].texCoords.x = winW2 + t;
-            bg_mesh[3].texCoords.x = t;
+            _background_mesh[0].texCoords.x = t;
+            _background_mesh[1].texCoords.x = _half_width + t;
+            _background_mesh[2].texCoords.x = _half_width + t;
+            _background_mesh[3].texCoords.x = t;
 
-            bg_mesh[0].texCoords.y = t2;
-            bg_mesh[1].texCoords.y = t2;
-            bg_mesh[2].texCoords.y = winH2 + t2;
-            bg_mesh[3].texCoords.y = winH2 + t2;
+            _background_mesh[0].texCoords.y = t2;
+            _background_mesh[1].texCoords.y = t2;
+            _background_mesh[2].texCoords.y = _half_height + t2;
+            _background_mesh[3].texCoords.y = _half_height + t2;
 
-            _window.draw(bg_mesh, &bg_tex);
+            _window.draw(_background_mesh, &_background_texture);
 
-            _window.setView(render_view);
+            _window.setView(_render_view);
         }
 
         // Scene rendering
@@ -382,23 +382,30 @@ void Display::run(sys::Projector & projector)
 
 void Display::updateSceneView()
 {
-    zoom = std::min(_window.getSize().x / (float) IWBAN_FRAME_WIDTH,
+    float zoom = std::min(_window.getSize().x / (float) IWBAN_FRAME_WIDTH,
                     _window.getSize().y / (float) IWBAN_FRAME_HEIGHT);
 
     if (cfg::zoom_multiplier)
         zoom = zoom - std::fmod(zoom + 0.00001f, cfg::zoom_multiplier);
+    _scene_width = IWBAN_FRAME_WIDTH * zoom;
+    _scene_height = IWBAN_FRAME_HEIGHT * zoom;
 
-    winW2 = _window.getSize().x / 2;
-    winH2 = _window.getSize().y / 2;
-    sceneW = IWBAN_FRAME_WIDTH * zoom;
-    sceneH = IWBAN_FRAME_HEIGHT * zoom;
-    marginX = (_window.getSize().x - sceneW) / 2;
-    marginY = (_window.getSize().y - sceneH) / 2;
-    render_view.setCenter(IWBAN_FRAME_WIDTH / 2, IWBAN_FRAME_HEIGHT / 2);
-    render_view.setSize(IWBAN_FRAME_WIDTH + marginX * 2 / zoom,
-                        IWBAN_FRAME_HEIGHT + marginY * 2 / zoom);
+    int marginX = (_window.getSize().x - _scene_width) / 2;
+    int marginY = (_window.getSize().y - _scene_height) / 2;
 
-    _window.setView(render_view);
+    _draw_background = marginX > 0 || marginY > 0;
+
+    if (_draw_background)
+    {
+        _render_view.setCenter(IWBAN_FRAME_WIDTH / 2, IWBAN_FRAME_HEIGHT / 2);
+        _render_view.setSize(IWBAN_FRAME_WIDTH + marginX * 2 / zoom,
+                             IWBAN_FRAME_HEIGHT + marginY * 2 / zoom);
+
+        _half_width = _window.getSize().x / 2;
+        _half_height = _window.getSize().y / 2;
+    }
+
+    _window.setView(_render_view);
 }
 
 }

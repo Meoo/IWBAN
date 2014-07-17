@@ -86,6 +86,7 @@ void Locale::loadFile(const std::string & filename)
         }
 
         // TODO This is really bad...?
+        // Not really optimized, but works
         char c = istr.get();
         while(c != separator)
         {

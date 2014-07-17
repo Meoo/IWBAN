@@ -49,7 +49,6 @@ public:
     void add(Body * body);
     void remove(Body * body);
 
-    // TODO update
     void update(const sf::Time & delta, int passes);
 
     void testRay(const ut::Vector & begin, const ut::Vector & end,

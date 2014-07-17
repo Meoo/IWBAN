@@ -23,7 +23,7 @@ class Body;
 namespace game
 {
 
-class SolidEntity
+class SolidEntity : public Entity
 {
 public:
     friend class World;

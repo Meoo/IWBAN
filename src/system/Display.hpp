@@ -18,26 +18,23 @@ class Projector;
 class Display
 {
 private:
-    // TODO Rename data members
     // Data members
     // Render window
     sf::RenderWindow    _window;
 
     // Icon and background data
-    sf::Image           win_icon;
-    sf::Texture         bg_tex;
-    sf::VertexArray     bg_mesh;
-    sf::View            bg_view;
+    sf::Image           _window_icon;
+    bool                _draw_background;
+    sf::Texture         _background_texture;
+    sf::VertexArray     _background_mesh;
+    sf::View            _background_view;
 
     // Screen size and view data
-    float               zoom;
-    int                 sceneW;
-    int                 sceneH;
-    int                 marginX;
-    int                 marginY;
-    float               winW2;
-    float               winH2;
-    sf::View            render_view;
+    int                 _scene_width;
+    int                 _scene_height;
+    float               _half_width;
+    float               _half_height;
+    sf::View            _render_view;
 
     // Debug variable
     IWBAN_DEBUG(bool    d_ready);

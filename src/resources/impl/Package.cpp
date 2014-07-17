@@ -80,7 +80,7 @@ PackageMap::iterator loadPackage(const std::string & package)
     // Insert the package into the map
     auto ret = s_package_map.insert(std::make_pair(package, std::move(entry)));
 
-    // TODO Better than that?
+    // TODO Better than that? Exception?
     IWBAN_ASSERT(ret.second);
 
     return ret.first;

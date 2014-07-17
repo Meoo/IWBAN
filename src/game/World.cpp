@@ -132,11 +132,13 @@ void World::updateEntities()
 
 void World::spawnNewEntities()
 {
-
+    // TODO spawnNewEntities
 }
 
 void World::cleanDeadEntities()
 {
+    // TODO cleanDeadEntities
+    // Use a separate list or process the whole entity list
     // despawnEntity(e)
 }
 

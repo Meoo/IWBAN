@@ -37,6 +37,9 @@ enum EventId
 class Event
 {
 public:
+    // Base class for Event dynamic parameters
+    class Param { public: virtual ~Param() {} };
+
     Event(const EventId & evt_id)
         : event_id(evt_id)
     {}
@@ -46,7 +49,7 @@ public:
     uint32_t                int_param;
     ut::Vector              vector_param;
     EntityHandle            entity_param;
-    std::unique_ptr<char>   ptr_param;
+    std::unique_ptr<Param>  ptr_param; // custom_param ?
 
 };
 // class Event

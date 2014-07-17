@@ -16,6 +16,8 @@
 #include <utils/Rectangle.hpp>
 #include <utils/Vector.hpp>
 
+#include <set>
+
 #ifndef NDEBUG
 #  include <graphics/contexts/debug/DebugContext.hpp>
 #endif
@@ -128,6 +130,8 @@ private:
 
 public:
     // Static functions
+    static std::set<ut::Vector> && getSeparatingAxes(const Body & first, const Body & second);
+
     /**
      * Compute the collision data between two bodies.
      *

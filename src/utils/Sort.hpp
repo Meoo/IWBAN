@@ -47,7 +47,7 @@ void doubleBubbleSort(I begin, I end, C comparator = C())
         end = done;
 
         // Bubble down
-        // TODO Will probably crash, since j goes out of bounds when i is begin
+        // TODO Seems to work.. may crash, since j goes out of bounds when i is begin
         j = end; // end - 1
         i = j--; // end
         while (i != begin)

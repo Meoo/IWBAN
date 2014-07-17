@@ -183,14 +183,19 @@ void Navigation::reset()
     if (_selected == _head) return;
 
     if (_selected)
-        _selected->deselect();
-
-    // TODO head can de deactivated?, error if failed?
-    if (_head)
     {
-        _selected = _head;
-        _head->select();
+        _selected->deselect();
+        _selected = nullptr;
     }
+
+    _selected = _head;
+
+    // Find the first aviable option
+    while (_selected && !_selected->isEnabled())
+        _selected = _table[_selected].up;
+
+    if (_selected)
+        _selected->select();
 }
 
 }
