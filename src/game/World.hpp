@@ -39,16 +39,27 @@ public:
             TGT_NAME,
             TGT_HANDLE
 
-        }               target_type;
+        } const         target_type;
 
         std::string     target_name;
         EntityHandle    target_handle;
 
-        sys::FTime      time;
-
         Event           event;
 
-        EventEntry(Event && e) : event(std::move(e)) {}
+        sys::FTime      time;
+
+        // Constructors
+        EventEntry(Event && event, Entity * source,
+                   const std::string & target, sys::FTime time)
+            : source(source)
+            , target_type(TGT_NAME), target_name(target)
+            , event(std::move(event)), time(time) {}
+
+        EventEntry(Event && event, Entity * source,
+                   Entity * target, sys::FTime time)
+            : source(source)
+            , target_type(TGT_HANDLE), target_handle(target)
+            , event(std::move(event)), time(time) {}
 
     };
     // class EventEntry
@@ -69,7 +80,7 @@ private:
     std::vector<unsigned> _free_slots;
     Entity::Serial      _next_serial    = 1;
 
-    sys::FTime          _clock;
+    sys::FTime          _clock          = 0;
 
     EventList           _event_list;
 

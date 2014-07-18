@@ -46,7 +46,7 @@ public:
 
     EventId                 event_id;
 
-    uint32_t                int_param;
+    uint32_t                int_param   = 0;
     ut::Vector              vector_param;
     EntityHandle            entity_param;
     std::unique_ptr<Param>  ptr_param; // custom_param ?

@@ -24,16 +24,16 @@ private:
 
     // Icon and background data
     sf::Image           _window_icon;
-    bool                _draw_background;
+    bool                _draw_background    = false;
     sf::Texture         _background_texture;
     sf::VertexArray     _background_mesh;
     sf::View            _background_view;
 
     // Screen size and view data
-    int                 _scene_width;
-    int                 _scene_height;
-    float               _half_width;
-    float               _half_height;
+    int                 _scene_width    = 0;
+    int                 _scene_height   = 0;
+    float               _half_width     = 0;
+    float               _half_height    = 0;
     sf::View            _render_view;
 
     // Debug variable

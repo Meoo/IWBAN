@@ -84,11 +84,7 @@ void World::queueDelayedEvent(Entity * source, Entity * target,
 
     sys::FTime time = _clock + delay;
 
-    EventEntry entry(std::move(event));
-    entry.source.reset(source);
-    entry.target_type = EventEntry::TGT_HANDLE;
-    entry.target_handle.reset(target);
-    entry.time = time;
+    EventEntry entry(std::move(event), source, target, time);
 
     // Insert before the first event who have a higher time
     // TODO Start from the end of the list to improve performances a little
@@ -106,11 +102,7 @@ void World::queueDelayedEvent(Entity * source, const std::string & target_name,
 
     sys::FTime time = _clock + delay;
 
-    EventEntry entry(std::move(event));
-    entry.source.reset(source);
-    entry.target_type = EventEntry::TGT_NAME;
-    entry.target_name = target_name;
-    entry.time = time;
+    EventEntry entry(std::move(event), source, target_name, time);
 
     // Insert before the first event who have a higher time
     // TODO Start from the end of the list to improve performances a little
