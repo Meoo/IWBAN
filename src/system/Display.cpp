@@ -390,20 +390,17 @@ void Display::updateSceneView()
     _scene_width = IWBAN_FRAME_WIDTH * zoom;
     _scene_height = IWBAN_FRAME_HEIGHT * zoom;
 
+    _half_width = _window.getSize().x / 2;
+    _half_height = _window.getSize().y / 2;
+
     int marginX = (_window.getSize().x - _scene_width) / 2;
     int marginY = (_window.getSize().y - _scene_height) / 2;
 
     _draw_background = marginX > 0 || marginY > 0;
 
-    if (_draw_background)
-    {
-        _render_view.setCenter(IWBAN_FRAME_WIDTH / 2, IWBAN_FRAME_HEIGHT / 2);
-        _render_view.setSize(IWBAN_FRAME_WIDTH + marginX * 2 / zoom,
-                             IWBAN_FRAME_HEIGHT + marginY * 2 / zoom);
-
-        _half_width = _window.getSize().x / 2;
-        _half_height = _window.getSize().y / 2;
-    }
+    _render_view.setCenter(IWBAN_FRAME_WIDTH / 2, IWBAN_FRAME_HEIGHT / 2);
+    _render_view.setSize(IWBAN_FRAME_WIDTH + marginX * 2 / zoom,
+                         IWBAN_FRAME_HEIGHT + marginY * 2 / zoom);
 
     _window.setView(_render_view);
 }
