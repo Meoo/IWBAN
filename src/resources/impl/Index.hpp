@@ -42,6 +42,10 @@ bool readIndex(std::istream & package, Index & index)
     if (index_count > IWBAN_PKG_MAX_FILES)
         return false;
 
+    uint32_t version = ut::read<uint32_t>(package);
+    if (version != IWBAN_PKG_VERSION)
+        return false;
+
     for (uint32_t i = 0; i < index_count; ++i)
     {
         IndexEntry entry;
@@ -66,6 +70,7 @@ inline
 void writeIndex(std::ostream & package, const Index & index)
 {
     ut::write<uint32_t>(package, IWBAN_PKG_MAGIC);
+    ut::write<uint32_t>(package, IWBAN_PKG_VERSION);
 
     uint32_t index_entries = index.size();
     ut::write<uint32_t>(package, index_entries);

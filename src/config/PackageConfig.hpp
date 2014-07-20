@@ -19,5 +19,7 @@
 // Package magic number 'IwPk' in little endian
 #define IWBAN_PKG_MAGIC       0x6B507749
 
+#define IWBAN_PKG_VERSION     1
+
 
 #endif // _IWBAN_PACKAGECONFIG_HPP_
