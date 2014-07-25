@@ -46,6 +46,7 @@ private:
     bool                _flushed;
 
     sf::Shader          _light_mix;
+    sf::Color           _overlay_color;
 
     IWBAN_DEBUG(bool    d_active);
 
@@ -72,6 +73,8 @@ public:
     void begin();
 
     void end();
+
+    void setOverlayColor(const sf::Color & color) { _overlay_color = color; }
 
 
 private:
