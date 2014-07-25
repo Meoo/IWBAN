@@ -43,6 +43,7 @@ protected:
            && (getControls().getAction(ACT_ACCEPT).isJustActivated()
             || getControls().getAction(ACT_MENU).isJustActivated())))
         {
+            getProjector()->fadeIn(sf::Color::White, sf::seconds(1));
             setNextScreen(_next_screen);
             dispose();
         }
@@ -54,12 +55,12 @@ protected:
 
         gfx::DrawContext & draw = renderer.openDrawContext();
 
-        draw.fill(sf::Color::White);
+        draw.fill(sf::Color(196, 196, 196));
 
         // TODO Draw splash image
 
         if (time_left < 1)
-            draw.fill(sf::Color(0, 0, 0, (1 - time_left) * 255));
+            draw.fill(sf::Color(255, 255, 255, (1 - time_left) * 255));
 
         draw.close();
     }
@@ -80,6 +81,7 @@ protected:
          && position.x < IWBAN_FRAME_WIDTH
          && position.y < IWBAN_FRAME_HEIGHT)
         {
+            getProjector()->fadeIn(sf::Color::White, sf::seconds(1));
             setNextScreen(_next_screen);
             dispose();
         }

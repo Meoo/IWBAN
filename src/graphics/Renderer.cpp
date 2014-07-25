@@ -18,7 +18,7 @@ namespace gfx
 {
 
 Renderer::Renderer(sf::RenderTarget & target)
-    : _target(target)
+    : _target(target), _overlay_color(sf::Color::Transparent)
 {
     IWBAN_DEBUG(d_active = false);
 
@@ -146,6 +146,13 @@ void Renderer::end()
                   "You must close the current context in order to finish rendering");
 
     flushDrawLight();
+
+    if (_overlay_color.a != 0)
+    {
+        sf::RectangleShape sprite(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT));
+        sprite.setFillColor(_overlay_color);
+        _target.draw(sprite);
+    }
 
 #ifndef NDEBUG
     if (_debug_enabled)

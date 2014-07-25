@@ -21,7 +21,14 @@ class Screen;
 class Projector : public boost::noncopyable
 {
 private:
-    Screen * _current_screen;
+    Screen *    _current_screen;
+
+    // TODO mutable... :(
+    mutable bool _fade_enabled;
+    bool        _fade_in;
+    sf::Color   _fade_color;
+    sf::Time    _fade_start_time;
+    sf::Time    _fade_delay;
 
 
 public:
@@ -41,6 +48,14 @@ public:
 
     void    mouseMove(const ut::Vector & position);
     void    mouseClick(const ut::Vector & position);
+
+    void    fadeIn(const sf::Color & color, const sf::Time & delay);
+    void    fadeOut(const sf::Color & color, const sf::Time & delay);
+
+    /**
+     * Force the fade to be cleared even if it is already in progress.
+     */
+    void    clearFade();
 
 };
 // class Projector
