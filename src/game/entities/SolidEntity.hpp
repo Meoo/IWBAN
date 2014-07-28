@@ -38,16 +38,12 @@ public:
 
 
 protected:
-    // Callbacks
+    // TODO Callbacks
     virtual void    onStartTouch() = 0;
 
     virtual void    onTouch() = 0;
 
     virtual void    onEndTouch() = 0;
-
-    virtual void    onChildAdded(const phy::Body & parent, const phy::Body & child) = 0;
-
-    virtual void    onChildRemoved(const phy::Body & parent, const phy::Body & child) = 0;
 
 };
 // class SolidEntity

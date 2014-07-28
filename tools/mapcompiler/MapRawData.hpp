@@ -15,7 +15,6 @@ typedef std::map<std::string, std::string> Properties;
 class Tile;
 
 class Tileset
-
 {
 public:
     std::string name;
@@ -49,9 +48,13 @@ class Layer
 public:
     std::string name;
 
+    // Tile data[W * H];
+
+    // Properties
     Properties properties;
 
-    // Tile data[W * H];
+    bool    solid;
+    int     depth;
 
 };
 // class Layer
@@ -59,14 +62,17 @@ public:
 class Map
 {
 public:
-    Properties properties;
-
     unsigned width;
     unsigned height;
 
     std::vector<Tileset> tilesets;
     TileDictionnary tiles;
     std::vector<Layer> layers;
+
+    // Properties
+    Properties properties;
+
+    //Color light_color;
 
 };
 // class Map
