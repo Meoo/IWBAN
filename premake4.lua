@@ -138,3 +138,5 @@ project "MapCompiler"
   includedirs { "tools" }
 
   files       { "tools/mapcompiler/**.cpp" }
+
+  use_Boost   { "system", "filesystem" }
