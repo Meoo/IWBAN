@@ -30,12 +30,14 @@ void print_help()
 
 int process_folder(const char * path_name)
 {
+    std::cout << "===== Processing " << path_name << " =====" << std::endl;
+
     // Check if given path is valid
     fs::path _path(path_name);
 
     if (!fs::exists(fs::path(_path)))
     {
-        std::cerr << "!!!!! Path " << path_name << " is not valid !!!!!"
+        std::cerr << "!!! Path " << path_name << " is not valid !!!"
                   << std::endl << std::endl;
         return 1;
     }
@@ -47,16 +49,12 @@ int process_folder(const char * path_name)
 
     if (!fs::is_directory(folder))
     {
-        std::cerr << "!!!!! File " << folder.string().c_str()
-                  << " is not a directory !!!!!" << std::endl << std::endl;
+        std::cerr << "!!! File " << folder.string().c_str()
+                  << " is not a directory !!!" << std::endl << std::endl;
         return 1;
     }
 
     // Path is a valid folder
-
-    std::cout << "===== Processing directory " << folder.leaf().string().c_str()
-              << " =====" << std::endl;
-
     std::cout << "+++ Listing files +++" << std::endl;
 
     // Index size is magic + number of entries + length of paths + size of IndexEntries
