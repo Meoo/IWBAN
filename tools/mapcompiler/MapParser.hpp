@@ -6,6 +6,7 @@
 #ifndef _MAPC_MAPPARSER_HPP_
 #define _MAPC_MAPPARSER_HPP_
 
+#include "Base64.hpp"
 #include "MapRawData.hpp"
 
 #include "tinf/tinf.h"
@@ -140,8 +141,8 @@ std::cout << "TILESET" << std::endl;
         std::unique_ptr<Tileset> output_tileset(new Tileset());
 
         // Properties
-        if (tileset->Attribute("name"))
-            output_tileset->name = std::string(tileset->Attribute("name"));
+        if (tileset_source->Attribute("name"))
+            output_tileset->name = std::string(tileset_source->Attribute("name"));
         output_tileset->first_gid = tileset->UnsignedAttribute("gid");
 
         parse_properties(tileset_source, output_tileset->properties);
@@ -191,49 +192,53 @@ std::cout << "LAYER" << std::endl;
             return 1;
         }
 
+        unsigned map_data_size = output_map.width * output_map.height;
+        std::unique_ptr<TileId[]> map_data(new TileId[map_data_size]);
+
         if (data->Attribute("encoding", "csv"))
         {
             // Parse CSV
             std::istringstream csv_stream;
             csv_stream.str(std::string(data->GetText()));
 
-            while (csv_stream.good())
+            unsigned i = 0;
+            while (csv_stream.good() && i < map_data_size)
             {
-                TileId gid;
-
                 // Read gid
-                csv_stream >> gid;
-
-                // TODO Use data
+                csv_stream >> map_data[i];
 
                 // Ignore comma and skip spaces
                 csv_stream.get();
                 csv_stream >> std::ws;
+
+                ++i;
+            }
+
+            if (i != map_data_size)
+            {
+                std::cerr << "!!! Not enough data in CSV-encoded layer !!!" << std::endl;
+                return 1;
             }
         }
         else if (data->Attribute("encoding", "base64"))
         {
-            // TODO Parse base64
-            const char * b64_data = data->GetText();
-            unsigned b64_len = std::strlen(b64_data);
+            // Get text and skip spaces
+            const char * b64_text = data->GetText();
+            while (b64_text[0] == ' ' || b64_text[0] == '\n' || b64_text[0] == '\t')
+                ++b64_text;
 
-            unsigned raw_data_len = (b64_len / 4) * 3;
-            if (b64_data[b64_len - 1] == '=') --raw_data_len;
-            if (b64_data[b64_len - 2] == '=') --raw_data_len;
-
-            std::unique_ptr<unsigned char[]> raw_data(new unsigned char[raw_data_len]);
-            // TODO Parse base64
-
+            // Decode base64
+            std::string raw_data = base64_decode(std::string(b64_text));
 
             if (data->Attribute("compression") != 0)
             {
                 // Compressed data
-                unsigned dest_len = output_map.width * output_map.height * sizeof(TileId);
-                std::unique_ptr<unsigned char[]> dest(new unsigned char[dest_len]);
+                unsigned dest_len = map_data_size * sizeof(TileId);
 
                 if (data->Attribute("compression", "zlib"))
                 {
-                    if (tinf_zlib_uncompress(dest.get(), &dest_len, raw_data.get(), raw_data_len) == TINF_DATA_ERROR)
+                    // TODO Endianness in map_data is system dependant, raw_data is little-endian
+                    if (tinf_zlib_uncompress(map_data.get(), &dest_len, raw_data.c_str(), raw_data.length()) == TINF_DATA_ERROR)
                     {
                         std::cerr << "!!! Zlib uncompression failed !!!" << std::endl;
                         return 1;
@@ -241,7 +246,8 @@ std::cout << "LAYER" << std::endl;
                 }
                 else if (data->Attribute("compression", "gzip"))
                 {
-                    if (tinf_gzip_uncompress(dest.get(), &dest_len, raw_data.get(), raw_data_len) == TINF_DATA_ERROR)
+                    // TODO Endianness in map_data is system dependant, raw_data is little-endian
+                    if (tinf_gzip_uncompress(map_data.get(), &dest_len, raw_data.c_str(), raw_data.length()) == TINF_DATA_ERROR)
                     {
                         std::cerr << "!!! Gzip uncompression failed !!!" << std::endl;
                         return 1;
@@ -252,11 +258,21 @@ std::cout << "LAYER" << std::endl;
                     std::cerr << "!!! Unsupported compression method !!!" << std::endl;
                     return -1;
                 }
-
-                raw_data = std::move(dest);
+            }
+            else
+            {
+                // Uncompressed data
+                // TODO Endianness in map_data is system dependant, raw_data is little-endian
+                std::memcpy(map_data.get(), raw_data.c_str(), raw_data.length());
             }
 
             // TODO Use data
+            /*for (unsigned i = 0; i < map_data_size; ++i)
+            {
+                std::cerr << map_data[i] << ' ';
+                if (i % output_map.width == 0)
+                    std::cerr << std::endl;
+            }*/
         }
         else
         {
