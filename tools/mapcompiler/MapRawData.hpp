@@ -7,72 +7,87 @@
 #define _MAPC_MAPRAWDATA_HPP_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
 typedef std::map<std::string, std::string> Properties;
 
+typedef uint32_t TileId;
+
 class Tile;
+
 
 class Tileset
 {
 public:
+    // Types
+    typedef std::vector<std::unique_ptr<Tile>> TileVector;
+
+    // Data
     std::string name;
 
     // TODO Image image;
 
+    unsigned first_gid;
+
     Properties properties;
 
-    unsigned first_gid;
+    TileVector tiles;
 
 };
 // class Tileset
 
+
 class Tile
 {
 public:
-    // TODO Tileset tileset;
+    // Data
+    Tileset *   tileset;
 
-    Properties properties;
+    TileId      id;
+    TileId      gid;
 
-    unsigned id;
-    unsigned gid;
+    Properties  properties;
 
 };
 // class Tile
 
-typedef std::map<unsigned, Tile> TileDictionnary;
 
 class Layer
 {
 public:
+    // Types
+    typedef std::unique_ptr<Tile*[]> TileMap;
+
+    // Data
     std::string name;
 
-    // Tile data[W * H];
+    TileMap     data;
 
-    // Properties
-    Properties properties;
-
-    bool    solid;
-    int     depth;
+    Properties  properties;
 
 };
 // class Layer
 
+
 class Map
 {
 public:
-    unsigned width;
-    unsigned height;
+    // Types
+    typedef std::vector<std::unique_ptr<Tileset>>   TilesetVector;
+    typedef std::map<TileId, Tile *>                TileDictionnary;
+    typedef std::vector<std::unique_ptr<Layer>>     LayerVector;
 
-    std::vector<Tileset> tilesets;
+    // Data
+    unsigned        width;
+    unsigned        height;
+
+    TilesetVector   tilesets;
     TileDictionnary tiles;
-    std::vector<Layer> layers;
+    LayerVector     layers;
 
-    // Properties
-    Properties properties;
-
-    //Color light_color;
+    Properties      properties;
 
 };
 // class Map

@@ -8,14 +8,42 @@
 
 #include "MapRawData.hpp"
 
-#include <mapcompiler/tinyxml/tinyxml2.h>
+#include "tinf/tinf.h"
+#include "tinyxml/tinyxml2.h"
 
 #include <boost/filesystem.hpp>
 
 #include <iostream>
+#include <sstream>
 
 namespace tx = tinyxml2;
 namespace fs = boost::filesystem;
+
+int open_document(const char * filename, tx::XMLDocument & document)
+{
+    tx::XMLError err = document.LoadFile(filename);
+    if (err != tx::XML_SUCCESS)
+    {
+        switch (err)
+        {
+        case tx::XML_ERROR_FILE_NOT_FOUND:
+        case tx::XML_ERROR_FILE_COULD_NOT_BE_OPENED:
+        case tx::XML_ERROR_FILE_READ_ERROR:
+            std::cerr << "!!! Could not open file " << filename
+                      << " (" << err << ") !!!" << std::endl;
+            break;
+
+        default:
+            std::cerr << "!!! Failed to parse file " << filename
+                      << " (" << err << ") !!!" << std::endl;
+            break;
+        }
+        return 1;
+    }
+    return 0;
+}
+
+// ---- ---- ---- ----
 
 // Find <properties> in element, and parse all <property> from it
 void parse_properties(const tx::XMLElement * element, Properties & properties)
@@ -48,33 +76,11 @@ void parse_properties(const tx::XMLElement * element, Properties & properties)
 int parse_map(const char * filename, Map & output_map)
 {
     tx::XMLDocument doc;
-
-    // Enclose err in a local scope
-    {
-        tx::XMLError err = doc.LoadFile(filename);
-        if (err != tx::XML_SUCCESS)
-        {
-            switch (err)
-            {
-            case tx::XML_ERROR_FILE_NOT_FOUND:
-            case tx::XML_ERROR_FILE_COULD_NOT_BE_OPENED:
-            case tx::XML_ERROR_FILE_READ_ERROR:
-                std::cerr << "!!! Could not open file " << filename
-                          << " (" << err << ") !!!" << std::endl;
-                break;
-
-            default:
-                std::cerr << "!!! Failed to parse file " << filename
-                          << " (" << err << ") !!!" << std::endl;
-                break;
-            }
-            return -1;
-        }
-    }
+    if (open_document(filename, doc))
+        return 1;
 
     // Get root element
     tx::XMLElement * map = doc.FirstChildElement("map");
-
     if (map == 0)
     {
         std::cerr << "!!! Map file has no map root element !!!" << std::endl;
@@ -82,7 +88,7 @@ int parse_map(const char * filename, Map & output_map)
     }
 
     // Properties
-    const char * version    = map->Attribute("version");
+    const char * version = map->Attribute("version");
     if (!version || std::string(version) != "1.0")
     {
         std::cerr << "!!! TMX file format version is not good ("
@@ -90,14 +96,15 @@ int parse_map(const char * filename, Map & output_map)
         return 1;
     }
 
-    //unsigned width      = map->UnsignedAttribute("width"); // in tiles
-    //unsigned height     = map->UnsignedAttribute("height"); // in tiles
+    output_map.width    = map->UnsignedAttribute("width"); // in tiles
+    output_map.height   = map->UnsignedAttribute("height"); // in tiles
 
     //unsigned tilewidth  = map->UnsignedAttribute("tilewidth"); // in pixels
     //unsigned tileheight = map->UnsignedAttribute("tileheight"); // in pixels
 
-    Properties map_props;
-    parse_properties(map, map_props);
+    parse_properties(map, output_map.properties);
+
+    // ---- ---- ---- ----
 
     // Parse child elements
     for (tx::XMLElement * tileset = map->FirstChildElement("tileset");
@@ -118,29 +125,11 @@ std::cout << "TILESET" << std::endl;
             fs::path source_path = fs::path(filename).parent_path();
             source_path /= fs::path(source_filename);
 
-            tx::XMLError err = tileset_doc.LoadFile(source_path.string().c_str());
-            if (err != tx::XML_SUCCESS)
-            {
-                switch (err)
-                {
-                case tx::XML_ERROR_FILE_NOT_FOUND:
-                case tx::XML_ERROR_FILE_COULD_NOT_BE_OPENED:
-                case tx::XML_ERROR_FILE_READ_ERROR:
-                    std::cerr << "!!! Could not open external tileset " << source_filename
-                              << " (" << err << ") !!!" << std::endl;
-                    break;
-
-                default:
-                    std::cerr << "!!! Failed to parse external tileset " << source_filename
-                              << " (" << err << ") !!!" << std::endl;
-                    break;
-                }
-                return -1;
-            }
+            if (open_document(source_path.string().c_str(), tileset_doc))
+                return 1;
 
             // Get root element
             tileset_source = tileset_doc.FirstChildElement("tileset");
-
             if (tileset_source == 0)
             {
                 std::cerr << "!!! External tileset file has no tileset root element !!!" << std::endl;
@@ -148,11 +137,14 @@ std::cout << "TILESET" << std::endl;
             }
         }
 
+        std::unique_ptr<Tileset> output_tileset(new Tileset());
+
         // Properties
-        //const char * tileset_name = tileset->Attribute("name");
-        //unsigned tileset_gid = tileset->UnsignedAttribute("gid");
-        Properties tileset_props;
-        parse_properties(tileset_source, tileset_props);
+        if (tileset->Attribute("name"))
+            output_tileset->name = std::string(tileset->Attribute("name"));
+        output_tileset->first_gid = tileset->UnsignedAttribute("gid");
+
+        parse_properties(tileset_source, output_tileset->properties);
 
         for (tx::XMLElement * tile = tileset_source->FirstChildElement("tile");
                 tile != 0; tile = tile->NextSiblingElement("tile"))
@@ -160,13 +152,24 @@ std::cout << "TILESET" << std::endl;
             // Tile
 std::cout << "TILE" << std::endl;
 
+            std::unique_ptr<Tile> output_tile(new Tile());
+
             // Properties
-            //unsigned tile_id = tile->UnsignedAttribute("id");
-            //unsigned tile_gid = tile_id + tileset_gid;
-            Properties tile_props;
-            parse_properties(tile, tile_props);
+            output_tile->tileset = output_tileset.get();
+            output_tile->id = tile->UnsignedAttribute("id");
+            output_tile->gid = output_tile->id + output_tileset->first_gid;
+            parse_properties(tile, output_tile->properties);
+
+            // Add tile to output data
+            output_map.tiles[output_tile->gid] = output_tile.get();
+            output_tileset->tiles.push_back(std::move(output_tile));
         }
+
+        // Add tileset to output data
+        output_map.tilesets.push_back(std::move(output_tileset));
     }
+
+    // ---- ---- ---- ----
 
     for (tx::XMLElement * layer = map->FirstChildElement("layer");
             layer != 0; layer = layer->NextSiblingElement("layer"))
@@ -174,38 +177,98 @@ std::cout << "TILE" << std::endl;
         // Tiles layer
 std::cout << "LAYER" << std::endl;
 
+        std::unique_ptr<Layer> output_layer(new Layer());
+
         // Properties
-        //const char * layer_name = layer->Attribute("name");
-        Properties layer_props;
-        parse_properties(layer, layer_props);
+        if (layer->Attribute("name"))
+            output_layer->name = std::string(layer->Attribute("name"));
+        parse_properties(layer, output_layer->properties);
 
         tx::XMLElement * data = layer->FirstChildElement("data");
         if (!data)
         {
             std::cerr << "!!! No data node found in layer !!!" << std::endl;
-            return -1;
-        }
-
-        if (data->Attribute("compression") != 0)
-        {
-            std::cerr << "!!! Layer data compression not supported !!!" << std::endl;
-            return -1;
+            return 1;
         }
 
         if (data->Attribute("encoding", "csv"))
         {
-            // TODO Parse CSV
+            // Parse CSV
+            std::istringstream csv_stream;
+            csv_stream.str(std::string(data->GetText()));
+
+            while (csv_stream.good())
+            {
+                TileId gid;
+
+                // Read gid
+                csv_stream >> gid;
+
+                // TODO Use data
+
+                // Ignore comma and skip spaces
+                csv_stream.get();
+                csv_stream >> std::ws;
+            }
         }
-        /*else if (data->Attribute("encoding", "base64"))
+        else if (data->Attribute("encoding", "base64"))
         {
             // TODO Parse base64
-        }*/
+            const char * b64_data = data->GetText();
+            unsigned b64_len = std::strlen(b64_data);
+
+            unsigned raw_data_len = (b64_len / 4) * 3;
+            if (b64_data[b64_len - 1] == '=') --raw_data_len;
+            if (b64_data[b64_len - 2] == '=') --raw_data_len;
+
+            std::unique_ptr<unsigned char[]> raw_data(new unsigned char[raw_data_len]);
+            // TODO Parse base64
+
+
+            if (data->Attribute("compression") != 0)
+            {
+                // Compressed data
+                unsigned dest_len = output_map.width * output_map.height * sizeof(TileId);
+                std::unique_ptr<unsigned char[]> dest(new unsigned char[dest_len]);
+
+                if (data->Attribute("compression", "zlib"))
+                {
+                    if (tinf_zlib_uncompress(dest.get(), &dest_len, raw_data.get(), raw_data_len) == TINF_DATA_ERROR)
+                    {
+                        std::cerr << "!!! Zlib uncompression failed !!!" << std::endl;
+                        return 1;
+                    }
+                }
+                else if (data->Attribute("compression", "gzip"))
+                {
+                    if (tinf_gzip_uncompress(dest.get(), &dest_len, raw_data.get(), raw_data_len) == TINF_DATA_ERROR)
+                    {
+                        std::cerr << "!!! Gzip uncompression failed !!!" << std::endl;
+                        return 1;
+                    }
+                }
+                else
+                {
+                    std::cerr << "!!! Unsupported compression method !!!" << std::endl;
+                    return -1;
+                }
+
+                raw_data = std::move(dest);
+            }
+
+            // TODO Use data
+        }
         else
         {
-            std::cerr << "!!! Unsupported layer encoding, use CSV !!!" << std::endl;
+            std::cerr << "!!! Unsupported layer encoding !!!" << std::endl;
             return -1;
         }
+
+        // Add layer to output data
+        output_map.layers.push_back(std::move(output_layer));
     }
+
+    // ---- ---- ---- ----
 
     for (tx::XMLElement * objlay = map->FirstChildElement("objectgroup");
             objlay != 0; objlay = objlay->NextSiblingElement("objectgroup"))
@@ -216,8 +279,7 @@ std::cout << "OBJLAY" << std::endl;
         // Properties
         //const char * objlay_name = objlay->Attribute("name");
 
-        Properties objlay_props;
-        parse_properties(objlay, objlay_props);
+        //parse_properties(objlay, objlay_props);
 
         for (tx::XMLElement * obj = objlay->FirstChildElement("object");
                 obj != 0; obj = obj->NextSiblingElement("object"))
@@ -233,6 +295,8 @@ std::cout << "OBJ" << std::endl;
             parse_properties(obj, obj_props);
         }
     }
+
+    // ---- ---- ---- ----
 
     for (tx::XMLElement * img = map->FirstChildElement("imagelayer");
             img != 0; img = img->NextSiblingElement("imagelayer"))

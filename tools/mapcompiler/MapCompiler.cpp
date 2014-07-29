@@ -6,6 +6,8 @@
 #include "MapRawData.hpp"
 #include "MapParser.hpp"
 
+#include "tinf/tinf.h"
+
 #include <iostream>
 
 void print_help()
@@ -50,6 +52,8 @@ int process_file(const char * filename)
 
 int main(int argc, char ** argv)
 {
+    tinf_init();
+
     if (argc == 1)
     {
         print_help();
