@@ -22,18 +22,30 @@ class Tileset
 {
 public:
     // Types
-    typedef std::vector<std::unique_ptr<Tile>> TileVector;
+    typedef std::unique_ptr<Tile[]> TileArray;
 
     // Data
     std::string name;
 
     // TODO Image image;
 
-    unsigned first_gid;
+    unsigned    first_gid;
 
-    Properties properties;
+    unsigned    tile_width;
+    unsigned    tile_height;
 
-    TileVector tiles;
+    unsigned    tile_rows;
+    unsigned    tile_lines;
+
+    unsigned    spacing;
+    unsigned    margin;
+
+    unsigned    offset_x;
+    unsigned    offset_y;
+
+    Properties  properties;
+
+    TileArray   tiles;
 
 };
 // class Tileset
@@ -46,7 +58,9 @@ public:
     Tileset *   tileset;
 
     TileId      id;
-    TileId      gid;
+
+    unsigned    u;  // Left border coord in image
+    unsigned    v;  // Top border coord in image
 
     Properties  properties;
 
@@ -82,6 +96,9 @@ public:
     // Data
     unsigned        width;
     unsigned        height;
+
+    unsigned        tile_width;
+    unsigned        tile_height;
 
     TilesetVector   tilesets;
     TileDictionnary tiles;

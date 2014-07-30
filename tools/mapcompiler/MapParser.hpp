@@ -97,11 +97,11 @@ int parse_map(const char * filename, Map & output_map)
         return 1;
     }
 
-    output_map.width    = map->UnsignedAttribute("width"); // in tiles
-    output_map.height   = map->UnsignedAttribute("height"); // in tiles
+    output_map.width        = map->UnsignedAttribute("width");      // in tiles
+    output_map.height       = map->UnsignedAttribute("height");     // in tiles
 
-    //unsigned tilewidth  = map->UnsignedAttribute("tilewidth"); // in pixels
-    //unsigned tileheight = map->UnsignedAttribute("tileheight"); // in pixels
+    output_map.tile_width   = map->UnsignedAttribute("tilewidth");  // in px
+    output_map.tile_height  = map->UnsignedAttribute("tileheight"); // in px
 
     parse_properties(map, output_map.properties);
 
@@ -112,8 +112,6 @@ int parse_map(const char * filename, Map & output_map)
             tileset != 0; tileset = tileset->NextSiblingElement("tileset"))
     {
         // Tileset
-std::cout << "TILESET" << std::endl;
-
         tx::XMLDocument tileset_doc; // Only used if an external tileset is used
         tx::XMLElement * tileset_source = tileset;
 
@@ -140,31 +138,110 @@ std::cout << "TILESET" << std::endl;
 
         std::unique_ptr<Tileset> output_tileset(new Tileset());
 
+        // Tile offset
+        tx::XMLElement * offset = tileset_source->FirstChildElement("tileoffset");
+        if (offset)
+        {
+            output_tileset->offset_x = offset->UnsignedAttribute("x");
+            output_tileset->offset_y = offset->UnsignedAttribute("y");
+        }
+        else
+        {
+            output_tileset->offset_x = 0;
+            output_tileset->offset_y = 0;
+        }
+
+        // Image
+        tx::XMLElement * image = tileset_source->FirstChildElement("image");
+        if (!image)
+        {
+            std::cerr << "!!! No image node found in tileset !!!" << std::endl;
+            return 1;
+        }
+
+        unsigned image_width  = image->UnsignedAttribute("width");
+        unsigned image_height = image->UnsignedAttribute("height");
+        if (image_width == 0 || image_height == 0)
+        {
+            std::cerr << "!!! Image has no size !!!" << std::endl;
+            return 1;
+        }
+
         // Properties
+        output_tileset->first_gid   = tileset->UnsignedAttribute("firstgid");
+
         if (tileset_source->Attribute("name"))
             output_tileset->name = std::string(tileset_source->Attribute("name"));
-        output_tileset->first_gid = tileset->UnsignedAttribute("gid");
+
+        output_tileset->tile_width  = tileset_source->UnsignedAttribute("tilewidth");  // in px
+        output_tileset->tile_height = tileset_source->UnsignedAttribute("tileheight"); // in px
+
+        output_tileset->spacing     = tileset_source->UnsignedAttribute("spacing");    // in px
+        output_tileset->margin      = tileset_source->UnsignedAttribute("margin");     // in px
 
         parse_properties(tileset_source, output_tileset->properties);
 
+        if (output_tileset->first_gid == 0)
+        {
+            std::cerr << "!!! Tileset has no first gid value !!!" << std::endl;
+            return 1;
+        }
+
+        if (output_tileset->tile_width == 0 || output_tileset->tile_height == 0)
+        {
+            std::cerr << "!!! Tileset has no tile size !!!" << std::endl;
+            return 1;
+        }
+
+        // Compute rows / lines count
+        output_tileset->tile_rows   =
+                (image_width - 2 * output_tileset->margin + output_tileset->spacing)
+              / (output_tileset->tile_width + output_tileset->spacing);
+        output_tileset->tile_lines  =
+                (image_height - 2 * output_tileset->margin + output_tileset->spacing)
+              / (output_tileset->tile_height + output_tileset->spacing);
+
+        std::unique_ptr<Tile[]> tile_array(new Tile[output_tileset->tile_rows * output_tileset->tile_lines]);
+
+        // Fill all tiles with common data
+        for (unsigned y = 0; y < output_tileset->tile_lines; ++y)
+        {
+            for (unsigned x = 0; x < output_tileset->tile_rows; ++x)
+            {
+                unsigned id = x + y * output_tileset->tile_rows;
+
+                if (id >= output_tileset->tile_rows * output_tileset->tile_lines)
+                {
+                    std::cerr << "!!! Tile has invalid id !!!" << std::endl;
+                    return 1;
+                }
+
+                Tile & output_tile = tile_array[id];
+
+                output_tile.tileset = output_tileset.get();
+                output_tile.id = id;
+                output_tile.u = output_tileset->margin + x * (output_tileset->tile_width + output_tileset->margin);
+                output_tile.v = output_tileset->margin + y * (output_tileset->tile_height + output_tileset->margin);
+
+                // Add tile to output data
+                output_map.tiles[id + output_tileset->first_gid] = &output_tile;
+            }
+        }
+
+        // Additional tile data from tileset
         for (tx::XMLElement * tile = tileset_source->FirstChildElement("tile");
                 tile != 0; tile = tile->NextSiblingElement("tile"))
         {
-            // Tile
-std::cout << "TILE" << std::endl;
+            unsigned id = tile->UnsignedAttribute("id");
 
-            std::unique_ptr<Tile> output_tile(new Tile());
+            // Tile
+            Tile & output_tile = tile_array[id];
 
             // Properties
-            output_tile->tileset = output_tileset.get();
-            output_tile->id = tile->UnsignedAttribute("id");
-            output_tile->gid = output_tile->id + output_tileset->first_gid;
-            parse_properties(tile, output_tile->properties);
-
-            // Add tile to output data
-            output_map.tiles[output_tile->gid] = output_tile.get();
-            output_tileset->tiles.push_back(std::move(output_tile));
+            parse_properties(tile, output_tile.properties);
         }
+
+        output_tileset->tiles = std::move(tile_array);
 
         // Add tileset to output data
         output_map.tilesets.push_back(std::move(output_tileset));
@@ -176,8 +253,6 @@ std::cout << "TILE" << std::endl;
             layer != 0; layer = layer->NextSiblingElement("layer"))
     {
         // Tiles layer
-std::cout << "LAYER" << std::endl;
-
         std::unique_ptr<Layer> output_layer(new Layer());
 
         // Properties
@@ -194,6 +269,7 @@ std::cout << "LAYER" << std::endl;
 
         unsigned map_data_size = output_map.width * output_map.height;
         std::unique_ptr<TileId[]> map_data(new TileId[map_data_size]);
+        std::unique_ptr<Tile*[]> map_data_ptr(new Tile*[map_data_size]);
 
         if (data->Attribute("encoding", "csv"))
         {
@@ -256,7 +332,7 @@ std::cout << "LAYER" << std::endl;
                 else
                 {
                     std::cerr << "!!! Unsupported compression method !!!" << std::endl;
-                    return -1;
+                    return 1;
                 }
             }
             else
@@ -266,13 +342,16 @@ std::cout << "LAYER" << std::endl;
                 std::memcpy(map_data.get(), raw_data.c_str(), raw_data.length());
             }
 
-            // TODO Use data
-            /*for (unsigned i = 0; i < map_data_size; ++i)
+            // Load pointers from indexes
+            for (unsigned i = 0; i < map_data_size; ++i)
             {
-                std::cerr << map_data[i] << ' ';
-                if (i % output_map.width == 0)
-                    std::cerr << std::endl;
-            }*/
+                if (map_data[i] == 0)
+                    map_data_ptr[i] = nullptr;
+                else
+                    map_data_ptr[i] = output_map.tiles.at(map_data[i]);
+            }
+
+            output_layer->data = std::move(map_data_ptr);
         }
         else
         {
@@ -290,8 +369,6 @@ std::cout << "LAYER" << std::endl;
             objlay != 0; objlay = objlay->NextSiblingElement("objectgroup"))
     {
         // Object layer
-std::cout << "OBJLAY" << std::endl;
-
         // Properties
         //const char * objlay_name = objlay->Attribute("name");
 
@@ -301,8 +378,6 @@ std::cout << "OBJLAY" << std::endl;
                 obj != 0; obj = obj->NextSiblingElement("object"))
         {
             // Object
-std::cout << "OBJ" << std::endl;
-
             //const char * obj_name = obj->Attribute("name");
             //const char * obj_type = obj->Attribute("type");
 
