@@ -24,8 +24,8 @@ private:
     Screen *    _current_screen;
 
     // TODO mutable... :(
-    mutable bool _fade_enabled;
-    bool        _fade_in;
+    mutable bool _fade_enabled  = false;
+    bool        _fade_in        = false;
     sf::Color   _fade_color;
     sf::Time    _fade_start_time;
     sf::Time    _fade_delay;

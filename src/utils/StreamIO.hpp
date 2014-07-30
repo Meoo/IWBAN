@@ -25,6 +25,7 @@ typename std::add_rvalue_reference<T>::type read(std::istream & stream)
 {
     IWBAN_STATIC_ASSERT(std::is_integral<T>::value);
 
+    // TODO Endianness should not be ignored
     T value;
     stream.read(reinterpret_cast<char *>(&value), sizeof(T));
     return std::move(value);
@@ -53,6 +54,7 @@ void write(std::ostream & stream, const T & value)
 {
     IWBAN_STATIC_ASSERT(std::is_integral<T>::value);
 
+    // TODO Endianness should not be ignored
     stream.write(reinterpret_cast<const char *>(&value), sizeof(T));
 }
 
