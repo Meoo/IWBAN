@@ -5,6 +5,7 @@
 
 #include "MapRawData.hpp"
 #include "MapParser.hpp"
+#include "TerrainBuilder.hpp"
 
 #include "tinf/tinf.h"
 
@@ -26,22 +27,28 @@ int process_file(const char * filename)
     std::cout << "+++ Parsing XML data +++" << std::endl;
 
     Map map;
-    int ret = parse_map(filename, map);
 
+    int ret = parse_map(filename, map);
     if (ret != 0)
         return ret;
 
-    std::cout << "+++ Building tile chunks +++" << std::endl;
+    std::cout << "+++ Building terrain chunks +++" << std::endl;
 
-    // TODO XML parsed, process the data
+    ret = build_terrain(map);
+    if (ret != 0)
+        return ret;
 
     std::cout << "+++ Building collision mask +++" << std::endl;
 
-    // TODO XML parsed, process the data
+    // TODO Build collision mask
 
     std::cout << "+++ Building light and shadow volumes +++" << std::endl;
 
-    // TODO XML parsed, process the data
+    // TODO Build light and shadow volumes
+
+    std::cout << "+++ Writing file +++" << std::endl;
+
+    // TODO Serialize map to file
 
     std::cout << "+++ Map done +++" << std::endl;
 

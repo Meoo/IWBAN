@@ -152,12 +152,21 @@ int parse_map(const char * filename, Map & output_map)
         }
 
         // Image
+        // TODO Image transparent color?
         tx::XMLElement * image = tileset_source->FirstChildElement("image");
         if (!image)
         {
             std::cerr << "!!! No image node found in tileset !!!" << std::endl;
             return 1;
         }
+
+        const char * image_source = image->Attribute("source");
+        if (!image_source)
+        {
+            std::cerr << "!!! Tileset has no source image !!!" << std::endl;
+            return 1;
+        }
+        output_tileset->image = std::string(image_source);
 
         unsigned image_width  = image->UnsignedAttribute("width");
         unsigned image_height = image->UnsignedAttribute("height");

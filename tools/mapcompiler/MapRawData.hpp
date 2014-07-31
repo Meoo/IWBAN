@@ -27,7 +27,7 @@ public:
     // Data
     std::string name;
 
-    // TODO Image image;
+    std::string image;
 
     unsigned    first_gid;
 

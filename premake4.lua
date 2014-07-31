@@ -139,4 +139,5 @@ project "MapCompiler"
 
   files       { "tools/mapcompiler/**.cpp" }
 
+  use_SFML    { "graphics", "window", "system" }
   use_Boost   { "system", "filesystem" }
