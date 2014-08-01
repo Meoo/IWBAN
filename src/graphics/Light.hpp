@@ -8,17 +8,11 @@
 
 #include <Global.hpp>
 
-#include <boost/intrusive/set.hpp>
-
 namespace gfx
 {
 
-class Light : public boost::intrusive::set_base_hook<>
+class Light
 {
-public:
-    typedef boost::intrusive::set<Drawable> List;
-
-
 private:
     // Data members
     bool        _cast_shadows;
