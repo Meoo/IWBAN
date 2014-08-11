@@ -6,6 +6,8 @@
 #ifndef _MAPC_BASE64_HPP_
 #define _MAPC_BASE64_HPP_
 
+// Source : http://www.adp-gmbh.ch/cpp/common/base64.html
+
 static const std::string base64_chars =
              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
              "abcdefghijklmnopqrstuvwxyz"
