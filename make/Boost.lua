@@ -67,6 +67,9 @@ function use_Boost(libs)
   includedirs { BOOST_INCLUDE_DIR }
   libdirs     { BOOST_LIBS_DIR }
 
+  -- Disable deprecated features
+  defines     { "BOOST_SYSTEM_NO_DEPRECATED", "BOOST_FILESYSTEM_NO_DEPRECATED" }
+
   -- Boost libs
   local s = ""
   if BOOST_RUNTIME_STATIC then
