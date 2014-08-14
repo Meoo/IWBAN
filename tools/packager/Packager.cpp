@@ -86,7 +86,7 @@ int process_folder(const char * path_name)
     }
 
     // Open package file
-    std::string package_name(folder.leaf().string() + IWBAN_PKG_EXTENSION);
+    std::string package_name(folder.filename().string() + IWBAN_PKG_EXTENSION);
 
     std::ofstream package(package_name.c_str(),
             std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);

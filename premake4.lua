@@ -97,7 +97,7 @@ project "IWBAN"
   pchsource   "src/Global.cpp"
 
   use_SFML    { "graphics", "audio", "window", "system" }
-  use_Boost   { "iostreams", "system", "filesystem" }
+  use_Boost   { "iostreams", "filesystem", "system" }
 
   -- Force WindowedApp on MacOSX to workaround XCode bug
   configuration { "Debug", "not MacOSX" }
@@ -124,7 +124,7 @@ project "Packager"
 
   files       { "tools/packager/**.cpp" }
 
-  use_Boost   { "system", "filesystem" }
+  use_Boost   { "filesystem", "system" }
 
 -- ///////////////////////////////////////////////////// --
 
@@ -140,4 +140,4 @@ project "MapCompiler"
   files       { "tools/mapcompiler/**.cpp" }
 
   use_SFML    { "graphics", "window", "system" }
-  use_Boost   { "system", "filesystem" }
+  use_Boost   { "filesystem", "system" }
