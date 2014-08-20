@@ -23,10 +23,6 @@ class Renderer;
 class LightContext : public Context
 {
 public:
-    friend class Renderer;
-
-
-public:
     // Virtual destructor
     virtual ~LightContext() {}
 
@@ -41,7 +37,8 @@ public:
 
 
 protected:
-    // Protected functions for Renderer
+    friend class Renderer;
+
     virtual void open(const sf::Color & ambient_light) = 0;
 
     virtual const sf::Texture & getTexture() const = 0;

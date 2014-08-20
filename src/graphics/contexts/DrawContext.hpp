@@ -19,10 +19,6 @@ class Renderer;
 
 class DrawContext : public Context
 {
-public:
-    friend class Renderer;
-
-
 private:
     // Data members
     sf::RenderTexture   _render_scene;
@@ -45,6 +41,8 @@ public:
 
 
 protected:
+    friend class Renderer;
+
     // Protected functions for Renderer
     void open();
 

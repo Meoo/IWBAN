@@ -30,10 +30,6 @@ class Space;
 
 class Body
 {
-public:
-    friend class Space;
-
-
 private:
     // Data members
     game::SolidEntity * _owner      = nullptr;
@@ -114,7 +110,8 @@ public:
 
 
 private:
-    // Private for Space
+    friend class Space;
+
     void            preUpdate(const sf::Time & delta);
     void            preStep(const sf::Time & step_delta);
 

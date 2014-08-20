@@ -17,10 +17,6 @@ class Projector;
 
 class Screen
 {
-public:
-    friend class Projector;
-
-
 private:
     // Data members
     Projector * _projector      = nullptr;
@@ -79,7 +75,8 @@ protected:
 
 
 private:
-    // Private functions for Projector
+    friend class Projector;
+
     void        show(Projector * proj)
     {
         IWBAN_PRE_PTR(proj);

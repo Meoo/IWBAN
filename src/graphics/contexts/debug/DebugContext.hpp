@@ -23,10 +23,6 @@ class Renderer;
 
 class DebugContext : public Context
 {
-public:
-    friend class Renderer;
-
-
 private:
     // Data members
     sf::RenderTexture   _render_scene;
@@ -49,7 +45,8 @@ public:
 
 
 protected:
-    // Protected functions for Renderer
+    friend class Renderer;
+
     void open();
 
     const sf::Texture & getTexture() const;

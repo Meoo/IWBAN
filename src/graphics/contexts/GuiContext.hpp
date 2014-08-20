@@ -19,10 +19,6 @@ class Renderer;
 
 class GuiContext : public Context
 {
-public:
-    friend class Renderer;
-
-
 private:
     // Data members
     sf::RenderTarget &  _render_target;
@@ -42,7 +38,8 @@ public:
 
 
 protected:
-    // Protected functions for Renderer
+    friend class Renderer;
+
     void open();
 
 };
