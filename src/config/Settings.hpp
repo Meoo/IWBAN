@@ -27,6 +27,8 @@ extern unsigned     window_height;
 extern unsigned     framerate;
 extern bool         vsync;
 
+extern unsigned     volume;
+
 extern std::string  language;
 
 extern bool         pixelated;

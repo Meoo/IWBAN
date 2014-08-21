@@ -7,6 +7,20 @@
 
 #include <gui/Navigation.hpp>
 
+namespace
+{
+
+inline bool checkBounds(const ut::Vector & position, const ut::Rectangle & bounds)
+{
+    return position.x >= bounds.x
+        && position.y >= bounds.y
+        && position.x <= bounds.x + bounds.w
+        && position.y <= bounds.y + bounds.h;
+}
+
+}
+// namespace
+
 namespace gui
 {
 
@@ -40,6 +54,11 @@ void Navigation::dispatchAction(sys::ActionId action)
             default:
                 // The action is not navigation, dispatch it and quit
                 _selected->dispatchAction(action);
+
+                Selectable * slave = _table[_selected].slave;
+                if (slave)
+                    slave->dispatchAction(action);
+
                 return;
             }
         }
@@ -49,12 +68,15 @@ void Navigation::dispatchAction(sys::ActionId action)
         {
             // Cannot move in choosen direction, dispatch the action instead
             _selected->dispatchAction(action);
+
+            Selectable * slave = _table[_selected].slave;
+            if (slave)
+                slave->dispatchAction(action);
+
             return;
         }
 
-        _selected->deselect();
-        _selected = target;
-        _selected->select();
+        select(target);
     }
     else
         reset();
@@ -69,26 +91,27 @@ void Navigation::dispatchMouseMove(const ut::Vector & position)
 
         ut::Rectangle bounds = it.first->getBounds();
 
-        if (position.x >= bounds.x
-         && position.y >= bounds.y
-         && position.x <= bounds.x + bounds.w
-         && position.y <= bounds.y + bounds.h)
+        if (checkBounds(position, bounds))
         {
-            if (_selected)
+            if (_selected && _selected == it.first)
+                return;
+
+            select(it.first);
+            return;
+        }
+
+        Selectable * slave = _table[it.first].slave;
+        if (slave)
+        {
+            ut::Rectangle bounds = slave->getBounds();
+            if (checkBounds(position, bounds))
             {
-                if (_selected == it.first)
+                if (_selected && _selected == it.first)
                     return;
 
-                _selected->deselect();
-                _selected = it.first;
-                _selected->select();
+                select(it.first);
+                return;
             }
-            else
-            {
-                _selected = it.first;
-                _selected->select();
-            }
-            return;
         }
     }
 }
@@ -98,12 +121,25 @@ void Navigation::dispatchMouseClick(const ut::Vector & position)
     if (_selected)
     {
         ut::Rectangle bounds = _selected->getBounds();
-        if (position.x >= bounds.x
-         && position.y >= bounds.y
-         && position.x <= bounds.x + bounds.w
-         && position.y <= bounds.y + bounds.h)
+        if (checkBounds(position, bounds))
         {
-            _selected->dispatchAction(sys::ACT_ACCEPT);
+            _selected->dispatchMouseClick(ut::Vector(
+                    position.x - bounds.x,
+                    position.y - bounds.y
+            ));
+        }
+
+        Selectable * slave = _table[_selected].slave;
+        if (slave)
+        {
+            ut::Rectangle bounds = slave->getBounds();
+            if (checkBounds(position, bounds))
+            {
+                slave->dispatchMouseClick(ut::Vector(
+                        position.x - bounds.x,
+                        position.y - bounds.y
+                ));
+            }
         }
     }
 }
@@ -119,20 +155,6 @@ void Navigation::addVertical(Selectable * up, Selectable * down)
 
     up_entry.down = down;
     down_entry.up = up;
-
-    if (!_selected)
-    {
-        if (up->isEnabled())
-        {
-            _selected = up;
-            up->select();
-        }
-        else if (down->isEnabled())
-        {
-            _selected = down;
-            down->select();
-        }
-    }
 }
 
 void Navigation::addHorizontal(Selectable * left, Selectable * right)
@@ -146,20 +168,19 @@ void Navigation::addHorizontal(Selectable * left, Selectable * right)
 
     left_entry.right = right;
     right_entry.left = left;
+}
 
-    if (!_selected)
-    {
-        if (left->isEnabled())
-        {
-            _selected = left;
-            left->select();
-        }
-        else if (right->isEnabled())
-        {
-            _selected = right;
-            right->select();
-        }
-    }
+void Navigation::addSlave(Selectable * master, Selectable * slave)
+{
+    IWBAN_PRE_PTR(master);
+    IWBAN_PRE_PTR(slave);
+    IWBAN_PRE(master != slave);
+
+    NavigationEntry & master_entry = _table[master];
+    master_entry.slave = slave;
+
+    if (_selected == master)
+        slave->select();
 }
 
 void Navigation::setHead(Selectable * head)
@@ -172,21 +193,14 @@ void Navigation::setHead(Selectable * head)
     _table[_head];
 
     if (!_selected && _head->isEnabled())
-    {
-        _selected = _head;
-        _head->select();
-    }
+        select(_head);
 }
 
 void Navigation::reset()
 {
     if (_selected == _head) return;
 
-    if (_selected)
-    {
-        _selected->deselect();
-        _selected = nullptr;
-    }
+    deselect();
 
     _selected = _head;
 
@@ -195,7 +209,35 @@ void Navigation::reset()
         _selected = _table[_selected].up;
 
     if (_selected)
-        _selected->select();
+        select(_selected);
+}
+
+void Navigation::select(Selectable * elem)
+{
+    if (_selected)
+        deselect();
+
+    elem->select();
+
+    Selectable * slave = _table[elem].slave;
+    if (slave)
+        slave->select();
+
+    _selected = elem;
+}
+
+void Navigation::deselect()
+{
+    if (!_selected)
+        return;
+
+    _selected->deselect();
+
+    Selectable * slave = _table[_selected].slave;
+    if (slave)
+        slave->deselect();
+
+    _selected = nullptr;
 }
 
 }

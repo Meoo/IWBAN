@@ -27,6 +27,8 @@ public:
         Selectable * down   = nullptr;
         Selectable * left   = nullptr;
         Selectable * right  = nullptr;
+
+        Selectable * slave  = nullptr;
     };
     // class NavigationEntry
 
@@ -52,11 +54,18 @@ public:
     void    addVertical(Selectable * up, Selectable * down);
     void    addHorizontal(Selectable * left, Selectable * right);
 
+    void    addSlave(Selectable * master, Selectable * slave);
+
     // Mark an element as the element selected by default
     void    setHead(Selectable * head);
 
     // Deselect the current element and select the head
     void    reset();
+
+
+private:
+    void    select(Selectable * elem);
+    void    deselect();
 
 };
 // class Navigation

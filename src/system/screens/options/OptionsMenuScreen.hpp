@@ -34,9 +34,9 @@ private:
 
     gui::Label  _title;
 
-    gui::Button _audio, _language_sub, _video_sub, _keyboard_sub, _gamepad_sub, _quit;
+    gui::Button _audio, _language_sub, _language, _video_sub, _keyboard_sub, _gamepad_sub, _quit;
 
-    gui::Label  _gamepad_state, _language;
+    gui::Label  _gamepad_state;
     sf::Time    _gamepad_state_timer;
 
     gui::Slider _volume;
@@ -62,9 +62,9 @@ public:
         _language_sub.setPosition({140, 140});
 
         _language.loadText(std::string("language.") + cfg::language);
+        _language.setCallback([this](){ onLanguage(); });
         _language.setPosition({440, 140});
         _language.setCharacterSize(22);
-        _language.setTextColor(sf::Color(220, 220, 220));
 
         // Audio
         _audio.loadText("options.audio");
@@ -72,6 +72,9 @@ public:
 
         _volume.setSize({200, 22});
         _volume.setPosition({440, 180});
+        _volume.setRange(0, 100, 10);
+        _volume.setValue(cfg::volume);
+        _volume.setCallback([](unsigned value){ cfg::volume = value; }); // TODO Update master volume
 
         // Video
         _video_sub.loadText("options.video");
@@ -98,12 +101,15 @@ public:
 
         // Navigation
         _navi.setHead(&_language_sub);
+
         _navi.addVertical(&_language_sub, &_audio);
         _navi.addVertical(&_audio, &_video_sub);
         _navi.addVertical(&_video_sub, &_keyboard_sub);
         _navi.addVertical(&_keyboard_sub, &_gamepad_sub);
         _navi.addVertical(&_gamepad_sub, &_quit);
 
+        _navi.addSlave(&_audio, &_volume);
+        _navi.addSlave(&_language_sub, &_language);
     }
 
     // Destructor

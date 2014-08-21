@@ -30,6 +30,10 @@ public:
     virtual ut::Rectangle getBounds() const = 0;
 
     virtual void    dispatchAction(sys::ActionId action) {}
+    virtual void    dispatchMouseClick(const ut::Vector & local_position)
+    {
+        dispatchAction(sys::ACT_ACCEPT);
+    }
 
 };
 // class Selectable

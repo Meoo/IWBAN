@@ -63,7 +63,9 @@ void Slider::deselect()
 
 ut::Rectangle Slider::getBounds() const
 {
-    return ut::Rectangle(_position.x, _position.y, _size.x, _size.y);
+    return ut::Rectangle(_position.x - _size.x / 2,
+                         _position.y - _size.y / 2,
+                         _size.x, _size.y);
 }
 
 void Slider::dispatchAction(sys::ActionId action)
@@ -92,6 +94,17 @@ void Slider::dispatchAction(sys::ActionId action)
 
         updateValue();
     }
+}
+
+void Slider::dispatchMouseClick(const ut::Vector & local_position)
+{
+    int range = _value_max - _value_min;
+    _value = _value_min + range * (local_position.x / (float) _size.x);
+
+    if (_action)
+        _action(_value);
+
+    updateValue();
 }
 
 void Slider::setSize(const ut::Vector & size)

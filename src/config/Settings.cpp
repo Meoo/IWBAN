@@ -27,6 +27,8 @@ unsigned    window_height   = IWBAN_FRAME_HEIGHT;
 unsigned    framerate       = IWBAN_FRAME_RATE;
 bool        vsync           = false;
 
+unsigned    volume          = 50;
+
 std::string language        = "fr";
 
 bool        pixelated       = false;
@@ -62,6 +64,7 @@ void save()
     SAVE(window_height);
     SAVE(framerate);
     SAVE(vsync);
+    SAVE(volume);
     SAVE(language);
     SAVE(pixelated);
     SAVE(light_smooth);
@@ -112,6 +115,7 @@ void load()
         LOAD(window_height);
         LOAD(framerate);
         LOAD(vsync);
+        LOAD(volume);
         LOAD(language);
         LOAD(pixelated);
         LOAD(light_smooth);
@@ -137,6 +141,12 @@ void load()
     {
         IWBAN_LOG_WARNING("Invalid value for 'fullscreen', setting to default");
         particles = 0;
+    }
+
+    if (volume > 100)
+    {
+        IWBAN_LOG_WARNING("Invalid value for 'volume', setting to default");
+        volume = 100;
     }
 
     if (language.size() != 2

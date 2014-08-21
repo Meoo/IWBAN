@@ -56,6 +56,7 @@ public:
 
     void        setCallback(const ValueCallback & func) { _action = func; }
     virtual void dispatchAction(sys::ActionId action);
+    virtual void dispatchMouseClick(const ut::Vector & local_position);
 
     void        setShadow(bool shadow) { _shadow = shadow; }
 
@@ -64,6 +65,8 @@ public:
 
     int         getValue() const { return _value; }
     void        setValue(int value) { _value = value; updateValue(); }
+
+    void        setRange(int min, int max, int step) { _value_min = min; _value_max = max; _step = step; updateValue(); }
 
     virtual void    refresh();
 
