@@ -5,7 +5,7 @@
 
 #include <config/PackageConfig.hpp>
 
-#include <resources/impl/Index.hpp>
+#include <resources/Index.hpp>
 
 #include <boost/filesystem.hpp>
 
@@ -15,7 +15,7 @@
 #include <string>
 
 namespace fs = boost::filesystem;
-namespace pk = res::impl;
+namespace pk = res;
 
 void print_help()
 {
