@@ -29,6 +29,9 @@ dofile "make/SFML.lua"
 -- Boost configuration
 dofile "make/Boost.lua"
 
+-- Lua configuration
+dofile "make/Lua.lua"
+
 -- ///////////////////////////////////////////////////// --
 
 local function bool_default(value, default)
@@ -98,6 +101,7 @@ project "IWBAN"
 
   use_SFML    { "graphics", "audio", "window", "system" }
   use_Boost   { "iostreams", "filesystem", "system" }
+  use_Lua     {}
 
   -- Force WindowedApp on MacOSX to workaround XCode bug
   configuration { "Debug", "not MacOSX" }
