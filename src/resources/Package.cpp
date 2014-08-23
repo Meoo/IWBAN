@@ -12,8 +12,8 @@
 #include <config/Settings.hpp>
 
 #include <resources/FileStream.hpp>
-#include <resources/impl/Package.hpp>
-#include <resources/impl/PackagedFile.hpp>
+#include <resources/Package.hpp>
+#include <resources/files/PackagedFile.hpp>
 
 #include <system/exceptions/FileCorrupted.hpp>
 #include <system/exceptions/FileNotFound.hpp>
@@ -24,7 +24,7 @@
 namespace
 {
 
-typedef std::unique_ptr<res::impl::Package> PackagePtr;
+typedef std::unique_ptr<res::Package> PackagePtr;
 
 class PackageEntry
 {
@@ -51,7 +51,7 @@ PackageMap::iterator loadPackage(const std::string & package)
         std::string unloc_path = std::string(IWBAN_DATA_FOLDER "/")
                                + package + IWBAN_PKG_EXTENSION;
 
-        entry.unlocalized.reset(new res::impl::Package(unloc_path));
+        entry.unlocalized.reset(new res::Package(unloc_path));
 
         IWBAN_LOG_INFO("Package '%s' found", package.c_str());
     }
@@ -66,7 +66,7 @@ PackageMap::iterator loadPackage(const std::string & package)
         std::string loc_path = std::string(IWBAN_DATA_FOLDER "/")
                              + package + "." + cfg::language + IWBAN_PKG_EXTENSION;
 
-        entry.localized.reset(new res::impl::Package(loc_path));
+        entry.localized.reset(new res::Package(loc_path));
 
         IWBAN_LOG_INFO("Package '%s.%s' found",
             package.c_str(), cfg::language.c_str());
@@ -94,9 +94,6 @@ PackageMap::iterator loadPackage(const std::string & package)
 // ---- ---- ---- ----
 
 namespace res
-{
-
-namespace impl
 {
 
 Package::Package(const std::string & package_filename)
@@ -149,9 +146,6 @@ FileImpl * openFileInPackage(const std::string & package,
 
     return nullptr;
 }
-
-}
-// namespace impl
 
 }
 // namespace res

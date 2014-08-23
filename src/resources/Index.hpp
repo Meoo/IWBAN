@@ -18,9 +18,6 @@
 namespace res
 {
 
-namespace impl
-{
-
 class IndexEntry
 {
 public:
@@ -83,9 +80,6 @@ void writeIndex(std::ostream & package, const Index & index)
     }
 }
 // writeIndex()
-
-}
-// namespace impl
 
 }
 // namespace res

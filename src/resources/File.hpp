@@ -16,9 +16,6 @@
 namespace res
 {
 
-namespace impl
-{
-
 class FileImpl
 {
 public:
@@ -33,9 +30,6 @@ public:
 };
 // class FileImpl
 
-}
-// namespace impl
-
 // ---- ---- ---- ----
 
 /**
@@ -49,7 +43,7 @@ public:
 
 private:
     // Implementation
-    std::unique_ptr<impl::FileImpl> _impl;
+    std::unique_ptr<FileImpl> _impl;
 
 
 public:
@@ -82,7 +76,7 @@ public:
 
 private:
     // Private constructor
-    explicit File(impl::FileImpl * implementation);
+    explicit File(FileImpl * implementation);
 
 };
 // class File

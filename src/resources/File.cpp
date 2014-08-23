@@ -11,8 +11,8 @@
 #include <config/Settings.hpp>
 
 #include <resources/File.hpp>
-#include <resources/impl/Package.hpp>
-#include <resources/impl/SingleFile.hpp>
+#include <resources/Package.hpp>
+#include <resources/files/SingleFile.hpp>
 
 #include <system/exceptions/FileNotFound.hpp>
 #include <system/exceptions/ResourceError.hpp>
@@ -33,7 +33,7 @@ File & File::operator = (File && other)
     return *this;
 }
 
-File::File(impl::FileImpl * implementation)
+File::File(FileImpl * implementation)
     : _impl(implementation)
 {
 }
@@ -64,19 +64,19 @@ File openFile(const std::string & filename)
         std::string file_path = std::string(IWBAN_DATA_FOLDER "/")
             + package_name + "." + cfg::language + "/" + file_id;
         if (fs::exists(fs::path(file_path)))
-            return File(new impl::SingleFile(file_path));
+            return File(new SingleFile(file_path));
     }
     {
         // Unlocalized
         std::string file_path = std::string(IWBAN_DATA_FOLDER "/") + filename;
         if (fs::exists(fs::path(file_path)))
-            return File(new impl::SingleFile(file_path));
+            return File(new SingleFile(file_path));
     }
 #endif
 
     // Search in packages
     {
-        impl::FileImpl * file_impl = impl::openFileInPackage(package_name, file_id);
+        FileImpl * file_impl = openFileInPackage(package_name, file_id);
 
         if (file_impl)
             return File(file_impl);
@@ -89,13 +89,13 @@ File openFile(const std::string & filename)
         std::string file_path = std::string(IWBAN_DATA_FOLDER "/")
             + package_name + "." + cfg::language + "/" + file_id;
         if (fs::exists(fs::path(file_path)))
-            return File(new impl::SingleFile(file_path));
+            return File(new SingleFile(file_path));
     }
     {
         // Unlocalized
         std::string file_path = std::string(IWBAN_DATA_FOLDER "/") + filename;
         if (fs::exists(fs::path(file_path)))
-            return File(new impl::SingleFile(file_path));
+            return File(new SingleFile(file_path));
     }
 #endif
 

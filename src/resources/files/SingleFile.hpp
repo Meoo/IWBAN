@@ -17,50 +17,44 @@
 namespace res
 {
 
-namespace impl
-{
-
 class SingleFile : public FileImpl
 {
 private:
-    typedef boost::iostreams::mapped_file_source MappedFile;
+    typedef boost::iostreams::mapped_file_source Source;
 
     // Data members
-    MappedFile _file;
+    Source _source;
 
 
 public:
     // Constructor
     explicit SingleFile(const std::string & filename)
-        : _file(filename.c_str())
+        : _source(filename.c_str())
     {
-        if (!_file.is_open())
+        if (!_source.is_open())
             throw sys::FileNotFound(filename.c_str());
     }
 
     // Destructor
     virtual ~SingleFile()
     {
-        if (_file.is_open())
-            _file.close();
+        if (_source.is_open())
+            _source.close();
     }
 
     // Virtual functions
-    virtual const void * getData() const
+    const void * getData() const override
     {
-        return _file.data();
+        return _source.data();
     }
 
-    virtual std::size_t getSize() const
+    std::size_t getSize() const override
     {
-        return _file.size();
+        return _source.size();
     }
 
 };
 // class SingleFile
-
-}
-// namespace impl
 
 }
 // namespace res

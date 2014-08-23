@@ -9,15 +9,11 @@
 #include <Global.hpp>
 
 #include <resources/File.hpp>
-#include <resources/impl/Index.hpp>
-#include <resources/impl/Package.hpp>
+#include <resources/Index.hpp>
 
 #include <boost/iostreams/device/mapped_file.hpp>
 
 namespace res
-{
-
-namespace impl
 {
 
 class PackagedFile : public FileImpl
@@ -38,21 +34,18 @@ public:
     {}
 
     // Virtual functions
-    virtual const void * getData() const
+    const void * getData() const override
     {
         return _source.data() + _index_entry.offset;
     }
 
-    virtual std::size_t getSize() const
+    std::size_t getSize() const override
     {
         return _index_entry.size;
     }
 
 };
 // class PackagedFile
-
-}
-// namespace impl
 
 }
 // namespace res

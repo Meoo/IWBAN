@@ -9,14 +9,11 @@
 #include <Global.hpp>
 
 #include <resources/File.hpp>
-#include <resources/impl/Index.hpp>
+#include <resources/Index.hpp>
 
 #include <boost/iostreams/device/mapped_file.hpp>
 
 namespace res
-{
-
-namespace impl
 {
 
 /**
@@ -50,9 +47,6 @@ public:
 
 FileImpl * openFileInPackage(const std::string & package,
                              const std::string & filename);
-
-}
-// namespace impl
 
 }
 // namespace res
