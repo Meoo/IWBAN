@@ -24,7 +24,6 @@ namespace gfx
 {
 
 DrawContext::DrawContext()
-    : _open(false)
 {
     _render_scene.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
 

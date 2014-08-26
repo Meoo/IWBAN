@@ -21,7 +21,7 @@ namespace gfx
 {
 
 GuiContext::GuiContext(sf::RenderTarget & target)
-    : _render_target(target), _open(false)
+    : _render_target(target)
 {
 }
 

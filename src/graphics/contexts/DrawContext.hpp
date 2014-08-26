@@ -23,7 +23,7 @@ private:
     // Data members
     sf::RenderTexture   _render_scene;
 
-    bool                _open;
+    bool                _open   = false;
 
 
 public:
@@ -35,17 +35,14 @@ public:
     void fill(const sf::Color & color,
               const sf::RenderStates & states = sf::RenderStates::Default);
 
-    virtual bool isOpen() const { return _open; }
+    bool isOpen() const override { return _open; }
+    void close() override;
 
-    virtual void close();
 
-
-protected:
+private:
     friend class Renderer;
 
-    // Protected functions for Renderer
     void open();
-
     const sf::Texture & getTexture() const;
 
 };

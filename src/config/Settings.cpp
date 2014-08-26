@@ -33,7 +33,6 @@ std::string language        = "fr";
 
 bool        pixelated       = false;
 
-bool        light_smooth    = true;
 unsigned    particles       = 2;
 
 // ---- ---- ---- ----
@@ -67,7 +66,6 @@ void save()
     SAVE(volume);
     SAVE(language);
     SAVE(pixelated);
-    SAVE(light_smooth);
     SAVE(particles);
     SAVE(keyboard);
     SAVE(gamepad);
@@ -118,7 +116,6 @@ void load()
         LOAD(volume);
         LOAD(language);
         LOAD(pixelated);
-        LOAD(light_smooth);
         LOAD(particles);
         LOAD(keyboard);
         LOAD(gamepad);

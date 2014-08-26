@@ -8,6 +8,9 @@
 
 #include <Global.hpp>
 
+#include <utils/Rectangle.hpp>
+#include <utils/Vector.hpp>
+
 namespace gfx
 {
 
@@ -24,9 +27,9 @@ public:
     // Virtual destructor
     virtual ~Light()     {}
 
-    // Virtual functions
-    void draw(gfx::LightContext & context);
+    const ut::Vector & getOrigin() const { return _origin; }
 
+    ut::Rectangle getBounds() const;
 
 };
 // class Light

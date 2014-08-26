@@ -18,33 +18,39 @@
 namespace gfx
 {
 
+class Light;
+class ShadowVolume;
+
 class Renderer;
 
 class LightContext : public Context
 {
+private:
+    // Data members
+    sf::RenderTexture   _render_light;
+    sf::RenderTexture   _render_light_mask;
+
+    bool                _open   = false;
+
+
 public:
-    // Virtual destructor
-    virtual ~LightContext() {}
+    LightContext();
 
-    // Virtual functions
-    virtual void draw(const sf::Drawable & drawable) = 0;
+    void draw(const gfx::Light & light);
 
-    // Functions
-    void buildShadowMask(const ut::Vector & origin,
+    bool isOpen() const override { return _open; }
+    void close() override;
+
+private:
+    // Internal functions
+    void buildShadowMask(const gfx::Light & light,
                          const std::vector<ShadowVolume *> & list);
 
-    void disableShadowMask();
 
-
-protected:
     friend class Renderer;
 
-    virtual void open(const sf::Color & ambient_light) = 0;
-
-    virtual const sf::Texture & getTexture() const = 0;
-
-    // Used internally to build shadow mask
-    virtual sf::RenderTexture & getRenderTexture() = 0;
+    void open(const sf::Color & ambient_color);
+    const sf::Texture & getTexture() const;
 
 };
 // class LightContext

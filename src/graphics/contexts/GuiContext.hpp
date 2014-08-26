@@ -23,7 +23,7 @@ private:
     // Data members
     sf::RenderTarget &  _render_target;
 
-    bool                _open;
+    bool                _open   = false;
 
 
 public:
@@ -32,12 +32,11 @@ public:
     void draw(const sf::Drawable & drawable,
               const sf::RenderStates & states = sf::RenderStates::Default);
 
-    virtual bool isOpen() const { return _open; }
+    bool isOpen() const override { return _open; }
+    void close() override;
 
-    virtual void close();
 
-
-protected:
+private:
     friend class Renderer;
 
     void open();

@@ -33,7 +33,6 @@ extern std::string  language;
 
 extern bool         pixelated;
 
-extern bool         light_smooth;
 extern unsigned     particles;
 
 // ---- ---- ---- ----

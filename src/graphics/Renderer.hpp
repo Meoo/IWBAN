@@ -18,6 +18,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <memory>
+
 namespace gfx
 {
 
@@ -29,18 +31,18 @@ private:
 
     Context *           _current_context;
 
-    DrawContext *       _draw_context = nullptr;
-    bool                _draw_enabled;
+    std::unique_ptr<DrawContext>    _draw_context;
+    bool                            _draw_enabled;
 
-    LightContext *      _light_context = nullptr;
-    bool                _light_enabled;
+    std::unique_ptr<LightContext>   _light_context;
+    bool                            _light_enabled;
 
-    GuiContext *        _gui_context = nullptr;
-    bool                _gui_enabled;
+    std::unique_ptr<GuiContext>     _gui_context;
+    bool                            _gui_enabled;
 
 #ifndef NDEBUG
-    DebugContext *      _debug_context = nullptr;
-    bool                _debug_enabled;
+    std::unique_ptr<DebugContext>   _debug_context;
+    bool                            _debug_enabled;
 #endif
 
     bool                _flushed;

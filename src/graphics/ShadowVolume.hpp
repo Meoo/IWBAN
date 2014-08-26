@@ -11,6 +11,8 @@
 #include <utils/Rectangle.hpp>
 #include <utils/Vector.hpp>
 
+#include <SFML/Graphics.hpp>
+
 #include <vector>
 
 namespace gfx
@@ -27,6 +29,8 @@ private:
 
     ut::Vector              _position;
 
+    sf::Color               _color      = sf::Color::White;
+
 
 public:
     // Functions
@@ -34,11 +38,14 @@ public:
     void dbgAddVertex(const ut::Vector & vec) { _vertices.push_back(vec); }
 
     // Accessors
-    std::size_t getVertexCount() const              { return _vertices.size(); }
-    ut::Vector  getVertex(std::size_t index) const  { return _position + _vertices[index]; }
+    std::size_t         getVertexCount() const                      { return _vertices.size(); }
+    ut::Vector          getVertex(std::size_t index) const          { return _position + _vertices[index]; }
 
     const ut::Vector &  getPosition() const                         { return _position; }
     void                setPosition(const ut::Vector & position)    { _position = position;}
+
+    const sf::Color &   getShadowColor() const                      { return _color; }
+    void                setShadowColor(const sf::Color & color)     { _color = color; }
 
 };
 // class ShadowVolume

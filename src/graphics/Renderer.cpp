@@ -9,8 +9,6 @@
 #include <config/Settings.hpp>
 
 #include <graphics/Renderer.hpp>
-#include <graphics/contexts/impl/QuickLightContext.hpp>
-#include <graphics/contexts/impl/SmoothLightContext.hpp>
 
 #include <resources/File.hpp>
 
@@ -49,7 +47,7 @@ DrawContext & Renderer::openDrawContext()
 
     _draw_enabled = true;
     _draw_context->open();
-    _current_context = _draw_context;
+    _current_context = _draw_context.get();
     return *_draw_context;
 }
 
@@ -64,7 +62,7 @@ LightContext & Renderer::openLightContext(const sf::Color & ambient_light)
 
     _light_enabled = true;
     _light_context->open(ambient_light);
-    _current_context = _light_context;
+    _current_context = _light_context.get();
     return *_light_context;
 }
 
@@ -81,7 +79,7 @@ GuiContext & Renderer::openGuiContext()
 
     _gui_enabled = true;
     _gui_context->open();
-    _current_context = _gui_context;
+    _current_context = _gui_context.get();
     return *_gui_context;
 }
 
@@ -96,7 +94,7 @@ DebugContext & Renderer::openDebugContext()
 
     _debug_enabled = true;
     _debug_context->open();
-    _current_context = _debug_context;
+    _current_context = _debug_context.get();
     return *_debug_context;
 }
 #endif
@@ -105,20 +103,11 @@ void Renderer::reloadConfiguration()
 {
     IWBAN_PRE(!d_active);
 
-    delete _draw_context;
-    delete _light_context;
-    delete _gui_context;
+    _draw_context.reset(new DrawContext());
+    _light_context.reset(new LightContext());
+    _gui_context.reset(new GuiContext(_target));
 
-    _draw_context = new DrawContext();
-
-    if (cfg::light_smooth)
-        _light_context = new impl::SmoothLightContext();
-    else
-        _light_context = new impl::QuickLightContext();
-
-    _gui_context = new GuiContext(_target);
-
-    IWBAN_DEBUG(_debug_context = new DebugContext());
+    IWBAN_DEBUG(_debug_context.reset(new DebugContext()));
 }
 
 void Renderer::begin()
