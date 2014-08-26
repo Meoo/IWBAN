@@ -39,10 +39,12 @@
  * 3 : Info
  * 4 : Debug (Max)
  */
-#ifdef NDEBUG
-#  define IWBAN_LOG_LEVEL 2
-#else
-#  define IWBAN_LOG_LEVEL 4
+#ifndef IWBAN_LOG_LEVEL
+#  ifdef NDEBUG
+#    define IWBAN_LOG_LEVEL 2
+#  else
+#    define IWBAN_LOG_LEVEL 4
+#  endif
 #endif
 
 /**
