@@ -17,13 +17,6 @@ Body::Body(const Shape * shape)
     IWBAN_PRE_PTR(shape);
 }
 
-Body::Body(game::SolidEntity * owner, const Shape * shape)
-    : _owner(owner), _shape(shape)
-{
-    IWBAN_PRE_PTR(owner);
-    IWBAN_PRE_PTR(shape);
-}
-
 void Body::move(const ut::Vector & delta)
 {
     // TODO _next_state.immediate_velocity += delta;

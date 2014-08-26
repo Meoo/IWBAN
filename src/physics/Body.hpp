@@ -8,8 +8,6 @@
 
 #include <Global.hpp>
 
-#include <game/entities/SolidEntity.hpp>
-
 #include <physics/CollisionData.hpp>
 #include <physics/CollisionGroup.hpp>
 
@@ -32,8 +30,6 @@ class Body
 {
 private:
     // Data members
-    game::SolidEntity * _owner      = nullptr;
-
     const Shape *   _shape;
 
     ut::Vector      _position;
@@ -65,7 +61,6 @@ private:
 public:
     // Constructor
     explicit        Body(const Shape * shape);
-                    Body(game::SolidEntity * owner, const Shape * shape);
 
     // Destructor
                     ~Body() {}
@@ -86,9 +81,6 @@ public:
 
     const ut::Vector & getAcceleration() const      { return _acceleration; }
     void            setAcceleration(const ut::Vector & acceleration) { _acceleration = acceleration; }
-
-    const game::SolidEntity *   getOwner() const    { return _owner; }
-    game::SolidEntity *         getOwner()          { return _owner; }
 
     const Shape *   getShape() const                { return _shape; }
     void            setShape(const Shape * shape)   { IWBAN_PRE_PTR(shape); _shape = shape; }
