@@ -7,8 +7,9 @@
 
 #include <config/Settings.hpp>
 
+#include <data/Locale.hpp>
+
 //#include <resources/Async.hpp>
-#include <resources/Locale.hpp>
 
 #include <system/Display.hpp>
 #include <system/Exception.hpp>
@@ -32,7 +33,7 @@ int main(int argc, char ** argv)
 
 
     IWBAN_LOG_INFO("Loading fonts");
-    res::getLocale().loadFont(IWBAN_DEFAULT_FONT);
+    data::getLocale().loadFont(IWBAN_DEFAULT_FONT);
 
 
     IWBAN_LOG_INFO("Opening display");

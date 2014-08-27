@@ -16,7 +16,7 @@
 #include <map>
 #include <set>
 
-namespace res
+namespace data
 {
 
 class Locale
@@ -30,7 +30,7 @@ private:
     FileList    _files;
 
     // Font file must be kept open
-    File        _default_font_file;
+    res::File   _default_font_file;
     sf::Font    _default_font;
 
 
@@ -63,6 +63,6 @@ Locale & getLocale()
 }
 
 }
-// namespace res
+// namespace data
 
 #endif // _IWBAN_LOCALE_HPP_

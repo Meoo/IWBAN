@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <data/Locale.hpp>
+
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
 #include <system/screens/options/OptionsMenuScreen.hpp>
@@ -15,8 +17,6 @@
 
 #include <gui/Button.hpp>
 #include <gui/Navigation.hpp>
-
-#include <resources/Locale.hpp>
 
 namespace sys
 {
@@ -34,7 +34,7 @@ public:
     // Constructor
     MainMenuScreen()
     {
-        res::getLocale().loadFile("system/menu.txt");
+        data::getLocale().loadFile("system/menu.txt");
 
         _newgame.loadText("menu.newgame");
         _newgame.setCallback([this](){ onNewGame(); });

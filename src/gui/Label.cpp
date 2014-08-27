@@ -7,20 +7,20 @@
 
 #include <gui/Label.hpp>
 
-#include <resources/Locale.hpp>
+#include <data/Locale.hpp>
 
 namespace gui
 {
 
 Label::Label()
 {
-    _text.setFont(res::getLocale().getFont());
+    _text.setFont(data::getLocale().getFont());
 }
 
 Label::Label(const std::string & string_key)
     : _key(string_key),
-      _text(res::getLocale().getString(string_key),
-            res::getLocale().getFont())
+      _text(data::getLocale().getString(string_key),
+            data::getLocale().getFont())
 {
 }
 
@@ -50,13 +50,13 @@ void Label::draw(gfx::GuiContext & context) const
 void Label::loadText(const std::string & string_key)
 {
     _key = string_key;
-    _text.setString(res::getLocale().getString(string_key));
+    _text.setString(data::getLocale().getString(string_key));
 }
 
 void Label::refresh()
 {
     if (!_key.empty())
-        _text.setString(res::getLocale().getString(_key));
+        _text.setString(data::getLocale().getString(_key));
 }
 
 }

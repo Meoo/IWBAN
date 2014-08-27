@@ -10,6 +10,8 @@
 
 #include <config/Settings.hpp>
 
+#include <data/Locale.hpp>
+
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
 
@@ -165,7 +167,7 @@ protected:
     void onLanguage(const char * language)
     {
         cfg::language = language;
-        res::getLocale().reload();
+        data::getLocale().reload();
         onQuit();
     }
 

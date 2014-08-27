@@ -10,6 +10,8 @@
 
 #include <config/GamepadConfig.hpp>
 
+#include <data/Locale.hpp>
+
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
 #include <system/Time.hpp>
@@ -19,8 +21,6 @@
 #include <gui/Label.hpp>
 #include <gui/Navigation.hpp>
 #include <gui/Slider.hpp>
-
-#include <resources/Locale.hpp>
 
 namespace sys
 {
@@ -45,7 +45,7 @@ public:
     GamepadOptionsScreen(Screen * previous_menu)
         : _previous_menu(previous_menu)
     {
-        res::getLocale().loadFile("system/gamepad.txt");
+        data::getLocale().loadFile("system/gamepad.txt");
 
         // Title
         _title.loadText("options.gamepad");

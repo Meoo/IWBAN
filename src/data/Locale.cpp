@@ -5,14 +5,15 @@
 
 #include <Global.hpp>
 
+#include <data/Locale.hpp>
+
 #include <resources/FileStream.hpp>
-#include <resources/Locale.hpp>
 
 #include <system/exceptions/FileNotFound.hpp>
 
 #include <locale>
 
-namespace res
+namespace data
 {
 
 Locale::Locale()
@@ -35,7 +36,7 @@ sf::String Locale::getString(const std::string & key) const
 
 void Locale::loadFont(const std::string & filename)
 {
-    _default_font_file = openFile(filename);
+    _default_font_file = res::openFile(filename);
     if (!_default_font.loadFromMemory(_default_font_file.getData(),
                                       _default_font_file.getSize()))
     {
@@ -47,11 +48,11 @@ void Locale::loadFile(const std::string & filename)
 {
     _files.insert(filename);
 
-    File file;
+    res::File file;
 
     try
     {
-        file = openFile(filename);
+        file = res::openFile(filename);
     }
     catch (sys::FileNotFound & error)
     {
@@ -59,7 +60,7 @@ void Locale::loadFile(const std::string & filename)
         return;
     }
 
-    FileStream istr(file);
+    res::FileStream istr(file);
 
     istr >> std::ws;
     while (!istr.eof())
@@ -119,4 +120,4 @@ void Locale::reload()
 }
 
 }
-// namespace res
+// namespace data

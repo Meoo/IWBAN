@@ -7,21 +7,21 @@
 
 #include <gui/Button.hpp>
 
-#include <resources/Locale.hpp>
+#include <data/Locale.hpp>
 
 namespace gui
 {
 
 Button::Button()
 {
-    _text.setFont(res::getLocale().getFont());
+    _text.setFont(data::getLocale().getFont());
     setTextColor(_idle_color);
 }
 
 Button::Button(const std::string & string_key)
     : _key(string_key),
-      _text(res::getLocale().getString(string_key),
-            res::getLocale().getFont())
+      _text(data::getLocale().getString(string_key),
+            data::getLocale().getFont())
 {
     setTextColor(_idle_color);
 }
@@ -95,7 +95,7 @@ void Button::dispatchAction(sys::ActionId action)
 void Button::loadText(const std::string & string_key)
 {
     _key = string_key;
-    _text.setString(res::getLocale().getString(string_key));
+    _text.setString(data::getLocale().getString(string_key));
 }
 
 void Button::setIdleColor(const sf::Color & color)
@@ -125,7 +125,7 @@ void Button::setDisabledColor(const sf::Color & color)
 void Button::refresh()
 {
     if (!_key.empty())
-        _text.setString(res::getLocale().getString(_key));
+        _text.setString(data::getLocale().getString(_key));
 
     if (_enabled)
     {

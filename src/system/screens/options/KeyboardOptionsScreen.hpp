@@ -10,6 +10,8 @@
 
 #include <config/KeyboardConfig.hpp>
 
+#include <data/Locale.hpp>
+
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
 #include <system/Time.hpp>
@@ -18,8 +20,6 @@
 #include <gui/Button.hpp>
 #include <gui/Label.hpp>
 #include <gui/Navigation.hpp>
-
-#include <resources/Locale.hpp>
 
 namespace sys
 {
@@ -42,7 +42,7 @@ public:
     KeyboardOptionsScreen(Screen * previous_menu)
         : _previous_menu(previous_menu)
     {
-        res::getLocale().loadFile("system/keyboard.txt");
+        data::getLocale().loadFile("system/keyboard.txt");
 
         // Title
         _title.loadText("options.keyboard");
