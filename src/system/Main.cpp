@@ -48,6 +48,7 @@ int main(int argc, char ** argv)
     // Loop until the game is closed
     IWBAN_LOG_INFO("Entering main loop");
     bool close = false;
+    bool exception_caught = false;
     while (!close)
     {
         try
@@ -70,6 +71,9 @@ int main(int argc, char ** argv)
         {
             IWBAN_LOG_CRITICAL("%s : %s", exception.title(), exception.what());
 
+            if (exception_caught) throw;
+            exception_caught = true;
+
             // IWBAN exception caught
             projector.setScreen(
                 new sys::ExceptionScreen(projector.getCurrentScreen()));
@@ -78,6 +82,9 @@ int main(int argc, char ** argv)
         {
             IWBAN_LOG_CRITICAL("Exception : %s", exception.what());
 
+            if (exception_caught) throw;
+            exception_caught = true;
+
             // Standard exception caught
             projector.setScreen(
                 new sys::ExceptionScreen(projector.getCurrentScreen()));
@@ -85,6 +92,9 @@ int main(int argc, char ** argv)
         catch (...)
         {
             IWBAN_LOG_CRITICAL("Unknown exception caught");
+
+            if (exception_caught) throw;
+            exception_caught = true;
 
             // Unknown exception caught
             projector.setScreen(
