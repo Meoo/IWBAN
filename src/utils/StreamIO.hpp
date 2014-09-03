@@ -10,7 +10,6 @@
 
 #include <iostream>
 #include <string>
-#include <type_traits>
 
 namespace ut
 {
@@ -21,21 +20,21 @@ namespace ut
  * All values are stored using little endian mode.
  */
 template<typename T> inline
-typename std::add_rvalue_reference<T>::type read(std::istream & stream)
+T read(std::istream & stream)
 {
     IWBAN_STATIC_ASSERT(std::is_integral<T>::value);
 
     // TODO Endianness should not be ignored
     T value;
     stream.read(reinterpret_cast<char *>(&value), sizeof(T));
-    return std::move(value);
+    return value;
 }
 
 /**
  * Read a null terminated string from a stream.
  */
 template<> inline
-std::string && read<std::string>(std::istream & stream)
+std::string read<std::string>(std::istream & stream)
 {
     std::string ret;
     std::getline(stream, ret, '\0');
