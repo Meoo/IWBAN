@@ -80,7 +80,7 @@ void save()
 
 #undef SAVE
 
-#define LOAD(var) if (!n.compare(#var)) f >> var
+#define LOAD(var) else if (!n.compare(#var)) f >> var
 
 void load()
 {
@@ -106,6 +106,9 @@ void load()
             return;
         }
 
+        // Start of loading zone which use "else if"
+        if (false) {}
+
         LOAD(fullscreen);
         LOAD(threading);
         LOAD(zoom_multiplier);
@@ -119,6 +122,9 @@ void load()
         LOAD(particles);
         LOAD(keyboard);
         LOAD(gamepad);
+
+        else
+            IWBAN_LOG_ERROR("Invalid key : '%s'", n.c_str());
 
         if (f.bad() || f.fail()) // eof is not an error
         {
