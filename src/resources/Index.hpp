@@ -35,12 +35,12 @@ bool readIndex(std::istream & package, Index & index)
     if (ut::read<uint32_t>(package) != IWBAN_PKG_MAGIC)
         return false;
 
-    uint32_t index_count = ut::read<uint32_t>(package);
-    if (index_count > IWBAN_PKG_MAX_FILES)
-        return false;
-
     uint32_t version = ut::read<uint32_t>(package);
     if (version != IWBAN_PKG_VERSION)
+        return false;
+
+    uint32_t index_count = ut::read<uint32_t>(package);
+    if (index_count > IWBAN_PKG_MAX_FILES)
         return false;
 
     for (uint32_t i = 0; i < index_count; ++i)
