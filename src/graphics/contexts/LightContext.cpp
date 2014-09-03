@@ -31,11 +31,22 @@ LightContext::LightContext()
 
     if (!cfg::pixelated)
         _render_light.setSmooth(true);
+
+    _light_mix = data::getShader("system/light.gls");
 }
 
 void LightContext::draw(const gfx::Light & light)
 {
     IWBAN_PRE(_open);
+
+    sf::RenderStates state(sf::BlendAdd);
+
+    if (/* TODO mask enabled */ false)
+    {
+        buildShadowMask(light, /* TODO shadow volumes list */ {});
+        _light_mix->setParameter("light_map", _render_light_mask.getTexture());
+        state.shader = _light_mix;
+    }
 
     // TODO Draw light (use shadow mask if necessary)
 }

@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <data/Shader.hpp>
+
 #include <graphics/Context.hpp>
 #include <graphics/ShadowVolume.hpp>
 
@@ -29,6 +31,7 @@ private:
     // Data members
     sf::RenderTexture   _render_light;
     sf::RenderTexture   _render_light_mask;
+    data::Shader        _light_mix;
 
     bool                _open   = false;
 

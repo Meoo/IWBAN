@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <data/Shader.hpp>
+
 #include <graphics/contexts/DrawContext.hpp>
 #include <graphics/contexts/GuiContext.hpp>
 #include <graphics/contexts/LightContext.hpp>
@@ -47,7 +49,7 @@ private:
 
     bool                _flushed;
 
-    sf::Shader          _light_mix;
+    data::Shader        _light_mix;
     sf::Color           _overlay_color;
 
     IWBAN_DEBUG(bool    d_active);

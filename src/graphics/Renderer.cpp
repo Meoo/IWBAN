@@ -10,8 +10,6 @@
 
 #include <graphics/Renderer.hpp>
 
-#include <resources/File.hpp>
-
 namespace gfx
 {
 
@@ -20,18 +18,7 @@ Renderer::Renderer(sf::RenderTarget & target)
 {
     IWBAN_DEBUG(d_active = false);
 
-    // TODO Use resource manager for shaders
-    // Light mix
-    res::File light = res::openFile("system/light.glfs");
-    std::string frag_light_str((const char*) light.getData(), light.getSize());
-
-    if (_light_mix.loadFromMemory(frag_light_str, sf::Shader::Fragment))
-    {
-        _light_mix.setParameter("texture", sf::Shader::CurrentTexture);
-    }
-    else
-        // TODO Should throw?
-        IWBAN_LOG_ERROR("Failed to load light mix shader");
+    _light_mix = data::getShader("system/light.gls");
 
     reloadConfiguration();
 }
@@ -165,8 +152,8 @@ void Renderer::flushDrawLight()
         // Lighting
         if (_light_enabled)
         {
-            _light_mix.setParameter("light_map", _light_context->getTexture());
-            state.shader = &_light_mix;
+            _light_mix->setParameter("light_map", _light_context->getTexture());
+            state.shader = _light_mix;
         }
 
         _target.draw(sprite, state);
