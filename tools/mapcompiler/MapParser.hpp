@@ -12,6 +12,8 @@
 #include "tinf/tinf.h"
 #include "tinyxml/tinyxml2.h"
 
+#include <config/StaticConfig.hpp>
+
 #include <boost/filesystem.hpp>
 
 #include <iostream>
@@ -114,6 +116,7 @@ int parse_map(const char * filename, InputMap & output_map)
         // Tileset
         tx::XMLDocument tileset_doc; // Only used if an external tileset is used
         tx::XMLElement * tileset_source = tileset;
+        fs::path tileset_path(filename);
 
         // External tileset
         const char * source_filename = tileset->Attribute("source");
@@ -121,10 +124,10 @@ int parse_map(const char * filename, InputMap & output_map)
         {
             // source_filename is a relative path
             // Append source_filename to parent path of filename
-            fs::path source_path = fs::path(filename).parent_path();
-            source_path /= fs::path(source_filename);
+            tileset_path = tileset_path.parent_path();
+            tileset_path /= fs::path(source_filename);
 
-            if (open_document(source_path.string().c_str(), tileset_doc))
+            if (open_document(tileset_path.string().c_str(), tileset_doc))
                 return 1;
 
             // Get root element
@@ -168,10 +171,48 @@ int parse_map(const char * filename, InputMap & output_map)
                 return 1;
             }
 
-            std::string image_source_str(image_source);
-            unsigned i = 0;
+            // image_source is relative to tileset_path
+            fs::path image_source_path = tileset_path.parent_path();
+            image_source_path /= fs::path(image_source);
+            image_source_path = fs::canonical(image_source_path);
+
+            // Find IWBAN/data folder in path, and make image_source_path relative to it
+            for (auto it = image_source_path.begin(); it != image_source_path.end(); ++it)
+            {
+                if (it->string() == IWBAN_PARENT_FOLDER)
+                {
+                    ++it; // Skip PARENT
+                    if (it->string() == IWBAN_DATA_FOLDER)
+                    {
+                        ++it; // Skip DATA
+
+                        // Make relative path from the remains
+                        fs::path tmp;
+                        while (it != image_source_path.end())
+                        {
+                            tmp /= *it;
+                            ++it;
+                        }
+                        image_source_path = tmp;
+                        break;
+                    }
+
+                    std::cerr << "??? Found " IWBAN_PARENT_FOLDER " folder with no "
+                                 IWBAN_DATA_FOLDER " folder inside ???" << std::endl;
+                }
+            }
+
+            if (image_source_path.is_absolute())
+            {
+                std::cerr << "!!! Failed to find data folder in path '"
+                          << image_source_path.string() << "' !!!" << std::endl;
+                return 1;
+            }
+
+            std::string image_source_str(image_source_path.generic_string());
 
             // Find image_source in texture table...
+            unsigned i = 0;
             for (; i < output_map.texture_table.size(); ++i)
                 if (image_source_str == output_map.texture_table.at(i))
                     break;

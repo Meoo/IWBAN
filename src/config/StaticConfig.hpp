@@ -7,6 +7,7 @@
 #define _IWBAN_STATICCONFIG_HPP_
 
 
+#define IWBAN_PARENT_FOLDER     "IWBAN"
 #define IWBAN_DATA_FOLDER       "data"
 #define IWBAN_USER_FOLDER       "."
 
