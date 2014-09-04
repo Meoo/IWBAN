@@ -27,7 +27,7 @@ public:
     // Data
     std::string name;
 
-    std::string image;
+    unsigned    texture_id;
 
     unsigned    first_gid;
 
@@ -85,10 +85,11 @@ public:
 // class Layer
 
 
-class Map
+class InputMap
 {
 public:
     // Types
+    typedef std::vector<std::string>                TextureTable;
     typedef std::vector<std::unique_ptr<Tileset>>   TilesetVector;
     typedef std::map<TileId, Tile *>                TileDictionnary;
     typedef std::vector<std::unique_ptr<Layer>>     LayerVector;
@@ -100,6 +101,7 @@ public:
     unsigned        tile_width;
     unsigned        tile_height;
 
+    TextureTable    texture_table;
     TilesetVector   tilesets;
     TileDictionnary tiles;
     LayerVector     layers;

@@ -3,13 +3,22 @@
  * @author Bastien Brunnenstein
  */
 
-#include "MapRawData.hpp"
+#include "InputMap.hpp"
 #include "MapParser.hpp"
-#include "TerrainBuilder.hpp"
+#include "ProcessLayer.hpp"
 
 #include "tinf/tinf.h"
 
+#include <config/MapConfig.hpp>
+
+#include <utils/StreamIO.hpp>
+
+#include <boost/filesystem.hpp>
+
 #include <iostream>
+#include <fstream>
+
+namespace fs = boost::filesystem;
 
 void print_help()
 {
@@ -26,33 +35,64 @@ int process_file(const char * filename)
 
     std::cout << "+++ Parsing XML data +++" << std::endl;
 
-    Map map;
+    InputMap map;
+    int ret;
 
-    int ret = parse_map(filename, map);
+    ret = parse_map(filename, map);
     if (ret != 0)
-        return ret;
+        return 1;
 
-    std::cout << "+++ Building terrain chunks +++" << std::endl;
 
-    ret = build_terrain(map);
-    if (ret != 0)
-        return ret;
+    std::cout << "+++ Opening output file +++" << std::endl;
 
-    std::cout << "+++ Building collision mask +++" << std::endl;
+    // Replace extension
+    fs::path out_path(filename);
+    out_path = out_path.parent_path() / out_path.stem();
+    out_path += IWBAN_MAP_EXTENSION;
 
-    // TODO Build collision mask
+    // Open file
+    std::ofstream out_map(out_path.string(), std::ofstream::binary | std::ofstream::trunc);
 
-    std::cout << "+++ Building light and shadow volumes +++" << std::endl;
 
-    // TODO Build light and shadow volumes
+    // Write header
+    ut::write<uint32_t>(out_map, IWBAN_MAP_MAGIC);
+    ut::write<uint32_t>(out_map, IWBAN_MAP_VERSION);
 
-    std::cout << "+++ Writing file +++" << std::endl;
 
-    // TODO Serialize map to file
+    // Texture table
+    ut::write<uint32_t>(out_map, map.texture_table.size());
+    for (const std::string & texture : map.texture_table)
+        ut::write<std::string>(out_map, texture);
+
+
+    // Layers
+    ut::write<uint32_t>(out_map, map.layers.size());
+    for (const std::unique_ptr<Layer> & layer : map.layers)
+    {
+        std::cout << "+++ Building layer " << layer->name << " +++" << std::endl;
+
+        ret = process_layer(map, *layer.get(), out_map);
+        if (ret != 0)
+            goto process_failed;
+    }
+
+
+    // TODO Everything else
+    // ...
+
 
     std::cout << "+++ Map done +++" << std::endl;
 
+    // Flush and close map file
+    out_map.flush();
+    out_map.close();
     return 0;
+
+process_failed:
+    // Close and delete failed map file
+    out_map.close();
+    fs::remove(out_path);
+    return 1;
 }
 
 // ---- ---- ---- ----

@@ -7,7 +7,7 @@
 #define _MAPC_MAPPARSER_HPP_
 
 #include "Base64.hpp"
-#include "MapRawData.hpp"
+#include "InputMap.hpp"
 
 #include "tinf/tinf.h"
 #include "tinyxml/tinyxml2.h"
@@ -74,7 +74,7 @@ void parse_properties(const tx::XMLElement * element, Properties & properties)
 
 // ---- ---- ---- ----
 
-int parse_map(const char * filename, Map & output_map)
+int parse_map(const char * filename, InputMap & output_map)
 {
     tx::XMLDocument doc;
     if (open_document(filename, doc))
@@ -160,13 +160,28 @@ int parse_map(const char * filename, Map & output_map)
             return 1;
         }
 
-        const char * image_source = image->Attribute("source");
-        if (!image_source)
         {
-            std::cerr << "!!! Tileset has no source image !!!" << std::endl;
-            return 1;
+            const char * image_source = image->Attribute("source");
+            if (!image_source)
+            {
+                std::cerr << "!!! Tileset has no source image !!!" << std::endl;
+                return 1;
+            }
+
+            std::string image_source_str(image_source);
+            unsigned i = 0;
+
+            // Find image_source in texture table...
+            for (; i < output_map.texture_table.size(); ++i)
+                if (image_source_str == output_map.texture_table.at(i))
+                    break;
+
+            // ...or insert it
+            if (i == output_map.texture_table.size())
+                output_map.texture_table.push_back(image_source_str);
+
+            output_tileset->texture_id = i;
         }
-        output_tileset->image = std::string(image_source);
 
         unsigned image_width  = image->UnsignedAttribute("width");
         unsigned image_height = image->UnsignedAttribute("height");
