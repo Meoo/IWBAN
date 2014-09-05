@@ -9,6 +9,7 @@
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 
 #include <config/PackageConfig.hpp>
+#include <config/PathsConfig.hpp>
 #include <config/Settings.hpp>
 
 #include <resources/FileStream.hpp>

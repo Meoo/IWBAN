@@ -23,6 +23,9 @@
 #include <unordered_map>
 #include <set>
 
+
+#define IWBAN_MAX_ENTITIES 1024
+
 namespace game
 {
 

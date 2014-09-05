@@ -5,6 +5,7 @@
 
 #include <Global.hpp>
 
+#include <config/PathsConfig.hpp>
 #include <config/Settings.hpp>
 
 #include <data/Locale.hpp>

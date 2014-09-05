@@ -6,12 +6,11 @@
 #include <Global.hpp>
 
 #include <data/Locale.hpp>
-
 #include <resources/FileStream.hpp>
-
 #include <system/exceptions/FileNotFound.hpp>
 
-#include <locale>
+#include <cstring> // strchr
+#include <locale> // locale::global
 
 namespace data
 {

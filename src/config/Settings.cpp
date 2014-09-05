@@ -5,6 +5,7 @@
 
 #include <Global.hpp>
 
+#include <config/PathsConfig.hpp>
 #include <config/Settings.hpp>
 
 #include <system/inputs/Gamepad.hpp>

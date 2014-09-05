@@ -8,6 +8,7 @@
 
 #include <Global.hpp>
 
+#include <cstring> // strlen
 #include <iostream>
 #include <string>
 

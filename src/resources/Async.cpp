@@ -10,6 +10,7 @@
 #include <system/exceptions/ResourceError.hpp>
 
 #include <condition_variable>
+#include <cstring> // memset
 #include <mutex>
 #include <thread>
 

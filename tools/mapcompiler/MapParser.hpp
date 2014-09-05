@@ -12,7 +12,7 @@
 #include "tinf/tinf.h"
 #include "tinyxml/tinyxml2.h"
 
-#include <config/StaticConfig.hpp>
+#include <config/PathsConfig.hpp>
 
 #include <boost/filesystem.hpp>
 

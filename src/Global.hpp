@@ -8,16 +8,11 @@
 #ifndef _IWBAN_GLOBAL_HPP_
 #define _IWBAN_GLOBAL_HPP_
 
-#include <config/StaticConfig.hpp>
-
 #include <boost/assert.hpp>
 #include <boost/static_assert.hpp>
 
 #include <cstdint>
 #include <cstdio>
-#include <cstring>
-
-#include <string>
 
 
 #define _IWBAN_DO(action)   do { action; } while(0)
