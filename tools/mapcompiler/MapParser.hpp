@@ -95,7 +95,7 @@ int parse_map(const char * filename, InputMap & output_map)
     if (!version || std::string(version) != "1.0")
     {
         std::cerr << "!!! TMX file format version is not good ("
-                  << version << " !!!" << std::endl;
+                  << version << ") !!!" << std::endl;
         return 1;
     }
 
