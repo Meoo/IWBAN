@@ -19,24 +19,24 @@ namespace data
 Chunk::Chunk(std::istream & data, const std::vector<sf::Texture *> & texture_table)
     : _vertices(sf::Quads)
 {
-    _texture = texture_table.at(ut::read<uint32_t>(data));
+    _texture = texture_table.at(ut::read<uint8_t>(data));
 
-    _bounds.x = ut::read<uint32_t>(data);
-    _bounds.y = ut::read<uint32_t>(data);
-    _bounds.w = ut::read<uint32_t>(data);
-    _bounds.h = ut::read<uint32_t>(data);
+    _bounds.x = ut::read<uint16_t>(data);
+    _bounds.y = ut::read<uint16_t>(data);
+    _bounds.w = ut::read<uint16_t>(data);
+    _bounds.h = ut::read<uint16_t>(data);
 
     // Vertices
-    uint32_t vertex_count = ut::read<uint32_t>(data);
+    uint32_t vertex_count = ut::read<uint16_t>(data);
     _vertices.resize(vertex_count);
     // TODO Check maximum vertex count
 
     for (uint32_t i = 0; i < vertex_count; ++i)
     {
-        _vertices[i].position.x = ut::read<uint32_t>(data);
-        _vertices[i].position.y = ut::read<uint32_t>(data);
-        _vertices[i].texCoords.x = ut::read<uint32_t>(data);
-        _vertices[i].texCoords.y = ut::read<uint32_t>(data);
+        _vertices[i].position.x = ut::read<uint16_t>(data);
+        _vertices[i].position.y = ut::read<uint16_t>(data);
+        _vertices[i].texCoords.x = ut::read<uint16_t>(data);
+        _vertices[i].texCoords.y = ut::read<uint16_t>(data);
     }
 }
 
@@ -48,7 +48,7 @@ Layer::Layer(std::istream & data, const std::vector<sf::Texture *> & texture_tab
     _render_depth = ut::read<int32_t>(data);
 
     // Chunks
-    uint32_t chunk_count = ut::read<uint32_t>(data);
+    uint32_t chunk_count = ut::read<uint8_t>(data);
     // TODO Check maximum texture count
 
     for (uint32_t i = 0; i < chunk_count; ++i)
@@ -67,13 +67,13 @@ Map::Map(const std::string & filename)
     if (ut::read<uint32_t>(data) != IWBAN_MAP_MAGIC)
         throw sys::FileCorrupted(filename.c_str());
 
-    uint32_t version = ut::read<uint32_t>(data);
+    uint32_t version = ut::read<uint8_t>(data);
     if (version != IWBAN_MAP_VERSION)
         throw sys::FileCorrupted(filename.c_str());
 
 
     // Texture table
-    uint32_t textures_count = ut::read<uint32_t>(data);
+    uint32_t textures_count = ut::read<uint8_t>(data);
     // TODO Check maximum texture count
 
     std::vector<data::Texture> texture_table;
@@ -84,7 +84,7 @@ Map::Map(const std::string & filename)
 
 
     // Layers
-    uint32_t layer_count = ut::read<uint32_t>(data);
+    uint32_t layer_count = ut::read<uint8_t>(data);
     _layers.reserve(layer_count);
     // TODO Check maximum layer count
 

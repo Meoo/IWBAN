@@ -21,7 +21,7 @@ int process_chunks(const InputMap & map, const Layer & layer, std::ostream & out
     class Vertice
     {
     public:
-        uint32_t x, y, u, v;
+        uint16_t x, y, u, v;
     };
 
     typedef std::vector<Vertice> VertVector;
@@ -29,8 +29,8 @@ int process_chunks(const InputMap & map, const Layer & layer, std::ostream & out
     class Chunk
     {
     public:
-        uint32_t texture_id;
-        uint32_t x, y, w, h; // Bounds
+        uint8_t texture_id;
+        uint16_t x, y, w, h; // Bounds
         VertVector vertices;
     };
 
@@ -53,7 +53,7 @@ int process_chunks(const InputMap & map, const Layer & layer, std::ostream & out
             const unsigned max_x = ((xs + 1) * map.width) / hori_sections;
 
             // We will group tiles per texture_id
-            std::map<uint32_t, VertVector> vertices_table;
+            std::map<uint8_t, VertVector> vertices_table;
 
             // Process every tile in current section
             for (unsigned y = min_y; y < max_y; ++y)
@@ -67,15 +67,15 @@ int process_chunks(const InputMap & map, const Layer & layer, std::ostream & out
                     // Get the vertex table for texture_id (create it if needed)
                     VertVector & vertices = vertices_table[tile->tileset->texture_id];
 
-                    unsigned left       = x * map.tile_width + tile->tileset->offset_x;
-                    unsigned right      = left + tile->tileset->tile_width;
-                    unsigned top        = y * map.tile_height + tile->tileset->offset_y;
-                    unsigned bot        = top + tile->tileset->tile_height;
+                    uint16_t left       = x * map.tile_width + tile->tileset->offset_x;
+                    uint16_t right      = left + tile->tileset->tile_width;
+                    uint16_t top        = y * map.tile_height + tile->tileset->offset_y;
+                    uint16_t bot        = top + tile->tileset->tile_height;
 
-                    unsigned tex_left   = tile->u;
-                    unsigned tex_right  = tex_left + tile->tileset->tile_width;
-                    unsigned tex_top    = tile->v;
-                    unsigned tex_bot    = tex_top + tile->tileset->tile_height;
+                    uint16_t tex_left   = tile->u;
+                    uint16_t tex_right  = tex_left + tile->tileset->tile_width;
+                    uint16_t tex_top    = tile->v;
+                    uint16_t tex_bot    = tex_top + tile->tileset->tile_height;
 
                     // Counter clockwise winding
                     // Top left
@@ -134,26 +134,26 @@ int process_chunks(const InputMap & map, const Layer & layer, std::ostream & out
     }
 
     // Write chunks to file
-    ut::write<uint32_t>(output, chunk_table.size());
+    ut::write<uint8_t>(output, chunk_table.size());
 
     // TODO Can be re-ordered by texture for a tiny performance boost
     for (const Chunk & chunk : chunk_table)
     {
-        ut::write<uint32_t>(output, chunk.texture_id);
+        ut::write<uint8_t>(output, chunk.texture_id);
 
-        ut::write<uint32_t>(output, chunk.x);
-        ut::write<uint32_t>(output, chunk.y);
-        ut::write<uint32_t>(output, chunk.w);
-        ut::write<uint32_t>(output, chunk.h);
+        ut::write<uint16_t>(output, chunk.x);
+        ut::write<uint16_t>(output, chunk.y);
+        ut::write<uint16_t>(output, chunk.w);
+        ut::write<uint16_t>(output, chunk.h);
 
-        ut::write<uint32_t>(output, chunk.vertices.size());
+        ut::write<uint16_t>(output, chunk.vertices.size());
 
         for (const Vertice & vertice : chunk.vertices)
         {
-            ut::write<uint32_t>(output, vertice.x);
-            ut::write<uint32_t>(output, vertice.y);
-            ut::write<uint32_t>(output, vertice.u);
-            ut::write<uint32_t>(output, vertice.v);
+            ut::write<uint16_t>(output, vertice.x);
+            ut::write<uint16_t>(output, vertice.y);
+            ut::write<uint16_t>(output, vertice.u);
+            ut::write<uint16_t>(output, vertice.v);
         }
     }
 

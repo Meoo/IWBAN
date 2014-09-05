@@ -56,17 +56,17 @@ int process_file(const char * filename)
 
     // Write header
     ut::write<uint32_t>(out_map, IWBAN_MAP_MAGIC);
-    ut::write<uint32_t>(out_map, IWBAN_MAP_VERSION);
+    ut::write<uint8_t>(out_map, IWBAN_MAP_VERSION);
 
 
     // Texture table
-    ut::write<uint32_t>(out_map, map.texture_table.size());
+    ut::write<uint8_t>(out_map, map.texture_table.size());
     for (const std::string & texture : map.texture_table)
         ut::write<std::string>(out_map, texture);
 
 
     // Layers
-    ut::write<uint32_t>(out_map, map.layers.size());
+    ut::write<uint8_t>(out_map, map.layers.size());
     for (const std::unique_ptr<Layer> & layer : map.layers)
     {
         std::cout << "+++ Building layer " << layer->name << " +++" << std::endl;
