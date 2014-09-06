@@ -42,6 +42,8 @@ int process_file(const char * filename)
     if (ret != 0)
         return 1;
 
+    // TODO Check map values bounds (e.g maximum size)
+
 
     std::cout << "+++ Opening output file +++" << std::endl;
 

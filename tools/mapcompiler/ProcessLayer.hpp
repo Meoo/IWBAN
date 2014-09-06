@@ -11,8 +11,10 @@
 #include <config/DisplayConfig.hpp>
 #include <utils/StreamIO.hpp>
 
+// FIXME Debug include
 #include <SFML/Graphics.hpp>
 
+#include <cstring>
 #include <iostream>
 
 
@@ -163,6 +165,123 @@ int process_chunks(const InputMap & map, const Layer & layer, std::ostream & out
 
 // ---- ---- ---- ----
 
+int process_bodies(const InputMap & map, const Layer & layer, std::ostream & output)
+{
+    class Box
+    {
+    public:
+        unsigned x, y, w, h;
+    };
+
+    // ---- ---- ---- ----
+
+    // Copy layer data in a temporary array
+    unsigned map_data_size = map.width * map.height;
+    Layer::TileMap map_data(new Tile*[map_data_size]);
+    std::memcpy(map_data.get(), layer.data.get(), sizeof(Tile*[map_data_size]));
+
+
+    // Group tiles in bigger boxes
+    std::vector<Box> boxes;
+    std::vector<Box> avaiable_boxes;
+
+    do
+    {
+        // Copy layer data in a temporary array again
+        Layer::TileMap avai_data(new Tile*[map_data_size]);
+        std::memcpy(avai_data.get(), map_data.get(), sizeof(Tile*[map_data_size]));
+
+        avaiable_boxes.clear();
+
+        // Compute avaiable boxes
+        for (unsigned y = 0; y < map.height; ++y)
+        {
+            for (unsigned x = 0; x < map.width; ++x)
+            {
+                if (!avai_data[x + y * map.width]) continue;
+
+                Box av;
+
+                // We found a tile that has not been processed yet
+                // TODO Expand it using map_data and not map_av to get the biggest
+                // box possible from this location
+unsigned ex = x;
+for (; ex < map.width; ++ex)
+{
+    if (avai_data[ex + y * map.width] == nullptr)
+        break;
+}
+av.x = x;
+av.y = y;
+av.w = ex - x;
+av.h = 1;
+
+                // Remove used tiles from map_av
+                for (unsigned ly = av.y; ly < (av.y + av.h); ++ly)
+                for (unsigned lx = av.x; lx < (av.x + av.w); ++lx)
+                {
+                    avai_data[lx + ly * map.width] = nullptr;
+                }
+
+                avaiable_boxes.push_back(av);
+            }
+        }
+
+        // Choose biggest box
+        Box biggest;
+        unsigned biggest_size = 0;
+        for (const Box & box : avaiable_boxes)
+        {
+            unsigned size = box.w * box.h;
+            if (size > biggest_size)
+            {
+                biggest_size = size;
+                biggest = box;
+            }
+        }
+
+        // Remove used tiles from map_data
+        for (unsigned y = biggest.y; y < (biggest.y + biggest.h); ++y)
+        for (unsigned x = biggest.x; x < (biggest.x + biggest.w); ++x)
+        {
+            map_data[x + y * map.width] = nullptr;
+        }
+
+        boxes.push_back(biggest);
+    }
+    while (avaiable_boxes.size() > 0);
+
+    // TODO Process boxes
+    // ...
+
+
+    /* FIXME DEBUG PRINT * /
+    sf::RenderTexture tex;
+    tex.create(map.tile_width * map.width, map.tile_height * map.height);
+    tex.clear(sf::Color::White);
+
+    for (const Box & b : boxes)
+    {
+        sf::RectangleShape s;
+        s.setPosition(b.x * map.tile_width, b.y * map.tile_height);
+        s.setSize(sf::Vector2f(b.w * map.tile_width, b.h * map.tile_height));
+        s.setOutlineThickness(-1);
+        s.setOutlineColor(sf::Color::Red);
+        s.setFillColor(sf::Color::Transparent);
+
+        tex.draw(s);
+    }
+
+    tex.display();
+    tex.getTexture().copyToImage().saveToFile("debug.png");
+    / * FIXME DEBUG PRINT */
+
+    return 0;
+}
+// process_bodies()
+
+// ---- ---- ---- ----
+
 int process_layer(const InputMap & map, const Layer & layer, std::ostream & output)
 {
     // Layer header
@@ -178,7 +297,10 @@ int process_layer(const InputMap & map, const Layer & layer, std::ostream & outp
     if (ret)
         return ret;
 
-    // TODO Bodies
+    // Bodies
+    ret = process_bodies(map, layer, output);
+    if (ret)
+        return ret;
 
     // TODO Shadows
 
