@@ -45,6 +45,19 @@ std::string read<std::string>(std::istream & stream)
 // ---- ---- ---- ----
 
 /**
+ * Read a binary value from a stream.
+ *
+ * All values are stored using little endian mode.
+ */
+template<typename T> inline
+void read(std::istream & stream, T & output)
+{
+    output = read<T>(stream);
+}
+
+// ---- ---- ---- ----
+
+/**
  * Write a binary value from a stream.
  *
  * All values are stored using little endian mode.

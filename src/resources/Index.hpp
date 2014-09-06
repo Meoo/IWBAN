@@ -18,11 +18,47 @@
 namespace res
 {
 
+class IndexHeader
+{
+public:
+    uint32_t    magic;
+    uint8_t     version;
+    uint16_t    file_count;
+
+    void read(std::istream & istr)
+    {
+         ut::read(istr, magic);
+         ut::read(istr, version);
+         ut::read(istr, file_count);
+    }
+
+    void write(std::ostream & ostr) const
+    {
+         ut::write(ostr, magic);
+         ut::write(ostr, version);
+         ut::write(ostr, file_count);
+    }
+};
+
+// ---- ---- ---- ----
+
 class IndexEntry
 {
 public:
     uint32_t   offset;
     uint32_t   size;
+
+    void read(std::istream & istr)
+    {
+         ut::read(istr, offset);
+         ut::read(istr, size);
+    }
+
+    void write(std::ostream & ostr) const
+    {
+         ut::write(ostr, offset);
+         ut::write(ostr, size);
+    }
 };
 
 typedef std::map<std::string, IndexEntry> Index;
@@ -32,23 +68,24 @@ typedef std::map<std::string, IndexEntry> Index;
 inline
 bool readIndex(std::istream & package, Index & index)
 {
-    if (ut::read<uint32_t>(package) != IWBAN_PKG_MAGIC)
+    IndexHeader header;
+
+    header.read(package);
+
+    if (header.magic != IWBAN_PKG_MAGIC)
         return false;
 
-    uint32_t version = ut::read<uint32_t>(package);
-    if (version != IWBAN_PKG_VERSION)
+    if (header.version != IWBAN_PKG_VERSION)
         return false;
 
-    uint32_t index_count = ut::read<uint32_t>(package);
-    if (index_count > IWBAN_PKG_MAX_FILES)
+    if (header.file_count > IWBAN_PKG_MAX_FILES)
         return false;
 
-    for (uint32_t i = 0; i < index_count; ++i)
+    for (unsigned i = 0; i < header.file_count; ++i)
     {
         IndexEntry entry;
 
-        entry.offset = ut::read<uint32_t>(package);
-        entry.size = ut::read<uint32_t>(package);
+        entry.read(package);
 
         std::string filename = ut::read<std::string>(package);
         if (filename.empty())
@@ -66,16 +103,17 @@ bool readIndex(std::istream & package, Index & index)
 inline
 void writeIndex(std::ostream & package, const Index & index)
 {
-    ut::write<uint32_t>(package, IWBAN_PKG_MAGIC);
-    ut::write<uint32_t>(package, IWBAN_PKG_VERSION);
+    IndexHeader header;
 
-    uint32_t index_entries = index.size();
-    ut::write<uint32_t>(package, index_entries);
+    header.magic = IWBAN_PKG_MAGIC;
+    header.version = IWBAN_PKG_VERSION;
+    header.file_count = index.size();
 
-    for (auto it = index.begin(); it != index.end(); ++it)
+    header.write(package);
+
+    for (const auto & it = index.begin(); it != index.end(); ++it)
     {
-        ut::write<uint32_t>(package, it->second.offset);
-        ut::write<uint32_t>(package, it->second.size);
+        it->second.write(package);
         ut::write<std::string>(package, it->first);
     }
 }

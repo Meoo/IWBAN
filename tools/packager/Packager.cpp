@@ -57,9 +57,9 @@ int process_folder(const char * path_name)
     // Path is a valid folder
     std::cout << "+++ Listing files +++" << std::endl;
 
-    // Index size is magic + number of entries + length of paths + size of IndexEntries
+    // Index size is header + entries + length of paths
     pk::Index index;
-    std::size_t index_size = sizeof(uint32_t) + sizeof(IWBAN_PKG_MAGIC);
+    std::size_t index_size = sizeof(pk::IndexHeader);
 
     // Recursively walk the folder
     for (fs::recursive_directory_iterator it(folder), end;
