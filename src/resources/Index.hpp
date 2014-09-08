@@ -111,7 +111,7 @@ void writeIndex(std::ostream & package, const Index & index)
 
     header.write(package);
 
-    for (const auto & it = index.begin(); it != index.end(); ++it)
+    for (auto it = index.begin(); it != index.end(); ++it)
     {
         it->second.write(package);
         ut::write<std::string>(package, it->first);
