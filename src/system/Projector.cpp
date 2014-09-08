@@ -38,10 +38,17 @@ void Projector::setScreen(Screen * screen)
 
 void Projector::update(const sf::Time & update_time)
 {
+    // Check if fade is finished
+    if (_fade_enabled && update_time >= _fade_start_time + _fade_delay)
+        _fade_enabled = false;
+
+
     // Update controls right before updating the screen
     getControls().update();
 
+    // Update screen
     _current_screen->onUpdate(update_time);
+
 
     // Check if we should change screen
     Screen * next_screen = _current_screen->getNextScreen();
@@ -76,13 +83,10 @@ void Projector::render(gfx::Renderer & renderer, const sf::Time & render_time) c
     {
         if (render_time >= _fade_start_time + _fade_delay)
         {
-            // Fade finished
-            _fade_enabled = false;
-
+            // Fade is finished but we wait for next frame just to
             if (_fade_in)
                 renderer.setOverlayColor(sf::Color::Transparent);
 
-            // TODO Just set the overlay to transparent? May cause flickering when screen changes (really rare case I think)
             else
                 renderer.setOverlayColor(_fade_color);
         }
@@ -101,6 +105,8 @@ void Projector::render(gfx::Renderer & renderer, const sf::Time & render_time) c
             renderer.setOverlayColor(current_color);
         }
     }
+    else
+        renderer.setOverlayColor(sf::Color::Transparent);
 }
 
 void Projector::mouseMove(const ut::Vector & position)
