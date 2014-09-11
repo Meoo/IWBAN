@@ -84,13 +84,10 @@ public:
 
     }
 
-    // Destructor
-    virtual ~LanguageSelectionScreen() {}
-
 
 protected:
     // Callbacks
-    virtual void onUpdate(const sf::Time & update_time)
+    void onUpdate(const sf::Time & update_time) override
     {
         // If menu is pressed, return to previous menu
         if (getControls().getAction(ACT_MENU).isJustActivated())
@@ -104,7 +101,7 @@ protected:
                 _navi.dispatchAction((ActionId) i);
     }
 
-    virtual void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
+    void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const override
     {
         gfx::DrawContext & draw = renderer.openDrawContext();
 
@@ -128,7 +125,7 @@ protected:
         gui.close();
     }
 
-    virtual void onShow()
+    void onShow() override
     {
         if (cfg::language == "fr")
         {
@@ -154,12 +151,12 @@ protected:
         _navi.reset();
     }
 
-    virtual void onMouseMove(const ut::Vector & position)
+    void onMouseMove(const ut::Vector & position) override
     {
         _navi.dispatchMouseMove(position);
     }
 
-    virtual void onMouseClick(const ut::Vector & position)
+    void onMouseClick(const ut::Vector & position) override
     {
         _navi.dispatchMouseClick(position);
     }

@@ -30,6 +30,8 @@ class OptionsMenuScreen : public Screen
 {
 private:
     // Data members
+    Screen *    _return_screen;
+
     gui::Navigation _navi;
 
     gui::Label  _title;
@@ -42,32 +44,29 @@ private:
     gui::Slider _volume;
 
     LanguageSelectionScreen _language_selection = LanguageSelectionScreen(this);
-    VideoOptionsScreen      _video_options = VideoOptionsScreen(this);
-    KeyboardOptionsScreen   _keyboard_options = KeyboardOptionsScreen(this);
-    GamepadOptionsScreen    _gamepad_options = GamepadOptionsScreen(this);
+    VideoOptionsScreen      _video_options      = VideoOptionsScreen(this);
+    KeyboardOptionsScreen   _keyboard_options   = KeyboardOptionsScreen(this);
+    GamepadOptionsScreen    _gamepad_options    = GamepadOptionsScreen(this);
 
 
 public:
     // Constructor
-    OptionsMenuScreen()
+    OptionsMenuScreen(Screen * return_screen)
+        : _return_screen(return_screen)
     {
         // Title
-        _title.loadText("menu.options");
         _title.setCharacterSize(50);
         _title.setPosition({320, 50});
 
         // Language
-        _language_sub.loadText("options.language");
         _language_sub.setCallback([this](){ onLanguage(); });
         _language_sub.setPosition({140, 140});
 
-        _language.loadText(std::string("language.") + cfg::language);
         _language.setCallback([this](){ onLanguage(); });
         _language.setPosition({440, 140});
         _language.setCharacterSize(22);
 
         // Audio
-        _audio.loadText("options.audio");
         _audio.setPosition({140, 180});
 
         _volume.setSize({200, 22});
@@ -77,17 +76,14 @@ public:
         _volume.setCallback([](unsigned value){ cfg::volume = value; }); // TODO Update master volume
 
         // Video
-        _video_sub.loadText("options.video");
         _video_sub.setCallback([this](){ onVideo(); });
         _video_sub.setPosition({140, 220});
 
         // Keyboard
-        _keyboard_sub.loadText("options.keyboard");
         _keyboard_sub.setCallback([this](){ onKeyboard(); });
         _keyboard_sub.setPosition({140, 260});
 
         // Gamepad
-        _gamepad_sub.loadText("options.gamepad");
         _gamepad_sub.setCallback([this](){ onGamepad(); });
         _gamepad_sub.setPosition({140, 300});
 
@@ -95,7 +91,6 @@ public:
         _gamepad_state.setCharacterSize(22);
 
         // Quit
-        _quit.loadText("options.return");
         _quit.setCallback([this](){ onQuit(); });
         _quit.setPosition({320, 440});
 
@@ -112,13 +107,22 @@ public:
         _navi.addSlave(&_language_sub, &_language);
     }
 
-    // Destructor
-    virtual ~OptionsMenuScreen() {}
-
 
 protected:
     // Callbacks
-    virtual void onUpdate(const sf::Time & update_time)
+    void onShow() override
+    {
+        _title.loadText("menu.options");
+        _language_sub.loadText("options.language");
+        _language.loadText(std::string("language.") + cfg::language);
+        _audio.loadText("options.audio");
+        _video_sub.loadText("options.video");
+        _keyboard_sub.loadText("options.keyboard");
+        _gamepad_sub.loadText("options.gamepad");
+        _quit.loadText("options.return");
+    }
+
+    void onUpdate(const sf::Time & update_time) override
     {
         if (_gamepad_state_timer < update_time)
         {
@@ -151,7 +155,7 @@ protected:
                 _navi.dispatchAction((ActionId) i);
     }
 
-    virtual void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
+    void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const override
     {
         gfx::DrawContext & draw = renderer.openDrawContext();
 
@@ -178,12 +182,12 @@ protected:
         gui.close();
     }
 
-    virtual void onMouseMove(const ut::Vector & position)
+    void onMouseMove(const ut::Vector & position) override
     {
         _navi.dispatchMouseMove(position);
     }
 
-    virtual void onMouseClick(const ut::Vector & position)
+    void onMouseClick(const ut::Vector & position) override
     {
         _navi.dispatchMouseClick(position);
     }
@@ -210,8 +214,8 @@ protected:
 
     void onQuit()
     {
-        // TODO Quit
-        _quit.setTextColor(sf::Color::Red);
+        setNextScreen(_return_screen);
+        dispose();
     }
 
 };

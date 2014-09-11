@@ -120,13 +120,10 @@ public:
 */
     }
 
-    // Destructor
-    virtual ~KeyboardOptionsScreen() {}
-
 
 protected:
     // Callbacks
-    virtual void onUpdate(const sf::Time & update_time)
+    void onUpdate(const sf::Time & update_time) override
     {
         // If menu is pressed, return to previous menu
         if (getControls().getAction(ACT_MENU).isJustActivated())
@@ -244,7 +241,7 @@ protected:
         } // else if (!_waiting_input)*/
     }
 
-    virtual void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
+    void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const override
     {
         gfx::DrawContext & draw = renderer.openDrawContext();
 
@@ -262,12 +259,12 @@ protected:
         gui.close();
     }
 
-    virtual void onMouseMove(const ut::Vector & position)
+    void onMouseMove(const ut::Vector & position) override
     {
         _navi.dispatchMouseMove(position);
     }
 
-    virtual void onMouseClick(const ut::Vector & position)
+    void onMouseClick(const ut::Vector & position) override
     {
         _navi.dispatchMouseClick(position);
     }

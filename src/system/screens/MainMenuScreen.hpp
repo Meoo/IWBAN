@@ -115,9 +115,7 @@ protected:
 
     void onOptions()
     {
-        // TODO Go to options screen
-        setNextScreen(new OptionsMenuScreen());
-        dispose();
+        setNextScreen(new OptionsMenuScreen(this));
     }
 
     void onQuit()
