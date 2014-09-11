@@ -37,13 +37,16 @@ int main(int argc, char ** argv)
     data::getLocale().loadFont(IWBAN_DEFAULT_FONT);
 
 
+    IWBAN_LOG_INFO("Initializing projector");
+    sys::Screen * screen = new sys::MainMenuScreen();
+    screen = new sys::SplashScreen(screen);
+
+    sys::Projector projector(screen);
+
+
     IWBAN_LOG_INFO("Opening display");
     sys::Display display;
     display.open();
-
-
-    IWBAN_LOG_INFO("Initializing projector");
-    sys::Projector projector(new sys::SplashScreen(new sys::MainMenuScreen()));
 
 
     // Loop until the game is closed
