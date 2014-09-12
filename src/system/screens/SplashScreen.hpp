@@ -35,7 +35,7 @@ public:
 
 protected:
     // Callbacks
-    virtual void onUpdate(const sf::Time & update_time)
+    void onUpdate(const sf::Time & update_time) override
     {
         // Either timeout or skip
         if (update_time - _begin_time >= _duration
@@ -49,7 +49,7 @@ protected:
         }
     }
 
-    virtual void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
+    void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const override
     {
         float time_left = (_duration - render_time + _begin_time).asSeconds();
 
@@ -59,22 +59,19 @@ protected:
 
         // TODO Draw splash image
 
+        // Fade out manually
         if (time_left < 1)
             draw.fill(sf::Color(255, 255, 255, (1 - time_left) * 255));
 
         draw.close();
     }
 
-    virtual void onShow()
+    void onShow() override
     {
         _begin_time = getGlobalTime();
     }
 
-    virtual void onHide()
-    {
-    }
-
-    virtual void onMouseClick(const ut::Vector & position)
+    void onMouseClick(const ut::Vector & position) override
     {
         if (_skippable
          && position.x > 0 && position.y > 0

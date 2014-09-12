@@ -36,19 +36,15 @@ public:
     {
         data::getLocale().loadFile("system/menu.txt");
 
-        _newgame.loadText("menu.newgame");
         _newgame.setCallback([this](){ onNewGame(); });
         _newgame.setPosition({320, 240});
 
-        _continue.loadText("menu.continue");
         _continue.setCallback([this](){ onContinue(); });
         _continue.setPosition({320, 280});
 
-        _options.loadText("menu.options");
         _options.setCallback([this](){ onOptions(); });
         _options.setPosition({320, 320});
 
-        _quit.loadText("menu.quit");
         _quit.setCallback([this](){ onQuit(); });
         _quit.setPosition({320, 360});
 
@@ -58,20 +54,25 @@ public:
         _navi.addVertical(&_options, &_quit);
     }
 
-    // Destructor
-    virtual ~MainMenuScreen() {}
-
 
 protected:
     // Callbacks
-    virtual void onUpdate(const sf::Time & update_time)
+    void onShow() override
+    {
+        _newgame.loadText("menu.newgame");
+        _continue.loadText("menu.continue");
+        _options.loadText("menu.options");
+        _quit.loadText("menu.quit");
+    }
+
+    void onUpdate(const sf::Time & update_time) override
     {
         for (unsigned i = 0; i < ACT_COUNT; ++i)
             if (getControls().getAction((ActionId) i).isJustActivated())
                 _navi.dispatchAction((ActionId) i);
     }
 
-    virtual void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const
+    void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const override
     {
         gfx::DrawContext & draw = renderer.openDrawContext();
 
@@ -90,12 +91,12 @@ protected:
         gui.close();
     }
 
-    virtual void onMouseMove(const ut::Vector & position)
+    void onMouseMove(const ut::Vector & position) override
     {
         _navi.dispatchMouseMove(position);
     }
 
-    virtual void onMouseClick(const ut::Vector & position)
+    void onMouseClick(const ut::Vector & position) override
     {
         _navi.dispatchMouseClick(position);
     }
