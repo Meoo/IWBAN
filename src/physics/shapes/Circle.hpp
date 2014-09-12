@@ -33,7 +33,7 @@ public:
     }
 
     // Virtual functions
-    virtual const ut::Rectangle & getBoundingBox() const
+    const ut::Rectangle & getBoundingBox() const override
     {
         return _bbox;
     }

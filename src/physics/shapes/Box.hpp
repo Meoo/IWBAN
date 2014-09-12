@@ -19,34 +19,35 @@ private:
     // Data members
     ut::Rectangle   _bbox;
 
+    IWBAN_DEBUG(mutable sf::RectangleShape d_shape);
+
 
 public:
     // Constructor
     Box(const ut::Rectangle & box)
         : _bbox(box)
     {
-        BOOST_ASSERT(box.w > 0 && box.h > 0);
+        IWBAN_ASSERT(box.w > 0 && box.h > 0);
+
+        IWBAN_DEBUG(d_shape.setSize(sf::Vector2f(_bbox.w, _bbox.h)));
+        IWBAN_DEBUG(d_shape.setFillColor(sf::Color::Transparent));
+        IWBAN_DEBUG(d_shape.setOutlineThickness(-1));
     }
 
     // Virtual functions
-    virtual const ut::Rectangle & getBoundingBox() const
+    const ut::Rectangle & getBoundingBox() const override
     {
         return _bbox;
     }
 
 #ifndef NDEBUG
-    virtual void drawDebug(gfx::DebugContext & debug_context,
-                           const ut::Vector & origin, const sf::Color & color) const
+    void drawDebug(gfx::DebugContext & debug_context,
+                   const ut::Vector & origin, const sf::Color & color) const override
     {
-        sf::RectangleShape shape(sf::Vector2f(_bbox.w, _bbox.h));
+        d_shape.setOutlineColor(color);
+        d_shape.setPosition(origin.x + _bbox.x, origin.y + _bbox.y);
 
-        shape.setFillColor(sf::Color::Transparent);
-        shape.setOutlineThickness(-1);
-        shape.setOutlineColor(color);
-
-        shape.setPosition(origin.x + _bbox.x, origin.y + _bbox.y);
-
-        debug_context.draw(shape);
+        debug_context.draw(d_shape);
     }
 #endif
 
