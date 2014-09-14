@@ -39,7 +39,7 @@ std::string read<std::string>(std::istream & stream)
 {
     std::string ret;
     std::getline(stream, ret, '\0');
-    return std::move(ret);
+    return ret;
 }
 
 // ---- ---- ---- ----
