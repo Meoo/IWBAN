@@ -21,10 +21,10 @@ Chunk::Chunk(std::istream & data, const std::vector<sf::Texture *> & texture_tab
 {
     _texture = texture_table.at(ut::read<uint8_t>(data));
 
-    _bounds.x = ut::read<uint16_t>(data);
-    _bounds.y = ut::read<uint16_t>(data);
-    _bounds.w = ut::read<uint16_t>(data);
-    _bounds.h = ut::read<uint16_t>(data);
+    _bounds.left    = ut::read<uint16_t>(data);
+    _bounds.top     = ut::read<uint16_t>(data);
+    _bounds.right   = _bounds.left + ut::read<uint16_t>(data);
+    _bounds.bottom  = _bounds.top + ut::read<uint16_t>(data);
 
     // Vertices
     uint32_t vertex_count = ut::read<uint16_t>(data);

@@ -63,9 +63,7 @@ void Slider::deselect()
 
 ut::Rectangle Slider::getBounds() const
 {
-    return ut::Rectangle(_position.x - _size.x / 2,
-                         _position.y - _size.y / 2,
-                         _size.x, _size.y);
+    return ut::Rectangle::fromSize(_position - _size / 2, _size);
 }
 
 void Slider::dispatchAction(sys::ActionId action)

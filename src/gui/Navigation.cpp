@@ -7,20 +7,6 @@
 
 #include <gui/Navigation.hpp>
 
-namespace
-{
-
-inline bool checkBounds(const ut::Vector & position, const ut::Rectangle & bounds)
-{
-    return position.x >= bounds.x
-        && position.y >= bounds.y
-        && position.x <= bounds.x + bounds.w
-        && position.y <= bounds.y + bounds.h;
-}
-
-}
-// namespace
-
 namespace gui
 {
 
@@ -91,7 +77,7 @@ void Navigation::dispatchMouseMove(const ut::Vector & position)
 
         ut::Rectangle bounds = it.first->getBounds();
 
-        if (checkBounds(position, bounds))
+        if (bounds.isContaining(position))
         {
             if (_selected && _selected == it.first)
                 return;
@@ -104,7 +90,7 @@ void Navigation::dispatchMouseMove(const ut::Vector & position)
         if (slave)
         {
             ut::Rectangle bounds = slave->getBounds();
-            if (checkBounds(position, bounds))
+            if (bounds.isContaining(position))
             {
                 if (_selected && _selected == it.first)
                     return;
@@ -121,11 +107,11 @@ void Navigation::dispatchMouseClick(const ut::Vector & position)
     if (_selected)
     {
         ut::Rectangle bounds = _selected->getBounds();
-        if (checkBounds(position, bounds))
+        if (bounds.isContaining(position))
         {
             _selected->dispatchMouseClick(ut::Vector(
-                    position.x - bounds.x,
-                    position.y - bounds.y
+                    position.x - bounds.top,
+                    position.y - bounds.left
             ));
         }
 
@@ -133,11 +119,11 @@ void Navigation::dispatchMouseClick(const ut::Vector & position)
         if (slave)
         {
             ut::Rectangle bounds = slave->getBounds();
-            if (checkBounds(position, bounds))
+            if (bounds.isContaining(position))
             {
                 slave->dispatchMouseClick(ut::Vector(
-                        position.x - bounds.x,
-                        position.y - bounds.y
+                        position.x - bounds.top,
+                        position.y - bounds.left
                 ));
             }
         }
