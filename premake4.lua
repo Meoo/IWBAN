@@ -139,7 +139,7 @@ project "MapCompiler"
   kind "ConsoleApp"
   targetname "mapc"
 
-  includedirs { "tools" }
+  includedirs { "src", "tools" }
 
   files       { "tools/mapcompiler/**.cpp" }
 
