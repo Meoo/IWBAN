@@ -66,7 +66,7 @@ int process_folder(const char * path_name)
          it != end; ++it)
     {
         // Remove the path prefix to get the relative path
-        const char * nice_path = it->path().string().c_str() + flen;
+        const char * nice_path = it->path().generic_string().c_str() + flen;
 
         if (!fs::is_directory(it.status()))
         {
