@@ -211,10 +211,24 @@ for (; ex < map.width; ++ex)
     if (avai_data[ex + y * map.width] == nullptr)
         break;
 }
+unsigned ey = y;
+for (; ey < map.height; ++ey)
+{
+    bool ok = true;
+    for (unsigned tx = x; tx < ex; ++tx)
+    {
+        if (avai_data[tx + ey * map.width] == nullptr)
+        {
+            ok = false; break;
+        }
+    }
+    if (!ok) break;
+}
+
 av.x = x;
 av.y = y;
 av.w = ex - x;
-av.h = 1;
+av.h = ey - y;
 
                 // Remove used tiles from map_av
                 for (unsigned ly = av.y; ly < (av.y + av.h); ++ly)
@@ -252,7 +266,14 @@ av.h = 1;
     while (avaiable_boxes.size() > 0);
 
     // TODO Process boxes
-    // ...
+    ut::write<uint8_t>(output, boxes.size());
+    for (const Box & box : boxes)
+    {
+        ut::write<uint16_t>(output, box.x * map.tile_width);
+        ut::write<uint16_t>(output, box.y * map.tile_height);
+        ut::write<uint16_t>(output, box.w * map.tile_width);
+        ut::write<uint16_t>(output, box.h * map.tile_height);
+    }
 
 
     /* FIXME DEBUG PRINT * /

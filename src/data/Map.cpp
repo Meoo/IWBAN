@@ -13,11 +13,40 @@
 #include <system/exceptions/FileCorrupted.hpp>
 #include <utils/StreamIO.hpp>
 
+#include <map>
+
+namespace
+{
+
+static std::map<std::string, std::unique_ptr<data::Map> > s_mapDict;
+
+std::unique_ptr<data::Map> loadMap(const std::string & filename)
+{
+    try
+    {
+        res::File file(res::openFile(filename));
+        res::FileStream istr(file);
+
+        std::unique_ptr<data::Map> map(new data::Map(istr));
+        return map;
+    }
+    catch (const sys::DataCorrupted & e)
+    {
+        throw sys::FileCorrupted(filename.c_str(), e);
+    }
+}
+// loadMap()
+
+}
+// namespace
+
 namespace data
 {
 
-Chunk::Chunk(std::istream & data, const std::vector<sf::Texture *> & texture_table)
-    : _vertices(sf::Quads)
+namespace map
+{
+
+Chunk::Chunk(std::istream & data, const TextureTable & texture_table)
 {
     _texture = texture_table.at(ut::read<uint8_t>(data));
 
@@ -40,43 +69,110 @@ Chunk::Chunk(std::istream & data, const std::vector<sf::Texture *> & texture_tab
     }
 }
 
-// ---- ---- ---- ----
-
-Layer::Layer(std::istream & data, const std::vector<sf::Texture *> & texture_table)
+void Chunk::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
-    _name = ut::read<std::string>(data);
-    _render_depth = ut::read<int32_t>(data);
-
-    // Chunks
-    uint32_t chunk_count = ut::read<uint8_t>(data);
-    // TODO Check maximum texture count
-
-    for (uint32_t i = 0; i < chunk_count; ++i)
-        _chunks.push_back(std::unique_ptr<Chunk>(new Chunk(data, texture_table)));
+    states.texture = _texture;
+    target.draw(_vertices, states);
 }
 
 // ---- ---- ---- ----
 
-Map::Map(const std::string & filename)
+BodyDesc::BodyDesc(std::istream & data)
 {
-    res::File map_file(res::openFile(filename));
-    res::FileStream data(map_file);
+    ut::Rectangle rec;
+
+    rec.left    = ut::read<uint16_t>(data);
+    rec.top     = ut::read<uint16_t>(data);
+    rec.right   = rec.left + ut::read<uint16_t>(data);
+    rec.bottom  = rec.top + ut::read<uint16_t>(data);
+
+    _mesh.setBounds(rec);
+}
+
+BodyDesc::BodyPtr BodyDesc::makeBody() const
+{
+    BodyPtr p (new phy::Body(&_mesh));
+    return p;
+}
+
+// ---- ---- ---- ----
+
+class Layer::LayerDrawable final : public gfx::Drawable
+{
+private:
+    const Layer * _layer;
 
 
+public:
+    LayerDrawable(const Layer * layer)
+        : _layer(layer) {}
+
+
+protected:
+    void draw(sf::RenderTarget & target, sf::RenderStates states) const override
+    {
+        for (const auto & chunk : _layer->getChunks())
+            target.draw(*chunk, states);
+    }
+};
+// class LayerDrawable
+
+Layer::Layer(std::istream & data, const TextureTable & texture_table)
+{
+    _name = ut::read<std::string>(data);
+    _render_depth = ut::read<int32_t>(data);
+
+
+    // Chunks
+    uint32_t chunk_count = ut::read<uint8_t>(data);
+    _chunks.reserve(chunk_count);
+    // TODO Check maximum chunk count
+
+    for (uint32_t i = 0; i < chunk_count; ++i)
+    {
+        ChunkPtr p(new Chunk(data, texture_table));
+        _chunks.push_back(std::move(p));
+    }
+
+
+    // Bodies
+    uint32_t body_count = ut::read<uint8_t>(data);
+    _bodies.reserve(body_count);
+    // TODO Check maximum bodies count
+
+    for (uint32_t i = 0; i < body_count; ++i)
+    {
+        BodyDescPtr b(new BodyDesc(data));
+        _bodies.push_back(std::move(b));
+    }
+}
+Layer::DrawablePtr Layer::makeDrawable() const
+{
+    DrawablePtr d(new LayerDrawable(this));
+    return d;
+}
+
+}
+// namespace map
+
+// ---- ---- ---- ----
+
+Map::Map(std::istream & data)
+{
     // Header
     if (ut::read<uint32_t>(data) != IWBAN_MAP_MAGIC)
-        throw sys::FileCorrupted(filename.c_str());
+        throw sys::DataCorrupted("Invalid magic");
 
     uint32_t version = ut::read<uint8_t>(data);
     if (version != IWBAN_MAP_VERSION)
-        throw sys::FileCorrupted(filename.c_str());
+        throw sys::DataCorrupted("Invalid version");
 
 
     // Texture table
     uint32_t textures_count = ut::read<uint8_t>(data);
     // TODO Check maximum texture count
 
-    std::vector<data::Texture> texture_table;
+    map::TextureTable texture_table;
     texture_table.reserve(textures_count);
 
     for (uint32_t i = 0; i < textures_count; ++i)
@@ -89,20 +185,27 @@ Map::Map(const std::string & filename)
     // TODO Check maximum layer count
 
     for (uint32_t i = 0; i < layer_count; ++i)
-        _layers.push_back(std::unique_ptr<Layer>(new Layer(data, texture_table)));
+    {
+        LayerPtr l(new map::Layer(data, texture_table));
+        _layers.push_back(std::move(l));
+    }
 }
 
-void Map::draw(sf::RenderTarget & target, sf::RenderStates states) const
-{
-    for (const auto & layer : _layers)
-    {
-        for (const auto & chunk : layer->_chunks)
-        {
-            states.texture = chunk->_texture;
-            target.draw(chunk->_vertices, states);
-        }
-    }
+// ---- ---- ---- ----
 
+Map * getMap(const std::string & filename)
+{
+    // Try to find map
+    auto it = ::s_mapDict.find(filename);
+    if (it != ::s_mapDict.end())
+        return it->second.get();
+
+    // Map not found, load it
+    std::unique_ptr<Map> map(::loadMap(filename));
+
+    Map * mapptr = map.get();
+    ::s_mapDict[filename] = std::move(map);
+    return mapptr;
 }
 
 }

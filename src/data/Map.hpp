@@ -9,6 +9,9 @@
 #include <Global.hpp>
 
 #include <data/Texture.hpp>
+#include <graphics/Drawable.hpp>
+#include <physics/Body.hpp>
+#include <physics/meshes/AABoxMesh.hpp>
 #include <utils/Rectangle.hpp>
 
 #include <SFML/Graphics.hpp>
@@ -23,54 +26,110 @@
 namespace data
 {
 
-class Chunk : public boost::noncopyable
+namespace map
+{
+
+typedef std::vector<sf::Texture *> TextureTable;
+
+// ---- ---- ---- ----
+
+class Chunk : public boost::noncopyable, public sf::Drawable
 {
 private:
+    // Data members
     ut::Rectangle   _bounds;
 
     data::Texture   _texture    = nullptr;
     //data::Shader    _shader     = nullptr;
-    sf::VertexArray _vertices;
-
-    // FIXME Remove me
-    friend class Map;
+    sf::VertexArray _vertices   = sf::VertexArray(sf::Quads);
 
 
 public:
-    explicit Chunk(std::istream & data, const std::vector<sf::Texture *> & texture_table);
+    Chunk(std::istream & data, const TextureTable & texture_table);
+
+
+protected:
+    void draw(sf::RenderTarget & target, sf::RenderStates states) const override;
 
 };
 // class Chunk
 
 // ---- ---- ---- ----
 
-class Layer : public boost::noncopyable
+class BodyDesc
 {
+public:
+    typedef std::unique_ptr<phy::Body> BodyPtr;
+
+
 private:
-    typedef std::vector<std::unique_ptr<Chunk>> ChunkVector;
-
-    std::string _name;
-    int         _render_depth   = 0;
-
-    ChunkVector _chunks;
-
-    // FIXME Remove me
-    friend class Map;
+    // Data members
+    phy::AABoxMesh _mesh;
 
 
 public:
-    explicit Layer(std::istream & data, const std::vector<sf::Texture *> & texture_table);
+    explicit BodyDesc(std::istream & data);
+
+    BodyPtr makeBody() const;
+
+};
+// class BodyDesc
+
+// ---- ---- ---- ----
+
+class Layer : public boost::noncopyable
+{
+public:
+    typedef std::unique_ptr<BodyDesc>   BodyDescPtr;
+    typedef std::vector<BodyDescPtr>    BodyDescVector;
+
+    typedef std::unique_ptr<gfx::Drawable> DrawablePtr;
+
+private:
+    class LayerDrawable;
+
+    typedef std::unique_ptr<Chunk>      ChunkPtr;
+    typedef std::vector<ChunkPtr>       ChunkVector;
+
+
+    // Data members
+    std::string     _name;
+    int             _render_depth   = 0;
+
+    ChunkVector     _chunks;
+    BodyDescVector  _bodies;
+
+
+public:
+    Layer(std::istream & data, const TextureTable & texture_table);
+
+    const BodyDescVector & getBodies() const { return _bodies; }
+
+    DrawablePtr makeDrawable() const;
+
+
+private:
+    friend class LayerDrawable;
+
+    const ChunkVector & getChunks() const { return _chunks; }
 
 };
 // class Layer
 
+}
+// namespace map
+
 // ---- ---- ---- ----
 
-class Map : public boost::noncopyable, public sf::Drawable
+class Map : public boost::noncopyable
 {
-private:
-    typedef std::vector<std::unique_ptr<Layer>> LayerVector;
+public:
+    typedef std::unique_ptr<map::Layer> LayerPtr;
+    typedef std::vector<LayerPtr>       LayerVector;
 
+
+private:
+    // Data members
     sf::Color   _ambient_light;
 
     LayerVector _layers;
@@ -79,12 +138,16 @@ private:
 
 
 public:
-    explicit Map(const std::string & filename);
+    explicit Map(std::istream & data);
 
-    void draw(sf::RenderTarget & target, sf::RenderStates states) const override;
+    const LayerVector & getLayers() const { return _layers; }
 
 };
 // class Map
+
+// ---- ---- ---- ----
+
+Map * getMap(const std::string & filename);
 
 }
 // namespace data

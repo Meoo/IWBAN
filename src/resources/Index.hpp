@@ -12,6 +12,8 @@
 
 #include <utils/StreamIO.hpp>
 
+#include <system/exceptions/DataCorrupted.hpp>
+
 #include <iostream>
 #include <map>
 
@@ -66,20 +68,20 @@ typedef std::map<std::string, IndexEntry> Index;
 // ---- ---- ---- ----
 
 inline
-bool readIndex(std::istream & package, Index & index)
+void readIndex(std::istream & package, Index & index)
 {
     IndexHeader header;
 
     header.read(package);
 
     if (header.magic != IWBAN_PKG_MAGIC)
-        return false;
+        throw sys::DataCorrupted("Invalid magic");
 
     if (header.version != IWBAN_PKG_VERSION)
-        return false;
+        throw sys::DataCorrupted("Invalid version");
 
     if (header.file_count > IWBAN_PKG_MAX_FILES)
-        return false;
+        throw sys::DataCorrupted("Too many files");
 
     for (unsigned i = 0; i < header.file_count; ++i)
     {
@@ -89,12 +91,10 @@ bool readIndex(std::istream & package, Index & index)
 
         std::string filename = ut::read<std::string>(package);
         if (filename.empty())
-            return false;
+            throw sys::DataCorrupted("File name is empty");
 
         index.insert({filename, entry});
     }
-
-    return true;
 }
 // readIndex()
 

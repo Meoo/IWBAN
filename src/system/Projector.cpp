@@ -43,14 +43,8 @@ void Projector::update(const sf::Time & update_time)
         _fade_enabled = false;
 
 
-    // Update controls right before updating the screen
-    getControls().update();
-
-    // Update screen
-    _current_screen->onUpdate(update_time);
-
-
     // Check if we should change screen
+    // Change screen before update, so update is always called before a render
     Screen * next_screen = _current_screen->getNextScreen();
     if (next_screen)
     {
@@ -73,6 +67,13 @@ void Projector::update(const sf::Time & update_time)
         else
             current->resetNextScreen();
     }
+
+
+    // Update controls right before updating the screen
+    getControls().update();
+
+    // Update screen
+    _current_screen->onUpdate(update_time);
 }
 
 void Projector::render(gfx::Renderer & renderer, const sf::Time & render_time) const

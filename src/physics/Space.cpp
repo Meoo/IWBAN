@@ -5,203 +5,126 @@
 
 #include <Global.hpp>
 
+#include <physics/Body.hpp>
+#include <physics/Controller.hpp>
 #include <physics/Space.hpp>
-
-#include <algorithm>
-#include <vector>
 
 namespace phy
 {
 
-Space::Space()
-{
-}
-
-void Space::add(Body * body)
+void Space::attach(Body * body)
 {
     IWBAN_PRE_PTR(body);
 
-    // TODO object->updateLastPosition(); ?
-#ifndef NDEBUG
-    auto ret = _bodies.insert(body);
-    IWBAN_ASSERT(ret.second);
-#else
-    _bodies.insert(body);
-#endif
+    auto it = _to_detach.find(body);
+
+    if (it != _to_detach.end())
+        _to_detach.erase(it);
+
+    else
+        _to_attach.insert(body);
+
 }
 
-void Space::remove(Body * body)
+void Space::detach(Body * body) noexcept
 {
     IWBAN_PRE_PTR(body);
 
-    IWBAN_VERIFY(_bodies.erase(body));
+    auto it = _to_attach.find(body);
+
+    if (it != _to_attach.end())
+        _to_attach.erase(it);
+
+    else
+        _to_detach.insert(body);
 }
 
-void Space::update(const sf::Time & delta, int passes)
+void Space::update()
 {
-    IWBAN_PRE(delta.asSeconds() > 0);
-    IWBAN_PRE(passes > 0);
+    // TODO Remove detached bodies
+    for (Body * body : _to_attach)
+        _bodies.insert(body);
 
-    sf::Time step_delta = delta / sf::Int64(passes);
+    _to_attach.clear();
 
-    // Pre update
+    // TODO Add newly attached bodies
+    for (Body * body : _to_detach)
+        _bodies.erase(body);
+
+    _to_detach.clear();
+
     for (Body * body : _bodies)
-        body->preUpdate(delta);
-
-    for (int i = 0; i < passes; ++i)
     {
-        // Pre step
+        if (Controller * ctrl = body->getController())
+            ctrl->preUpdate(*this, *body);
+    }
+
+    // TODO Simulate a step
+    for (unsigned step = 0; step < 4; ++step) // FIXME constant
+    {
         for (Body * body : _bodies)
-            body->preStep(step_delta);
-
-        std::vector<CollisionData> collisions;
-
-        // Collision detection : Broad phase
-        computePairs([this, &collisions]
-                           (phy::Body & first_body,
-                            phy::Body & second_body)
         {
-            // Collision detection : Narrow phase
-            CollisionData data;
-            if (Body::collide(first_body, second_body, data))
-                collisions.push_back(std::move(data));
-        });
+            if (Controller * ctrl = body->getController())
+                ctrl->step(*this, *body);
+        }
 
-        // TODO Collision response
-        for (const CollisionData & collision : collisions)
+        struct Pair { Body * first, * second; };
+        std::vector<Pair> pairs;
+
+        // TODO Broad phase : Find pairs that could be colliding
+        // Actually : no broadphase, n^2 pairs with inactive bodies culled
+        for (auto it = _bodies.begin(); it != _bodies.end(); ++it)
         {
-            // We can const cast because we know we own them
-            Body * first = const_cast<Body*>(collision.first);
-            Body * secnd = const_cast<Body*>(collision.second);
-
-            // TODO Compute strength a better way, and change strength variable name?
-            if (first->getMass() == 0)
+            auto it2 (it);
+            ++it2;
+            for (; it2 != _bodies.end(); ++it2)
             {
-                CollisionResult res_secnd;
-                res_secnd.body      = first;
-                res_secnd.body_position = first->_position;
-                res_secnd.body_velocity = first->_velocity;
-                res_secnd.mask      = collision.second_mask;
-                res_secnd.origin    = collision.origin;
-                res_secnd.normal    = - collision.normal;
-                res_secnd.force     = - collision.mtv;
-                res_secnd.strength  = 1;
-
-                secnd->respond(res_secnd);
-            }
-            else if (secnd->getMass() == 0)
-            {
-                CollisionResult res_first;
-                res_first.body      = secnd;
-                res_first.body_position = secnd->_position;
-                res_first.body_velocity = secnd->_velocity;
-                res_first.mask      = collision.first_mask;
-                res_first.origin    = collision.origin;
-                res_first.normal    = collision.normal;
-                res_first.force     = collision.mtv;
-                res_first.strength  = 1;
-
-                first->respond(res_first);
-            }
-            else
-            {
-                ut::Vector p = collision.mtv / 2;
-
-                CollisionResult res_first;
-                res_first.body      = secnd;
-                res_first.body_position = secnd->_position;
-                res_first.body_velocity = secnd->_velocity;
-                res_first.mask      = collision.first_mask;
-                res_first.origin    = collision.origin;
-                res_first.normal    = collision.normal;
-                res_first.force     = p;
-                res_first.strength  = 0.5f;
-
-                CollisionResult res_secnd;
-                res_secnd.body      = first;
-                res_secnd.body_position = first->_position;
-                res_secnd.body_velocity = first->_velocity;
-                res_secnd.mask      = collision.second_mask;
-                res_secnd.origin    = collision.origin;
-                res_secnd.normal    = - collision.normal;
-                res_secnd.force     = - p;
-                res_secnd.strength  = 0.5f;
-
-                first->respond(res_first);
-                secnd->respond(res_secnd);
+                if (((*it)->getController() || (*it2)->getController())
+                 && ((*it)->getBounds().isIntersecting((*it2)->getBounds())))
+                    pairs.push_back({*it, *it2});
             }
         }
 
-        // Post step
-        for (Body * body : _bodies)
-            body->postStep(step_delta);
-    }
+        std::vector<Contact> contacts;
 
-    // Post update
-    for (Body * body : _bodies)
-        body->postUpdate(delta);
-}
+        // TODO Narrow phase : Compute contacts
+        for (const Pair & pair : pairs)
+            Body::computeContacts(*(pair.first), *(pair.second), contacts);
 
-void Space::computePairs(const PairCallback & callback) const
-{
-    IWBAN_PRE(callback);
-
-    // Sort by x position
-    std::vector<Body *> bodies(_bodies.begin(), _bodies.end());
-    std::stable_sort(bodies.begin(), bodies.end(),
-        [](Body * a, Body * b)
+        // TODO Resolution
+        for (const Contact & contact : contacts)
         {
-            return (a->getBoundingBox().x) < (b->getBoundingBox().x);
-        });
+            if (Controller * ctrl = contact.first->getController())
+                ctrl->resolveContact(*this, *contact.first, contact);
 
-    for (auto it = bodies.begin(); it != bodies.end(); ++it)
-    {
-        ut::Rectangle abb = (*it)->getBoundingBox();
-        float l = abb.x + abb.w;
-
-        auto it2 = it;
-        ++it2;
-        for (; it2 != bodies.end(); ++it2)
-        {
-            // Stop when the right bound of
-            ut::Rectangle bbb = (*it2)->getBoundingBox();
-            if (bbb.x > l)
-                break;
-
-            callback(**it, **it2);
+            if (Controller * ctrl = contact.second->getController())
+                ctrl->resolveContact(*this, *contact.second,
+                                     Contact::reverse(contact));
         }
     }
-}
 
-void Space::testRay(const ut::Vector & begin, const ut::Vector & end,
-                    const RayCallback & callback) const
-{
-    IWBAN_PRE(callback);
-
-    // TODO testRay
-}
-
-void Space::testRectangle(const ut::Rectangle & rect,
-                          const RectangleCallback & callback) const
-{
-    IWBAN_PRE(callback);
-
-    // TODO testRectangle
-}
-
-void Space::testShape(const Shape & shape,
-                      const ShapeCallback & callback) const
-{
-    IWBAN_PRE(callback);
-
-    // TODO testShape
+    for (Body * body : _bodies)
+    {
+        if (Controller * ctrl = body->getController())
+            ctrl->postUpdate(*this, *body);
+    }
 }
 
 #ifndef NDEBUG
-void Space::drawDebug(gfx::DebugContext & debug_context) const
+void Space::drawDebug(gfx::DebugContext & debug) const
 {
-    for (const Body * body : _bodies)
-        body->drawDebug(debug_context);
+    sf::RectangleShape s;
+    s.setFillColor(sf::Color::Transparent);
+    s.setOutlineThickness(-2);
+    s.setOutlineColor(sf::Color::Black);
+
+    for (Body * body : _bodies)
+    {
+        ut::Rectangle b = body->getBounds();
+        s.setSize(sf::Vector2f(b.getWidth(), b.getHeight()));
+        s.setPosition(b.left, b.top);
+        debug.draw(s);
+    }
 }
 #endif
 

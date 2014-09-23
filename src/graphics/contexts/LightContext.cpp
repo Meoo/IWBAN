@@ -80,6 +80,7 @@ void LightContext::buildShadowMask(const gfx::Light & light,
     _render_light_mask.clear(sf::Color::Black);
 
     // Keep the vertex array here to avoid many memory allocations
+    // TODO Static or member data?
     static sf::VertexArray vertices(sf::Quads);
 
     ut::Vector origin = light.getOrigin();

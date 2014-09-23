@@ -113,8 +113,14 @@ Package::Package(const std::string & package_filename)
     FileStream stream(_source.data(), _source.size());
 
     // Read index
-    if (!readIndex(stream, _index))
-        throw sys::FileCorrupted(package_filename.c_str());
+    try
+    {
+        readIndex(stream, _index);
+    }
+    catch (const sys::DataCorrupted & e)
+    {
+        throw sys::FileCorrupted(package_filename.c_str(), e);
+    }
 }
 
 FileImpl * Package::openFile(const std::string & filename)

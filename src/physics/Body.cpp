@@ -6,129 +6,67 @@
 #include <Global.hpp>
 
 #include <physics/Body.hpp>
-#include <physics/Shape.hpp>
+#include <physics/Mesh.hpp>
 
 namespace phy
 {
 
-Body::Body(const Shape * shape)
-    : _shape(shape)
+Body::Body(const Mesh * mesh, Controller * controller)
+    : _mesh(mesh), _controller(controller)
 {
-    IWBAN_PRE_PTR(shape);
+    IWBAN_PRE_PTR(mesh);
 }
 
-void Body::move(const ut::Vector & delta)
+ut::Rectangle Body::getBounds() const
 {
-    // TODO _next_state.immediate_velocity += delta;
-    wake();
+    if (!_mesh)
+        return ut::Rectangle();
+
+    ut::Rectangle bounds = _mesh->getBounds();
+    bounds.translate(getPosition());
+    return bounds;
 }
 
-void Body::moveTo(const ut::Vector & position)
+// TODO Real computeContacts implementation
+void Body::computeContacts(const Body & first, const Body & second,
+                           std::vector<Contact> & output)
 {
-    // TODO _next_state.immediate_velocity += (position - _next_state.position);
-    wake();
-}
+    ut::Rectangle inter = first.getBounds().computeIntersection(second.getBounds());
 
-/*void Body::setPosition(const ut::Vector & position)
-{
-    _position = position;
-    // TODO just_teleported = true;
-    wake();
-}*/
+    if (inter.isEmpty())
+        return;
 
-/*void Body::setVelocity(const ut::Vector & velocity)
-{
-    _velocity = velocity;
-    wake();
-}*/
+    Contact contact;
 
-ut::Rectangle Body::getBoundingBox() const
-{
-    ut::Rectangle r = getShape()->getBoundingBox();
-    r.x += _position.x;
-    r.y += _position.y;
-    return r;
-}
+    // TODO const_cast ?
+    contact.first   = const_cast<Body *>(&first);
+    contact.second  = const_cast<Body *>(&second);
 
-void Body::preUpdate(const sf::Time & delta)
-{
-    _pressure = ut::Vector();
-    _delta = ut::Vector();
-    _velocity += _acceleration * delta.asSeconds();
-}
+    contact.origin = (Vector(inter.left, inter.top)
+                    + Vector(inter.right, inter.bottom)) / 2;
 
-void Body::preStep(const sf::Time & step_delta)
-{
-    ut::Vector movement = (_velocity + _immediate_force) * step_delta.asSeconds();
-    _position += movement;
-    _delta += movement;
-}
+    bool fleft = first.getBounds().left == inter.left;
+    bool fright = first.getBounds().right == inter.right;
+    bool ftop = first.getBounds().top == inter.top;
+    bool fbot = first.getBounds().bottom == inter.bottom;
 
-void Body::respond(const CollisionResult & result)
-{
-    // TODO Physics response
-    _position += result.force;
-    _delta += result.force;
+    if (fleft && !fright)
+        contact.impulse.x = inter.right - inter.left;
 
-    // Right hand normal
-    ut::Vector rhnorm = ut::Vector(result.normal.y, - result.normal.x);
-    ut::Vector deltav = (_velocity - result.body_velocity) * result.strength;
+    else if (fright && !fleft)
+        contact.impulse.x = inter.left - inter.right;
 
-    ut::Vector up = ut::project(deltav, result.normal);
-    ut::Vector side = ut::project(_velocity, rhnorm);
+    if (ftop && !fbot)
+        contact.impulse.y = inter.bottom - inter.top;
 
-    _velocity = side * .99f - up * .3f;
-}
+    else if (fbot && !ftop)
+        contact.impulse.y = inter.top - inter.bottom;
 
-void Body::postStep(const sf::Time & step_delta)
-{
-}
+    contact.normal = ut::normalize(contact.impulse);
 
-void Body::postUpdate(const sf::Time & delta)
-{
-    _immediate_force = ut::Vector();
-}
-
-#ifndef NDEBUG
-void Body::drawDebug(gfx::DebugContext & debug_context) const
-{
-    sf::Color col = getColorFromCollisionGroup(getSolidityGroup());
-
-    if (!isAwake())
-        col *= sf::Color(128, 128, 128);
-
-    getShape()->drawDebug(debug_context, getPosition(), col);
-}
-#endif
-
-bool Body::collide(const Body & first, const Body & secnd, CollisionData & data)
-{
-    if (first.getMass() == 0 && secnd.getMass() == 0)
-        return false;
-
-    if (!first.isAwake() && !secnd.isAwake())
-        return false;
-
-    // Collision groups
-    CollisionGroup first_mask = secnd.getSolidityGroup() & first.getCollisionMask();
-    CollisionGroup secnd_mask = first.getSolidityGroup() & secnd.getCollisionMask();
-
-    if (first_mask == COL_NONE && secnd_mask == COL_NONE)
-        return false;
-
-    // Check intersection between objects (before a more precise computation)
-    if (!ut::hasIntersection(first.getBoundingBox(), secnd.getBoundingBox()))
-        return false;
-
-    data.first       = &first;
-    data.second      = &secnd;
-    data.first_mask  = first_mask;
-    data.second_mask = secnd_mask;
-
-    // Compute the collision data between the two objects
-    ut::Vector offset = secnd.getPosition() - first.getPosition();
-    return phy::Shape::collide(*first.getShape(), *secnd.getShape(), offset, data);
+    output.push_back(contact);
 }
 
 }
 // namespace phy
+

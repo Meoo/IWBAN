@@ -18,21 +18,21 @@ namespace ut
 class Rectangle
 {
 public:
-    typedef float Coord;
+    typedef float Float;
 
 
     // Data members
-    Coord left      = 0;
-    Coord top       = 0;
-    Coord right     = 0;
-    Coord bottom    = 0;
+    Float left      = 0;
+    Float top       = 0;
+    Float right     = 0;
+    Float bottom    = 0;
 
 
     // Constructors
     Rectangle() = default;
 
     constexpr
-    Rectangle(Coord left, Coord top, Coord right, Coord bottom)
+    Rectangle(Float left, Float top, Float right, Float bottom)
         : left(left), top(top), right(right), bottom(bottom) {}
 
     template<typename U> constexpr
@@ -63,7 +63,7 @@ public:
 
 
     // Functions
-    void grow(Coord margin)
+    void grow(Float margin)
     {
         left    -= margin;
         top     -= margin;
@@ -71,7 +71,7 @@ public:
         bottom  += margin;
     }
 
-    void expand(Coord x, Coord y)
+    void expand(Float x, Float y)
     {
         left    = std::min(left, x);
         top     = std::min(top, y);
@@ -95,6 +95,22 @@ public:
         bottom  = std::max(bottom, rectangle.bottom);
     }
 
+    void translate(Float x, Float y)
+    {
+        left    += x;
+        right   += x;
+        top     += y;
+        bottom  += y;
+    }
+
+    void translate(const Vector & vector)
+    {
+        left    += vector.x;
+        right   += vector.x;
+        top     += vector.y;
+        bottom  += vector.y;
+    }
+
     Rectangle computeUnion(const Rectangle & rectangle) const
     {
         return Rectangle(std::min(left, rectangle.left),
@@ -111,6 +127,24 @@ public:
                          std::min(bottom, rectangle.bottom));
     }
 
+    constexpr
+    Float getWidth() const
+    {
+        return right - left;
+    }
+
+    constexpr
+    Float getHeight() const
+    {
+        return bottom - top;
+    }
+
+    constexpr
+    Float getVolume() const
+    {
+        return getWidth() * getHeight();
+    }
+
 
     // Predicates
     constexpr
@@ -120,7 +154,7 @@ public:
     }
 
     constexpr
-    bool isContaining(Coord x, Coord y) const
+    bool isContaining(Float x, Float y) const
     {
         return x >= left && x <= right && y >= top && y <= bottom;
     }

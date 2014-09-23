@@ -187,7 +187,11 @@ int list_package(const char * packagefile)
     }
 
     pk::Index index;
-    if (!pk::readIndex(package, index))
+    try
+    {
+        pk::readIndex(package, index);
+    }
+    catch (...)
     {
         std::cerr << "!!! File is not a valid package !!!" << std::endl;
         return 1;
@@ -235,7 +239,11 @@ int extract_file(const char * file, const char * packagefile)
     }
 
     pk::Index index;
-    if (!pk::readIndex(package, index))
+    try
+    {
+        pk::readIndex(package, index);
+    }
+    catch (...)
     {
         std::cerr << "!!! File is not a valid package !!!" << std::endl;
         return 1;

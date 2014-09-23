@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <string>
+
 namespace cfg
 {
 

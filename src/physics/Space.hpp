@@ -8,73 +8,101 @@
 
 #include <Global.hpp>
 
-#include <physics/Body.hpp>
-#include <physics/Shape.hpp>
-
-#include <utils/Rectangle.hpp>
 #include <utils/Vector.hpp>
-
-#include <functional>
-#include <set>
 
 #ifndef NDEBUG
 #  include <graphics/contexts/debug/DebugContext.hpp>
 #endif
 
+#include <set>
+
 namespace phy
 {
 
-class Space
+class Body;
+
+
+typedef char Group;
+
+const Group GROUP_WORLD         = 0x01;
+const Group GROUP_OBJECTS       = 0x02;
+const Group GROUP_PROJECTILES   = 0x04;
+const Group GROUP_TRIGGERS      = 0x08;
+
+const Group GROUP_SPECIAL_1     = 0x10;
+const Group GROUP_SPECIAL_2     = 0x20;
+const Group GROUP_SPECIAL_3     = 0x40;
+const Group GROUP_SPECIAL_4     = 0x80;
+
+const unsigned LAYER_COUNT      = 8;
+
+// ---- ---- ---- ----
+
+class TraceRayQuery
 {
 public:
-    typedef std::function<void(Body &, Body &)> PairCallback;
+    typedef ut::Vector  Vector;
 
-    typedef std::function<void(Body &)> RayCallback;
-    typedef std::function<void(Body &)> RectangleCallback;
-    typedef std::function<void(Body &)> ShapeCallback;
-
-    typedef std::set<Body *>    BodyList;
+    static const Group DEFAULT_RAY_MASK    = GROUP_WORLD | GROUP_OBJECTS;
 
 
+    Vector  origin;
+    Vector  direction;
+    float   distance;
+
+    Group   group_mask  = DEFAULT_RAY_MASK;
+
+};
+// class TraceRayQuery
+
+class TraceRayResult
+{
+public:
+    typedef ut::Vector  Vector;
+
+    bool    hit;
+    float   t;
+    Vector  point;
+    Vector  normal;
+    Body *  body;
+
+};
+// class TraceRayResult
+
+// ---- ---- ---- ----
+
+class Space
+{
 private:
+    typedef std::set<Body *> BodySet;
+
+
     // Data members
-    BodyList    _bodies;
+    BodySet _bodies;
+
+    BodySet _to_attach;
+    BodySet _to_detach;
 
 
 public:
-    // Constructor
-         Space();
+    typedef ut::Vector      Vector;
+
 
     // Functions
-    void add(Body * body);
-    void remove(Body * body);
+    void attach(Body * body);
+    void detach(Body * body) noexcept;
 
-    void update(const sf::Time & delta, int passes);
+    void update();
 
-    void testRay(const ut::Vector & begin, const ut::Vector & end,
-                 const RayCallback & callback) const;
 
-    void testRectangle(const ut::Rectangle & rect,
-                       const RectangleCallback & callback) const;
+    // Trace functions
+    Body * tracePoint(const Vector & point, Group group_mask) const;
 
-    /**
-     * Find bodies that can collide given shape.
-     */
-    void testShape(const Shape & shape,
-                   const ShapeCallback & callback) const;
+    TraceRayResult traceRay(const TraceRayQuery & query) const;
 
 #ifndef NDEBUG
-    void drawDebug(gfx::DebugContext & debug_context) const;
+    void drawDebug(gfx::DebugContext & debug) const;
 #endif
-
-private:
-    /**
-     * Find every pair of bodies that could collide.
-     *
-     * This is a broad phase collision detection. Pairs found by this
-     * function may not be able to collide.
-     */
-    void computePairs(const PairCallback & callback) const;
 
 };
 // class Space
