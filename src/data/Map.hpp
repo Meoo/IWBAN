@@ -47,6 +47,8 @@ private:
 public:
     Chunk(std::istream & data, const TextureTable & texture_table);
 
+    const ut::Rectangle & getBounds() const { return _bounds; }
+
 
 protected:
     void draw(sf::RenderTarget & target, sf::RenderStates states) const override;

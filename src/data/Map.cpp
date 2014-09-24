@@ -111,9 +111,15 @@ public:
 protected:
     void draw(sf::RenderTarget & target, sf::RenderStates states) const override
     {
+        ut::Rectangle view = target.getViewport(target.getView());
+
         for (const auto & chunk : _layer->getChunks())
-            target.draw(*chunk, states);
+        {
+            if (chunk->getBounds().isIntersecting(view))
+                target.draw(*chunk, states);
+        }
     }
+
 };
 // class LayerDrawable
 
