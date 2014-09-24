@@ -156,6 +156,7 @@ void Keyboard::onKeyPressed(sf::Keyboard::Key key)
     {
     case ACT_JUMP:
         _controls.getAction(ACT_ACCEPT).activate();
+        _controls.getAction(ACT_JUMP).activate();
         break;
 
     case ACT_COUNT:
@@ -211,6 +212,7 @@ void Keyboard::onKeyReleased(sf::Keyboard::Key key)
     {
     case ACT_JUMP:
         _controls.getAction(ACT_ACCEPT).deactivate();
+        _controls.getAction(ACT_JUMP).deactivate();
         break;
 
     case ACT_COUNT:
