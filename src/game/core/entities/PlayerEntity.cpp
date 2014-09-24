@@ -5,6 +5,8 @@
 
 #include <Global.hpp>
 
+#include <config/DisplayConfig.hpp>
+
 #include <game/core/entities/PlayerEntity.hpp>
 
 #include <physics/meshes/AABoxMesh.hpp>
@@ -15,15 +17,43 @@ namespace
 {
 
 // TODO Use macros / config instead?
-const phy::AABoxMesh PLAYER_MESH(ut::Rectangle(-5, -10, 6, 11));
+// Player hitbox
+const int PLAYER_WIDTH  = 11;
+const int PLAYER_HEIGHT = 21;
+const phy::AABoxMesh PLAYER_MESH(ut::Rectangle(- PLAYER_WIDTH / 2,
+                                               - PLAYER_HEIGHT / 2,
+                                               PLAYER_WIDTH - PLAYER_WIDTH / 2,
+                                               PLAYER_HEIGHT - PLAYER_HEIGHT / 2));
 
-const float JUMP     = 8.5f;
-const float DJUMP    = 7.0f;
+// Normalization function, to get 60 FPS values from 50 FPS ones
+constexpr float N(float x)
+{
+    return (x * 50.0f) / IWBAN_UPDATE_RATE;
+}
+
+// Initial jump speed
+const float JUMP     = N(8.5f);
+
+// Double jump speed
+const float DJUMP    = N(7.0f);
+
+// Jump stop factor (when you release jump key)
+// No normalization since it's a factor
 const float JUMPSTOP = 0.45f;
-const float GRAVITY  = 0.40f;
-const float GRAVMAX  = 9.0f;
-const float SIDE     = 2.5f;
 
+// Gravity force
+// Double normalization since it's in px/s^2
+const float GRAVITY  = N(N(0.40f));
+
+// Maximum gravity speed
+const float GRAVMAX  = N(9.0f);
+
+// Move speed
+const float SIDE     = N(3.0f);
+
+
+// Overall gravity multiplier
+// Can be set to a negative value
 const float G        = 1.f;
 
 }
