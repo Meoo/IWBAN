@@ -18,6 +18,10 @@ Entity::Entity()
 
 Entity::~Entity()
 {
+    // TODO Better cleanup
+    for (phy::Body * body : _bodies)
+        getWorld().getSpace().detach(body);
+
     getWorld().remove(this);
 }
 
