@@ -62,7 +62,8 @@ void Body::computeContacts(const Body & first, const Body & second,
     else if (fbot && !ftop)
         contact.impulse.y = inter.top - inter.bottom;
 
-    contact.normal = ut::normalize(contact.impulse);
+    if (!contact.impulse.isNull())
+        contact.normal = ut::normalize(contact.impulse);
 
     output.push_back(contact);
 }
