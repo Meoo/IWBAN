@@ -111,13 +111,9 @@ public:
 protected:
     void draw(sf::RenderTarget & target, sf::RenderStates states) const override
     {
-        ut::Rectangle view = target.getViewport(target.getView());
-
+        // TODO Cull chunks based on camera view
         for (const auto & chunk : _layer->getChunks())
-        {
-            if (chunk->getBounds().isIntersecting(view))
-                target.draw(*chunk, states);
-        }
+            target.draw(*chunk, states);
     }
 
 };
