@@ -42,10 +42,11 @@ void DebugContext::fill(const sf::Color & color,
     _render_scene.draw(rect, states);
 }
 
-void DebugContext::open()
+void DebugContext::open(const sf::View & view)
 {
     BOOST_ASSERT(!_open);
 
+    _render_scene.setView(view);
     _render_scene.clear(sf::Color(0, 0, 0, 0));
 
     _open = true;

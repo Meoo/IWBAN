@@ -51,10 +51,11 @@ void LightContext::draw(const gfx::Light & light)
     // TODO Draw light (use shadow mask if necessary)
 }
 
-void LightContext::open(const sf::Color & ambient_color)
+void LightContext::open(const sf::View & view, const sf::Color & ambient_color)
 {
     IWBAN_PRE(!_open);
 
+    _render_light.setView(view);
     _render_light.clear(ambient_color);
 
     _open = true;

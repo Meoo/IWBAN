@@ -33,7 +33,7 @@ DrawContext & Renderer::openDrawContext()
                   "You must close the current context before opening another");
 
     _draw_enabled = true;
-    _draw_context->open();
+    _draw_context->open(_camera.getView());
     _current_context = _draw_context.get();
     return *_draw_context;
 }
@@ -48,7 +48,7 @@ LightContext & Renderer::openLightContext(const sf::Color & ambient_light)
                   "You must close the current context before opening another");
 
     _light_enabled = true;
-    _light_context->open(ambient_light);
+    _light_context->open(_camera.getView(), ambient_light);
     _current_context = _light_context.get();
     return *_light_context;
 }
@@ -80,7 +80,7 @@ DebugContext & Renderer::openDebugContext()
                   "You must close the current context before opening another");
 
     _debug_enabled = true;
-    _debug_context->open();
+    _debug_context->open(_camera.getView());
     _current_context = _debug_context.get();
     return *_debug_context;
 }

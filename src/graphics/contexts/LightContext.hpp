@@ -52,7 +52,7 @@ private:
 
     friend class Renderer;
 
-    void open(const sf::Color & ambient_color);
+    void open(const sf::View & view, const sf::Color & ambient_color);
     const sf::Texture & getTexture() const;
 
 };

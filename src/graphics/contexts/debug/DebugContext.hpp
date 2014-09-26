@@ -47,7 +47,7 @@ public:
 protected:
     friend class Renderer;
 
-    void open();
+    void open(const sf::View & view);
 
     const sf::Texture & getTexture() const;
 

@@ -10,6 +10,7 @@
 
 #include <data/Shader.hpp>
 
+#include <graphics/Camera.hpp>
 #include <graphics/contexts/DrawContext.hpp>
 #include <graphics/contexts/GuiContext.hpp>
 #include <graphics/contexts/LightContext.hpp>
@@ -30,6 +31,8 @@ class Renderer
 private:
     // Data members
     sf::RenderTarget &  _target;
+
+    Camera              _camera;
 
     Context *           _current_context;
 
@@ -79,6 +82,11 @@ public:
     void end();
 
     void setOverlayColor(const sf::Color & color) { _overlay_color = color; }
+
+          Camera & getCamera()          { return _camera; }
+    const Camera & getCamera() const    { return _camera; }
+
+    void setCamera(const Camera & camera) { _camera = camera; }
 
 
 private:

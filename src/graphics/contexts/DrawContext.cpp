@@ -49,9 +49,11 @@ void DrawContext::fill(const sf::Color & color,
     _render_scene.draw(rect, states);
 }
 
-void DrawContext::open()
+void DrawContext::open(const sf::View & view)
 {
     IWBAN_PRE(!_open);
+
+    _render_scene.setView(view);
 
 #ifndef NDEBUG
     _render_scene.clear(sf::Color(
