@@ -9,6 +9,7 @@
 #include <Global.hpp>
 
 #include <system/Controls.hpp>
+#include <system/Projector.hpp>
 #include <system/Screen.hpp>
 #include <system/Time.hpp>
 

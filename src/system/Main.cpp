@@ -5,10 +5,13 @@
 
 #include <Global.hpp>
 
+#include <config/DisplayConfig.hpp>
 #include <config/PathsConfig.hpp>
 #include <config/Settings.hpp>
 
 #include <data/Locale.hpp>
+
+#include <game/core/InitialScreen.hpp>
 
 //#include <resources/Async.hpp>
 
@@ -17,8 +20,6 @@
 #include <system/Projector.hpp>
 #include <system/exceptions/RestartApp.hpp>
 #include <system/screens/ExceptionScreen.hpp>
-#include <system/screens/MainMenuScreen.hpp>
-#include <system/screens/SplashScreen.hpp>
 
 int main(int argc, char ** argv)
 {
@@ -38,10 +39,7 @@ int main(int argc, char ** argv)
 
 
     IWBAN_LOG_INFO("Initializing projector");
-    sys::Screen * screen = new sys::MainMenuScreen();
-    screen = new sys::SplashScreen(screen);
-
-    sys::Projector projector(screen);
+    sys::Projector projector(game::createInitialScreen(argc, argv));
 
 
     IWBAN_LOG_INFO("Opening display");
