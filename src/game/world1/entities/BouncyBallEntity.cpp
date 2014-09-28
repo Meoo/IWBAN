@@ -105,6 +105,9 @@ void BouncyBallController::postUpdate(const phy::Space & space, phy::Body & body
 BouncyBallEntity::BouncyBallEntity()
     : _body(&BALL_MESH, &_controller)
 {
+    _body.setGroup(phy::GROUP_NONE);
+    _body.setCollisionMask(phy::GROUP_WORLD);
+
     // FIXME Debug
     _body.setPosition(ut::Vector(300, 300));
 }

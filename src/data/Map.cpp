@@ -92,6 +92,8 @@ BodyDesc::BodyDesc(std::istream & data)
 BodyDesc::BodyPtr BodyDesc::makeBody() const
 {
     BodyPtr p (new phy::Body(&_mesh));
+    p->setGroup(phy::GROUP_WORLD);
+    p->setCollisionMask(phy::GROUP_NONE);
     return p;
 }
 

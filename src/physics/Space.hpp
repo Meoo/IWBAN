@@ -24,6 +24,8 @@ class Body;
 
 typedef char Group;
 
+const Group GROUP_NONE          = 0;
+
 const Group GROUP_WORLD         = 0x01;
 const Group GROUP_OBJECTS       = 0x02;
 const Group GROUP_PROJECTILES   = 0x04;
@@ -34,7 +36,7 @@ const Group GROUP_SPECIAL_2     = 0x20;
 const Group GROUP_SPECIAL_3     = 0x40;
 const Group GROUP_SPECIAL_4     = 0x80;
 
-const unsigned LAYER_COUNT      = 8;
+const unsigned GROUP_COUNT      = 8;
 
 // ---- ---- ---- ----
 

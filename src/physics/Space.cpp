@@ -83,9 +83,11 @@ void Space::update()
             ++it2;
             for (; it2 != _bodies.end(); ++it2)
             {
-                if (((*it)->getController() || (*it2)->getController())
-                 && ((*it)->getBounds().isIntersecting((*it2)->getBounds())))
-                    pairs.push_back({*it, *it2});
+                if (((*it)->getController() || (*it2)->getController()))
+                    if (((*it)->getGroup() & (*it2)->getCollisionMask())
+                     || ((*it2)->getGroup() & (*it)->getCollisionMask()))
+                        if (((*it)->getBounds().isIntersecting((*it2)->getBounds())))
+                        pairs.push_back({*it, *it2});
             }
         }
 
@@ -98,11 +100,13 @@ void Space::update()
         // TODO Resolution
         for (const Contact & contact : contacts)
         {
-            if (Controller * ctrl = contact.first->getController())
-                ctrl->resolveContact(*this, *contact.first, contact);
+            if (contact.first->getCollisionMask() & contact.second->getGroup())
+                if (Controller * ctrl = contact.first->getController())
+                    ctrl->resolveContact(*this, *contact.first, contact);
 
-            if (Controller * ctrl = contact.second->getController())
-                ctrl->resolveContact(*this, *contact.second,
+            if (contact.second->getCollisionMask() & contact.first->getGroup())
+                if (Controller * ctrl = contact.second->getController())
+                    ctrl->resolveContact(*this, *contact.second,
                                      Contact::reverse(contact));
         }
     }

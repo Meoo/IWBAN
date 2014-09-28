@@ -33,10 +33,10 @@ public:
 private:
     // Data members
     const Mesh *    _mesh;
-    Controller *    _controller = nullptr;
+    Controller *    _controller     = nullptr;
 
-    Group           _group;
-    Group           _collision_mask;
+    Group           _group          = GROUP_NONE;
+    Group           _collision_mask = GROUP_WORLD | GROUP_OBJECTS;
 
     Vector          _position;
 
@@ -50,6 +50,12 @@ public:
 
     Controller *    getController()                         { return _controller; }
     void            setController(Controller * controller)  { _controller = controller; }
+
+    Group           getGroup() const                        { return _group; }
+    void            setGroup(Group group)                   { _group = group; }
+
+    Group           getCollisionMask() const                { return _collision_mask; }
+    void            setCollisionMask(Group mask)            { _collision_mask = mask; }
 
     const Vector &  getPosition() const                     { return _position; }
     void            setPosition(const Vector & position)    { _position = position; }
