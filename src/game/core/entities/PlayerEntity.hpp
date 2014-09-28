@@ -13,7 +13,6 @@
 #include <physics/Body.hpp>
 #include <physics/Controller.hpp>
 
-
 namespace game
 {
 
@@ -51,6 +50,9 @@ private:
 public:
     PlayerEntity();
     ~PlayerEntity();
+
+    const ut::Vector & getPosition() const { return _body.getPosition(); }
+    void setPosition(const ut::Vector & position) { _body.setPosition(position); }
 
 
 protected:

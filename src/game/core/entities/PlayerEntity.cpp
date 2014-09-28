@@ -156,6 +156,7 @@ void PlayerController::postUpdate(const phy::Space & space, phy::Body & body)
 PlayerEntity::PlayerEntity()
     : _body(&PLAYER_MESH, &_controller)
 {
+    // FIXME Debug
     _body.setPosition(ut::Vector(75, 75));
 }
 
