@@ -9,6 +9,10 @@
 #include <physics/Controller.hpp>
 #include <physics/Space.hpp>
 
+#ifndef NDEBUG
+#  include <physics/Mesh.hpp>
+#endif
+
 namespace phy
 {
 
@@ -113,17 +117,12 @@ void Space::update()
 #ifndef NDEBUG
 void Space::drawDebug(gfx::DebugContext & debug) const
 {
-    sf::RectangleShape s;
-    s.setFillColor(sf::Color::Transparent);
-    s.setOutlineThickness(-2);
-    s.setOutlineColor(sf::Color::Black);
-
+    sf::RenderStates r;
     for (Body * body : _bodies)
     {
-        ut::Rectangle b = body->getBounds();
-        s.setSize(sf::Vector2f(b.getWidth(), b.getHeight()));
-        s.setPosition(b.left, b.top);
-        debug.draw(s);
+        r.transform = sf::Transform::Identity;
+        r.transform.translate(body->getPosition());
+        body->getMesh()->drawDebug(debug, r);
     }
 }
 #endif

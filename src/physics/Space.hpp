@@ -10,11 +10,11 @@
 
 #include <utils/Vector.hpp>
 
+#include <set>
+
 #ifndef NDEBUG
 #  include <graphics/contexts/debug/DebugContext.hpp>
 #endif
-
-#include <set>
 
 namespace phy
 {
@@ -98,7 +98,11 @@ public:
     // Trace functions
     Body * tracePoint(const Vector & point, Group group_mask) const;
 
+    //Body * traceBox(const ut::Rectangle & box, Group group_mask) const;
+
     TraceRayResult traceRay(const TraceRayQuery & query) const;
+
+    //Contact traceBody(const Body & body) const;
 
 #ifndef NDEBUG
     void drawDebug(gfx::DebugContext & debug) const;

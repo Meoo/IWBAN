@@ -10,6 +10,10 @@
 
 #include <utils/Rectangle.hpp>
 
+#ifndef NDEBUG
+#  include <graphics/contexts/debug/DebugContext.hpp>
+#endif
+
 namespace phy
 {
 
@@ -21,6 +25,11 @@ public:
 
     // Virtual functions
     virtual const ut::Rectangle & getBounds() const = 0;
+
+#ifndef NDEBUG
+    virtual void drawDebug(gfx::DebugContext & debug,
+                           const sf::RenderStates & states) const = 0;
+#endif
 
 };
 // class Mesh

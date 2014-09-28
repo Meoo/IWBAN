@@ -46,6 +46,8 @@ public:
     explicit        Body(const Mesh * mesh, Controller * controller = nullptr);
 
     // Getters / setters
+    const Mesh *    getMesh() const                         { return _mesh; }
+
     Controller *    getController()                         { return _controller; }
     void            setController(Controller * controller)  { _controller = controller; }
 
