@@ -140,6 +140,12 @@ public:
     }
 
     constexpr
+    ut::Vector getSize() const
+    {
+        return ut::Vector(getWidth(), getHeight());
+    }
+
+    constexpr
     Float getVolume() const
     {
         return getWidth() * getHeight();
