@@ -20,15 +20,23 @@ private:
     typedef data::map::BodyDesc::BodyPtr    BodyPtr;
     typedef data::map::Layer::DrawablePtr   DrawablePtr;
 
+    class MapLayer
+    {
+    public:
+        std::string             name;
+        std::vector<BodyPtr>    bodies;
+        DrawablePtr             drawable;
+    };
+    // class MapLayer
+
+
     const data::Map *       _map;
 
-    std::vector<BodyPtr>    _map_bodies;
-    std::vector<DrawablePtr> _map_drawables;
+    std::vector<MapLayer>   _layers;
 
 
 public:
-    explicit MapEntity(const data::Map * map)
-        : _map(map) {}
+    explicit MapEntity(const data::Map * map);
 
 
 protected:

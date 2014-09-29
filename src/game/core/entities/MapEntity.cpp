@@ -10,20 +10,36 @@
 namespace game
 {
 
-void MapEntity::doSpawn()
+
+MapEntity::MapEntity(const data::Map * map)
+    : _map(map)
 {
     for (auto & layer : _map->getLayers())
     {
+        MapLayer l;
+        l.name = layer->getName();
+
         DrawablePtr drawable = layer->makeDrawable();
-        addDrawable(drawable.get());
-        _map_drawables.push_back(std::move(drawable));
+        l.drawable = std::move(drawable);
 
         for (auto & bodydesc : layer->getBodies())
         {
             BodyPtr body = bodydesc->makeBody();
-            addBody(body.get());
-            _map_bodies.push_back(std::move(body));
+            l.bodies.push_back(std::move(body));
         }
+
+        _layers.push_back(std::move(l));
+    }
+}
+
+void MapEntity::doSpawn()
+{
+    for (MapLayer & layer : _layers)
+    {
+        addDrawable(layer.drawable.get());
+
+        for (BodyPtr & body : layer.bodies)
+            addBody(body.get());
     }
 }
 

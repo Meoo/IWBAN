@@ -105,6 +105,8 @@ private:
 public:
     Layer(std::istream & data, const TextureTable & texture_table);
 
+    const std::string & getName() const { return _name; }
+
     const BodyDescVector & getBodies() const { return _bodies; }
 
     DrawablePtr makeDrawable() const;
