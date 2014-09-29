@@ -9,8 +9,10 @@
 #include <Global.hpp>
 
 #include <utils/Vector.hpp>
+#include <utils/Rectangle.hpp>
 
 #include <set>
+#include <vector>
 
 #ifndef NDEBUG
 #  include <graphics/contexts/debug/DebugContext.hpp>
@@ -20,6 +22,7 @@ namespace phy
 {
 
 class Body;
+class Contact;
 
 
 typedef char Group;
@@ -40,6 +43,7 @@ const unsigned GROUP_COUNT      = 8;
 
 // ---- ---- ---- ----
 
+/*
 class TraceRayQuery
 {
 public:
@@ -70,6 +74,7 @@ public:
 
 };
 // class TraceRayResult
+*/
 
 // ---- ---- ---- ----
 
@@ -98,13 +103,16 @@ public:
 
 
     // Trace functions
-    Body * tracePoint(const Vector & point, Group group_mask) const;
+    Body *              tracePoint(const Vector & point, Group group_mask) const;
+    std::vector<Body *> tracePointM(const Vector & point, Group group_mask) const;
 
-    //Body * traceBox(const ut::Rectangle & box, Group group_mask) const;
+    Body *              traceRect(const ut::Rectangle & rect, Group group_mask) const;
+    std::vector<Body *> traceRectM(const ut::Rectangle & rect, Group group_mask) const;
 
-    TraceRayResult traceRay(const TraceRayQuery & query) const;
+    Contact             traceBody(const Body & body) const;
+    std::vector<Contact> traceBodyM(const Body & body) const;
 
-    //Contact traceBody(const Body & body) const;
+    //TraceRayResult traceRay(const TraceRayQuery & query) const;
 
 #ifndef NDEBUG
     void drawDebug(gfx::DebugContext & debug) const;

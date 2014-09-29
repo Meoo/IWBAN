@@ -118,6 +118,91 @@ void Space::update()
     }
 }
 
+Body * Space::tracePoint(const Vector & point, Group group_mask) const
+{
+    // TODO Optimize
+
+    for (Body * body : _bodies)
+        if (group_mask & body->getGroup())
+            if (body->getBounds().isContaining(point))
+                return body;
+
+    return nullptr;
+}
+
+std::vector<Body *> Space::tracePointM(const Vector & point, Group group_mask) const
+{
+    // TODO Optimize
+
+    std::vector<Body *> res;
+
+    for (Body * body : _bodies)
+        if (group_mask & body->getGroup())
+            if (body->getBounds().isContaining(point))
+                res.push_back(body);
+
+    return res;
+}
+
+Body * Space::traceRect(const ut::Rectangle & rect, Group group_mask) const
+{
+    // TODO Optimize
+
+    for (Body * body : _bodies)
+        if (group_mask & body->getGroup())
+            if (body->getBounds().isIntersecting(rect))
+                return body;
+
+    return nullptr;
+}
+
+std::vector<Body *> Space::traceRectM(const ut::Rectangle & rect, Group group_mask) const
+{
+    // TODO Optimize
+
+    std::vector<Body *> res;
+
+    for (Body * body : _bodies)
+        if (group_mask & body->getGroup())
+            if (body->getBounds().isIntersecting(rect))
+                res.push_back(body);
+
+    return res;
+}
+
+Contact Space::traceBody(const Body & body) const
+{
+    // TODO Optimize
+
+    std::vector<Contact> res;
+
+    for (Body * other : _bodies)
+    {
+        if (body.getCollisionMask() & other->getGroup())
+        {
+            Body::computeContacts(body, *other, res);
+
+            if (!res.empty())
+                return res[0];
+        }
+    }
+
+    return Contact();
+}
+
+std::vector<Contact> Space::traceBodyM(const Body & body) const
+{
+    // TODO Optimize
+
+    std::vector<Contact> res;
+
+    for (Body * other : _bodies)
+        if (body.getCollisionMask() & other->getGroup())
+            Body::computeContacts(body, *other, res);
+
+    return res;
+}
+
 #ifndef NDEBUG
 void Space::drawDebug(gfx::DebugContext & debug) const
 {
