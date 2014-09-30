@@ -50,9 +50,8 @@ Lua::Lua()
     lua_pushglobaltable(_state);
     for (unsigned i = 0; banned_funcs[i]; ++i)
     {
-        lua_pushstring(_state, banned_funcs[i]);
         lua_pushnil(_state);
-        lua_rawset(_state, -2);
+        lua_setfield(_state, -2, banned_funcs[i]);
     }
     lua_pop(_state, 1);
 }

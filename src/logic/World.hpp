@@ -22,7 +22,7 @@ class World
 {
 private:
     phy::Space          _space;
-    //Lua                 _lua;
+    Lua                 _lua;
 
     std::set<Entity *>  _new_entities;
     std::set<Entity *>  _entities;

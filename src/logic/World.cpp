@@ -24,6 +24,7 @@ void World::update()
 
     for (Entity * ent : _entities)
     {
+        // TODO Check next update value, or sort by next update
         ent->update();
     }
 }
