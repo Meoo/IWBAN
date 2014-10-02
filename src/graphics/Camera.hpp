@@ -11,6 +11,7 @@
 #include <utils/Vector.hpp>
 
 #include <SFML/Graphics/View.hpp>
+#include <SFML/System/Time.hpp>
 
 namespace gfx
 {
@@ -24,13 +25,18 @@ private:
 
 
 public:
+    // Constructor
                 Camera();
+    explicit    Camera(const ut::Vector & center);
 
-    void        centerOn(const ut::Vector & center);
+    // Getters / setters
+    const sf::View & getView() const                { return _view; }
 
-    void        moveToward(const ut::Vector & center, unsigned damping = 16);
+    void        setCenter(const ut::Vector & center);
 
-    const sf::View & getView() const { return _view; }
+    // Functions
+    ut::Vector  screenToWorld(const ut::Vector & screen_coord) const;
+    ut::Vector  worldToScreen(const ut::Vector & world_coord) const;
 
 
 private:
@@ -38,6 +44,31 @@ private:
 
 };
 // class Camera
+
+// ---- ---- ---- ----
+
+class CameraOperator
+{
+private:
+    // Data members
+    Camera      _camera;
+
+
+public:
+    // Constructor
+                CameraOperator() = default;
+
+    // Getters / setters
+    const Camera & getCamera() const                { return _camera; }
+    void        setCamera(const Camera & camera)    { _camera = camera; }
+
+    Camera      getCameraAt(const sf::Time & time) const;
+
+    // Functions
+    void        setTarget(const ut::Vector & target);
+
+};
+// class CameraOperator
 
 }
 // namespace gfx
