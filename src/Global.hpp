@@ -9,9 +9,7 @@
 #define _IWBAN_GLOBAL_HPP_
 
 #include <boost/assert.hpp>
-#include <boost/static_assert.hpp>
 
-#include <cstdint>
 #include <cstdio>
 
 
@@ -105,6 +103,6 @@
 #define IWBAN_VERIFY(x)                 BOOST_VERIFY(x)
 
 // Static assert
-#define IWBAN_STATIC_ASSERT(x)          BOOST_STATIC_ASSERT(x)
+#define IWBAN_STATIC_ASSERT(x)          static_assert(x, #x)
 
 #endif // _IWBAN_GLOBAL_HPP_
