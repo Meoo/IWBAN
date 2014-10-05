@@ -193,6 +193,12 @@ Map::Map(std::istream & data)
         LayerPtr l(new map::Layer(data, texture_table));
         _layers.push_back(std::move(l));
     }
+
+
+    // Lua script
+    std::string script = ut::read<std::string>(data);
+    if (!script.empty())
+        _lua_script = logic::LuaScript::fromFile(script);
 }
 
 // ---- ---- ---- ----

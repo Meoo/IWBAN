@@ -10,6 +10,7 @@
 
 #include <data/Texture.hpp>
 #include <graphics/Drawable.hpp>
+#include <logic/Lua.hpp>
 #include <physics/Body.hpp>
 #include <physics/meshes/AABoxMesh.hpp>
 #include <utils/Rectangle.hpp>
@@ -45,8 +46,10 @@ private:
 
 
 public:
+    // Constructor
     Chunk(std::istream & data, const TextureTable & texture_table);
 
+    // Getters / setters
     const ut::Rectangle & getBounds() const { return _bounds; }
 
 
@@ -70,8 +73,10 @@ private:
 
 
 public:
+    // Constructor
     explicit BodyDesc(std::istream & data);
 
+    // Functions
     BodyPtr makeBody() const;
 
 };
@@ -103,12 +108,14 @@ private:
 
 
 public:
+    // Constructor
     Layer(std::istream & data, const TextureTable & texture_table);
 
+    // Getters / setters
     const std::string & getName() const { return _name; }
-
     const BodyDescVector & getBodies() const { return _bodies; }
 
+    // Functions
     DrawablePtr makeDrawable() const;
 
 
@@ -134,16 +141,18 @@ public:
 
 private:
     // Data members
-    sf::Color   _ambient_light;
+    sf::Color           _ambient_light;
 
-    LayerVector _layers;
+    LayerVector         _layers;
 
-    std::string _lua_script;
+    logic::LuaScript    _lua_script;
 
 
 public:
+    // Constructor
     explicit Map(std::istream & data);
 
+    // Getters / setters
     const LayerVector & getLayers() const { return _layers; }
 
 };

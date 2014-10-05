@@ -79,6 +79,10 @@ int process_file(const char * filename)
     }
 
 
+    // Lua Script
+    ut::write<std::string>(out_map, map.properties["script"]);
+
+
     // TODO Everything else
     // ...
 
