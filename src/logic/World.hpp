@@ -16,8 +16,6 @@
 namespace logic
 {
 
-class EntityFilter;
-
 class World
 {
 private:
@@ -33,13 +31,6 @@ public:
 
     // Get all entities
     void    getEntities();
-
-    // Get all entities matching a filter
-    void    getEntities(EntityFilter & filter);
-
-    // Get first entity matching a filter
-    Entity * getEntity(EntityFilter & filter);
-
 
     void    update();
 
