@@ -23,12 +23,13 @@
 
 // Always enabled in Debug mode
 #ifndef NDEBUG
-#  define PERF_MONITORING
+#   define PERF_MONITORING
 #endif
 
 #ifdef PERF_MONITORING
-#  include <iostream>
-#  include <iomanip> // setprecision
+#   include <iostream>
+#   include <iomanip> // setprecision
+#   include <sstream>
 #endif
 
 namespace sys
@@ -347,11 +348,18 @@ void Display::run(sys::Projector & projector)
         PERF_END(display);
 
 #ifdef PERF_MONITORING
-        // Display FPS results every 1000 frames
-        if ((++fps_counter) >= 1000)
+        // Display FPS results every 5 seconds
+        ++fps_counter;
+        if (fps_clock.getElapsedTime().asSeconds() >= 5.f)
         {
-            std::cout << "FPS  : " << (fps_counter /
-                    fps_clock.getElapsedTime().asSeconds()) << std::endl;
+            float fps = (fps_counter / fps_clock.getElapsedTime().asSeconds());
+
+            std::ostringstream title_str;
+            title_str << std::setprecision(1) << std::fixed << IWBAN_GAME_NAME << " - " << fps << " fps";
+            _window.setTitle(title_str.str());
+
+            std::cout << "FPS  : " << fps << std::endl;
+
             fps_clock.restart();
             fps_counter = 0;
         }
