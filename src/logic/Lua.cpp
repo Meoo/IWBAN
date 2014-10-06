@@ -6,6 +6,7 @@
 #include <Global.hpp>
 
 #include <logic/Lua.hpp>
+#include <logic/Variant.hpp>
 #include <resources/File.hpp>
 
 #include <lauxlib.h>
@@ -20,6 +21,49 @@ LuaScript LuaScript::fromFile(const std::string & filename)
 {
     res::File file = res::openFile(filename);
     return LuaScript(filename, (const char *) file.getData(), file.getSize());
+}
+
+// ---- ---- ---- ----
+
+LuaObject::LuaObject(LuaObject && object)
+    : _lua(object._lua), _registry(object._registry), _index(object._index)
+{
+    object._lua = nullptr;
+}
+
+LuaObject::LuaObject(Lua * lua, LuaRegistry registry)
+    : _lua(lua), _registry(registry)
+{
+    lua_rawgeti(*_lua, LUA_REGISTRYINDEX, _registry);
+    _index = lua_rawlen(*_lua, -1);
+
+    lua_newtable(*_lua);
+    lua_rawseti(*_lua, -2, _index);
+
+    lua_pop(*_lua, 1);
+}
+
+LuaObject::~LuaObject()
+{
+    if (isValid())
+    {
+        // TODO Exception safety?
+        lua_rawgeti(*_lua, LUA_REGISTRYINDEX, _registry);
+
+        lua_pushnil(*_lua);
+        lua_rawseti(*_lua, -2, _index);
+
+        lua_pop(*_lua, 1);
+    }
+}
+
+LuaObject & LuaObject::operator= (LuaObject && object)
+{
+    _lua        = object._lua;
+    _registry   = object._registry;
+    _index      = object._index;
+    object._lua = nullptr;
+    return *this;
 }
 
 // ---- ---- ---- ----
@@ -64,6 +108,13 @@ Lua::Lua()
         lua_setfield(_state, -2, banned_funcs[i]);
     }
     lua_pop(_state, 1);
+
+    // Create registry tables
+    for (int i = LUA_IWBAN__FIRST; i <= LUA_IWBAN__LAST; ++i)
+    {
+        lua_newtable(_state);
+        lua_rawseti(_state, LUA_REGISTRYINDEX, i);
+    }
 }
 
 Lua::~Lua()
@@ -84,6 +135,71 @@ void Lua::runFile(const std::string & filename)
         luaL_loadbuffer(_state, (const char*) f.getData(), f.getSize(), filename.c_str());
     }
     pcall(0, 0);
+}
+
+LuaObject && Lua::createObject(LuaRegistry registry)
+{
+    return std::move(LuaObject(this, registry));
+}
+
+void Lua::pushObject(LuaObject & object)
+{
+    if (object.isValid())
+    {
+        lua_rawgeti(_state, LUA_REGISTRYINDEX, object.getRegistry());
+        lua_rawgeti(_state, -1, object.getIndex());
+        lua_remove(_state, -2);
+    }
+    else
+        lua_pushnil(_state);
+}
+
+Variant Lua::toVariant(int index)
+{
+    switch (lua_type(_state, index))
+    {
+    case LUA_TNUMBER:
+        return Variant((Variant::Float) lua_tonumber(_state, index));
+
+    case LUA_TBOOLEAN:
+        return Variant(lua_toboolean(_state, index));
+
+    case LUA_TSTRING:
+        return Variant(lua_tostring(_state, index));
+
+    // TODO Vector type
+
+    default:
+        return Variant();
+    }
+}
+
+void Lua::pushVariant(const Variant & variant)
+{
+    if (variant.isInt())
+        lua_pushinteger(_state, variant.toInt());
+
+    else if (variant.isFloat())
+        lua_pushnumber(_state, variant.toFloat());
+
+    else if (variant.isBool())
+        lua_pushboolean(_state, variant.toBool());
+
+    else if (variant.isString())
+        lua_pushstring(_state, variant.toString().c_str());
+
+    else if (variant.isVector())
+    {
+        ut::Vector v = variant.toVector();
+        lua_createtable(_state, 0, 2);
+        lua_pushnumber(_state, v.x);
+        lua_setfield(_state, -2, "x");
+        lua_pushnumber(_state, v.y);
+        lua_setfield(_state, -2, "y");
+    }
+
+    else
+        lua_pushnil(_state);
 }
 
 bool Lua::pcall(int narg, int nres)
