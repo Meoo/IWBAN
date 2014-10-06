@@ -27,7 +27,7 @@ private:
 
 
 public:
-    //Lua &   getLua() { return _lua; }
+    Lua &   getLua() { return _lua; }
 
     // Get all entities
     void    getEntities();

@@ -11,6 +11,8 @@
 #include <graphics/Drawable.hpp>
 #include <graphics/Light.hpp>
 #include <graphics/ShadowVolume.hpp>
+#include <logic/Lua.hpp>
+#include <logic/Variant.hpp>
 #include <system/Time.hpp>
 
 #include <boost/noncopyable.hpp>
@@ -39,11 +41,17 @@ private:
 
     sys::FTime      _next_update    = 0;
 
+    // State
+    bool            _spawned        = false;
+
     // Sub-systems lists
     std::set<gfx::Drawable *>       _drawables;
     std::set<gfx::Light *>          _lights;
     std::set<gfx::ShadowVolume *>   _shadows;
     std::set<phy::Body *>           _bodies;
+
+    // Lua entity
+    mutable LuaObject               _lua_object;
 
 
 public:
@@ -55,17 +63,16 @@ public:
     void        setName(const std::string & name)   { _name = name; }
 
     // FIXME Debug
-    void    testRender(gfx::DrawContext & draw);
+    void        testRender(gfx::DrawContext & draw);
 
     // Values and events
-    /*template<typename T>
-    const T &   getValue(const std::string & key);
-    template<typename T>
-    void        setValue(const std::string & key, const T & value);
+    Variant     getValue(const std::string & key) const;
+    void        setValue(const std::string & key, const Variant & value);
 
-    void        sendEvent(const std::string & event);
-    template<typename T>
-    void        sendEvent(const std::string & event, const T & param);*/
+    /*void        sendEvent(const std::string & event);
+    void        sendEvent(const std::string & event, const Variant & param);*/
+
+    LuaObject & getLuaObject() const                { return _lua_object; }
 
 
 protected:
@@ -84,19 +91,24 @@ protected:
 
     // Functions to be overloaded
     virtual void    doSpawn()       {}
+    virtual void    doDespawn()     {}
+
     virtual void    doUpdate()      {}
 
-    /*virtual void    doGetValue()    {}
-    virtual void    doSetValue()    {}
+    // Default behavior is to get / set from lua object
+    virtual Variant doGetValue(const std::string & key) const;
+    virtual void    doSetValue(const std::string & key, const Variant & value);
 
-    virtual void    doEvent()       {}*/
+    /*virtual void    doEvent(const std::string & event) {}*/
 
 
 private:
     friend class World;
 
-    void        spawn()     { doSpawn(); }
-    void        update()    { doUpdate(); }
+    void        spawn();
+    void        despawn();
+
+    void        update();
 
 
 };
