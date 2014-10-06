@@ -48,21 +48,14 @@ Variant Entity::doGetValue(const std::string & key) const
 {
     Lua & l = getWorld().getLua();
 
+    // TODO Protect lua calls, or check LuaObject
+    IWBAN_ASSERT(getLuaObject().isValid());
+
     l.pushObject(getLuaObject());
-
-    // Pop metatable
-    lua_getmetatable(l, -1);
-    lua_pushnil(l);
-    lua_setmetatable(l, -3);
-
-    // Get value
-    lua_getfield(l, -2, key.c_str());
+    lua_pushstring(l, key.c_str());
+    lua_rawget(l, -2);
     Variant v = l.toVariant(-1);
-    lua_pop(l, 1);
-
-    // Push metatable
-    lua_setmetatable(l, -2);
-    lua_pop(l, 1);
+    lua_pop(l, 2);
 
     return v;
 }
@@ -71,19 +64,13 @@ void Entity::doSetValue(const std::string & key, const Variant & value)
 {
     Lua & l = getWorld().getLua();
 
+    // TODO Protect lua calls, or check LuaObject
+    IWBAN_ASSERT(getLuaObject().isValid());
+
     l.pushObject(getLuaObject());
-
-    // Pop metatable
-    lua_getmetatable(l, -1);
-    lua_pushnil(l);
-    lua_setmetatable(l, -3);
-
-    // Set value
+    lua_pushstring(l, key.c_str());
     l.pushVariant(value);
-    lua_setfield(l, -3, key.c_str());
-
-    // Push metatable
-    lua_setmetatable(l, -2);
+    lua_rawset(l, -2);
     lua_pop(l, 1);
 }
 
