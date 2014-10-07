@@ -53,6 +53,9 @@ public:
     // Static constructor
     static LuaScript fromFile(const std::string & filename);
 
+    // Functions
+    bool            isValid() const     { return !_buffer.empty(); }
+
 
 private:
     friend class Lua;
@@ -120,10 +123,10 @@ public:
     operator    lua_State*()            { return _state; }
 
     // Functions
-    void        run(const LuaScript & script, const char * source);
+    void        run(const LuaScript & script);
     void        runFile(const std::string & filename);
 
-    LuaObject && createObject(LuaRegistry registry);
+    LuaObject   createObject(LuaRegistry registry);
     void        pushObject(LuaObject & object);
 
     Variant     toVariant(int index);

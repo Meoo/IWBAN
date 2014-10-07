@@ -12,7 +12,29 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+namespace
+{
+
 IWBAN_STATIC_ASSERT(LUA_VERSION_NUM == 502);
+
+const char * IWBAN_LUA_BANNED_FUNCTIONS[] =
+{
+    "collectgarbage",
+    "dofile",
+    "getmetatable",
+    "loadfile",
+    "load",
+    "loadstring",
+    "rawequal",
+    "rawlen",
+    "rawget",
+    "rawset",
+    "setmetatable",
+    nullptr
+};
+
+}
+// namespace
 
 namespace logic
 {
@@ -84,28 +106,12 @@ Lua::Lua()
     // Each luaopen_ function push a library on the stack.
     lua_pop(_state, 6);
 
-    static const char * banned_funcs[] =
-    {
-        "collectgarbage",
-        "dofile",
-        "getmetatable",
-        "loadfile",
-        "load",
-        "loadstring",
-        "rawequal",
-        "rawlen",
-        "rawget",
-        "rawset",
-        "setmetatable",
-        nullptr
-    };
-
     // Remove banned functions
     lua_pushglobaltable(_state);
-    for (unsigned i = 0; banned_funcs[i]; ++i)
+    for (unsigned i = 0; IWBAN_LUA_BANNED_FUNCTIONS[i]; ++i)
     {
         lua_pushnil(_state);
-        lua_setfield(_state, -2, banned_funcs[i]);
+        lua_setfield(_state, -2, IWBAN_LUA_BANNED_FUNCTIONS[i]);
     }
     lua_pop(_state, 1);
 
@@ -122,9 +128,11 @@ Lua::~Lua()
     lua_close(_state);
 }
 
-void Lua::run(const LuaScript & script, const char * source)
+void Lua::run(const LuaScript & script)
 {
-    luaL_loadbuffer(_state, script.getData(), script.getSize(), source);
+    IWBAN_ASSERT(script.isValid());
+
+    luaL_loadbuffer(_state, script.getData(), script.getSize(), script.getSource());
     pcall(0, 0);
 }
 
@@ -137,9 +145,9 @@ void Lua::runFile(const std::string & filename)
     pcall(0, 0);
 }
 
-LuaObject && Lua::createObject(LuaRegistry registry)
+LuaObject Lua::createObject(LuaRegistry registry)
 {
-    return std::move(LuaObject(this, registry));
+    return LuaObject(this, registry);
 }
 
 void Lua::pushObject(LuaObject & object)
@@ -167,28 +175,60 @@ Variant Lua::toVariant(int index)
     case LUA_TSTRING:
         return Variant(lua_tostring(_state, index));
 
-    // TODO Vector type
+    case LUA_TTABLE:
+    {
+        // Vector (x and y in a table)
+        ut::Vector v;
+
+        lua_getfield(_state, index, "x");
+        if (!lua_isnumber(_state, -1))
+        {
+            lua_pop(_state, 1);
+            break;
+        }
+        v.x = lua_tonumber(_state, -1);
+        lua_pop(_state, 1);
+
+        lua_getfield(_state, index, "y");
+        if (!lua_isnumber(_state, -1))
+        {
+            lua_pop(_state, 1);
+            break;
+        }
+        v.y = lua_tonumber(_state, -1);
+        lua_pop(_state, 1);
+
+        return Variant(v);
+    }
 
     default:
-        return Variant();
+        break;
     }
+
+    return Variant();
 }
 
 void Lua::pushVariant(const Variant & variant)
 {
-    if (variant.isInt())
+    switch (variant.getType())
+    {
+    case Variant::TYPE_INT:
         lua_pushinteger(_state, variant.toInt());
+        break;
 
-    else if (variant.isFloat())
+    case Variant::TYPE_FLOAT:
         lua_pushnumber(_state, variant.toFloat());
+        break;
 
-    else if (variant.isBool())
+    case Variant::TYPE_BOOL:
         lua_pushboolean(_state, variant.toBool());
+        break;
 
-    else if (variant.isString())
+    case Variant::TYPE_STRING:
         lua_pushstring(_state, variant.toString().c_str());
+        break;
 
-    else if (variant.isVector())
+    case Variant::TYPE_VECTOR:
     {
         ut::Vector v = variant.toVector();
         lua_createtable(_state, 0, 2);
@@ -196,10 +236,12 @@ void Lua::pushVariant(const Variant & variant)
         lua_setfield(_state, -2, "x");
         lua_pushnumber(_state, v.y);
         lua_setfield(_state, -2, "y");
+        break;
     }
 
-    else
+    default:
         lua_pushnil(_state);
+    }
 }
 
 bool Lua::pcall(int narg, int nres)
