@@ -61,6 +61,7 @@ public:
                 Variant(bool bool_value);
                 Variant(const Vector & vector_value);
                 Variant(const String & string_value);
+                Variant(const char * string_value);
 
     // Type check functions
     bool        isNull() const      { return _type == TYPE_NULL; }

@@ -46,6 +46,11 @@ Variant::Variant(const String & string_value)
 {
 }
 
+Variant::Variant(const char * string_value)
+    : _type(TYPE_STRING), _string_value(string_value)
+{
+}
+
 // ---- ---- ---- ----
 
 Variant::Int Variant::toInt() const
@@ -107,13 +112,13 @@ bool Variant::toBool() const
         switch (_type)
         {
         case TYPE_INT:
-            return static_cast<Float>(_int_value);
+            return static_cast<bool>(_int_value);
 
         case TYPE_FLOAT:
-            return _float_value;
+            return static_cast<bool>(_float_value);
 
         case TYPE_BOOL:
-            return static_cast<Float>(_bool_value);
+            return _bool_value;
 
         case TYPE_STRING:
             return boost::lexical_cast<bool>(_string_value);
