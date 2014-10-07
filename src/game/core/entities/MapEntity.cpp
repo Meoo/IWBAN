@@ -10,7 +10,6 @@
 namespace game
 {
 
-
 MapEntity::MapEntity(const data::Map * map)
     : _map(map)
 {
@@ -34,6 +33,19 @@ MapEntity::MapEntity(const data::Map * map)
 
 void MapEntity::doSpawn()
 {
+    logic::Lua & l = getLua();
+
+    if (_map->getLuaScript().isValid())
+    {
+        l.pushObject(getLuaObject());
+        lua_setglobal(l, "MAP");
+
+        l.run(_map->getLuaScript());
+
+        lua_pushnil(l);
+        lua_setglobal(l, "MAP");
+    }
+
     for (MapLayer & layer : _layers)
     {
         addDrawable(layer.drawable.get());

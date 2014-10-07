@@ -155,6 +155,8 @@ public:
     // Getters / setters
     const LayerVector & getLayers() const { return _layers; }
 
+    const logic::LuaScript & getLuaScript() const { return _lua_script; }
+
 };
 // class Map
 
