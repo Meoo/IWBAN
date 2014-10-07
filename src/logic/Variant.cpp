@@ -158,6 +158,8 @@ Variant::String Variant::toString() const
         case TYPE_BOOL:
             return boost::lexical_cast<String>(_bool_value);
 
+        // TODO Vector ?
+
         case TYPE_STRING:
             return _string_value;
 
