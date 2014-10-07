@@ -26,6 +26,7 @@
 namespace phy
 {
 class Body;
+class Space;
 }
 
 namespace logic
@@ -76,6 +77,11 @@ public:
 
 
 protected:
+    // Shorthands for systems
+    World &     getWorld();
+    phy::Space & getSpace();
+    Lua &       getLua() const;
+
     // Sub-systems
     void        addDrawable(gfx::Drawable * drawable);
     void        removeDrawable(gfx::Drawable * drawable);

@@ -15,6 +15,7 @@ Entity::Entity()
 {
     // TODO Better state machine ?
     getWorld().add(this);
+    _lua_object = getLua().createObject(LUA_IWBAN_ENTITIES);
 }
 
 Entity::~Entity()
@@ -46,10 +47,10 @@ void Entity::setValue(const std::string & key, const Variant & value)
 
 Variant Entity::doGetValue(const std::string & key) const
 {
-    Lua & l = getWorld().getLua();
-
     // TODO Protect lua calls, or check LuaObject
     IWBAN_ASSERT(getLuaObject().isValid());
+
+    Lua & l = getLua();
 
     l.pushObject(getLuaObject());
     lua_pushstring(l, key.c_str());
@@ -62,16 +63,31 @@ Variant Entity::doGetValue(const std::string & key) const
 
 void Entity::doSetValue(const std::string & key, const Variant & value)
 {
-    Lua & l = getWorld().getLua();
-
     // TODO Protect lua calls, or check LuaObject
     IWBAN_ASSERT(getLuaObject().isValid());
+
+    Lua & l = getLua();
 
     l.pushObject(getLuaObject());
     lua_pushstring(l, key.c_str());
     l.pushVariant(value);
-    lua_rawset(l, -2);
+    lua_rawset(l, -3);
     lua_pop(l, 1);
+}
+
+World & Entity::getWorld()
+{
+    return logic::getWorld();
+}
+
+phy::Space & Entity::getSpace()
+{
+    return logic::getWorld().getSpace();
+}
+
+Lua & Entity::getLua() const
+{
+    return logic::getWorld().getLua();
 }
 
 void Entity::addDrawable(gfx::Drawable * drawable)
