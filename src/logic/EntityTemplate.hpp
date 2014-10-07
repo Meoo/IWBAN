@@ -8,8 +8,17 @@
 
 #include <Global.hpp>
 
+#include <logic/Variant.hpp>
+
+#include <map>
+#include <memory>
+#include <string>
+
 namespace logic
 {
+
+class Entity;
+class EntityFactory;
 
 /**
  * @brief Class allowing to build entities with predefined parameters.
@@ -17,13 +26,16 @@ namespace logic
 class EntityTemplate
 {
 private:
-    std::string _entity_class;
+    std::string                     _entity_class;
+    std::map<std::string, Variant>  _properties;
 
 
 public:
     explicit EntityTemplate(const std::string & entity_class);
 
-    std::unique_ptr<Entity> && createEntity(EntityFactory & factory) const;
+    void setValue(const std::string & key, const Variant & value);
+
+    std::unique_ptr<Entity> createEntity(EntityFactory & factory) const;
 
 };
 // class EntityTemplate

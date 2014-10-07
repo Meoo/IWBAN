@@ -8,6 +8,9 @@
 
 #include <Global.hpp>
 
+#include <map>
+#include <memory>
+
 namespace logic
 {
 
@@ -38,7 +41,7 @@ public:
     // allocator must remain valid for the lifetime of the factory.
     void    registerClass(const std::string & entity_class, EntityAllocator * allocator);
 
-    std::unique_ptr<Entity> && createEntity(const std::string & entity_class) const;
+    std::unique_ptr<Entity> createEntity(const std::string & entity_class);
 
 };
 // class EntityFactory
@@ -54,9 +57,6 @@ EntityFactory & getEntityFactory()
 
 // ---- ---- ---- ----
 
-/**
- * Class allowing to auto-register
- */
 template<class T, const char * C>
 class AutoLinkedAllocator final : public EntityAllocator
 {
