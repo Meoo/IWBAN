@@ -126,6 +126,9 @@ void Display::run(sys::Projector & projector)
     gfx::Renderer   renderer(_window);
     sf::Time        next_update(IWBAN_UPDATE_TIME);
 
+    bool            cursor_enabled = true;
+    sf::Time        cursor_time;
+
 #ifdef PERF_MONITORING
     // FPS counter
     sf::Clock       fps_clock;
@@ -157,6 +160,13 @@ void Display::run(sys::Projector & projector)
     // Main loop
     while(_window.isOpen())
     {
+        // Disable cursor if not moved for a few seconds
+        if (cursor_enabled && getGlobalTime() >= cursor_time)
+        {
+            _window.setMouseCursorVisible(false);
+            cursor_enabled = false;
+        }
+
         PERF_BEGIN(event);
 
         // Event polling
@@ -229,10 +239,16 @@ void Display::run(sys::Projector & projector)
                 break;
 
             case sf::Event::MouseMoved:
+                _window.setMouseCursorVisible(true);
+                cursor_enabled = true;
+                cursor_time = getGlobalTime() + sf::seconds(4);
                 projector.mouseMove(_window.mapPixelToCoords(sf::Vector2i(event.mouseMove.x, event.mouseMove.y)));
                 break;
 
             case sf::Event::MouseButtonPressed:
+                _window.setMouseCursorVisible(true);
+                cursor_enabled = true;
+                cursor_time = getGlobalTime() + sf::seconds(4);
                 if (event.mouseButton.button == sf::Mouse::Left)
                     projector.mouseClick(_window.mapPixelToCoords(sf::Vector2i(event.mouseButton.x, event.mouseButton.y)));
                 break;
