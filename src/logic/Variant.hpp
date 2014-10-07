@@ -25,9 +25,6 @@ public:
     typedef ut::Vector  Vector;
     typedef std::string String;
 
-
-private:
-    // Type
     enum Type
     {
         TYPE_NULL,
@@ -37,8 +34,12 @@ private:
         TYPE_VECTOR,
         TYPE_STRING,
 
-    }           _type;
+    };
     // enum Type
+
+
+private:
+    Type        _type;
 
     // Primitive types and POD
     union
@@ -64,6 +65,7 @@ public:
                 Variant(const char * string_value);
 
     // Type check functions
+    Type        getType() const     { return _type; }
     bool        isNull() const      { return _type == TYPE_NULL; }
     bool        isInt() const       { return _type == TYPE_INT; }
     bool        isFloat() const     { return _type == TYPE_FLOAT; }
