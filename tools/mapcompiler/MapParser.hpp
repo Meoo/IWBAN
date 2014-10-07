@@ -62,7 +62,7 @@ void parse_properties(const tx::XMLElement * element, Properties & properties)
             const char * key    = prop->Attribute("name");
             const char * value  = prop->Attribute("value");
 
-            if (!key || value)
+            if (!key || !value)
             {
                 std::cout << "????? Missing key or value attribute from"
                           << " property element, ignored ?????" << std::endl;
