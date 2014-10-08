@@ -70,8 +70,7 @@ public:
     Variant     getValue(const std::string & key) const;
     void        setValue(const std::string & key, const Variant & value);
 
-    /*void        sendEvent(const std::string & event);
-    void        sendEvent(const std::string & event, const Variant & param);*/
+    void        sendEvent(const std::string & event, const Variant & param = Variant());
 
     LuaObject & getLuaObject() const                { return _lua_object; }
 
@@ -105,7 +104,7 @@ protected:
     virtual Variant doGetValue(const std::string & key) const;
     virtual void    doSetValue(const std::string & key, const Variant & value);
 
-    /*virtual void    doEvent(const std::string & event) {}*/
+    virtual void    doEvent(const std::string & event, const Variant & param);
 
 
 private:

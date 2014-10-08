@@ -7,6 +7,7 @@
 
 #include <logic/Entity.hpp>
 #include <logic/World.hpp>
+#include <physics/Body.hpp>
 
 namespace logic
 {
@@ -45,6 +46,11 @@ void Entity::setValue(const std::string & key, const Variant & value)
     doSetValue(key, value);
 }
 
+void Entity::sendEvent(const std::string & event, const Variant & param)
+{
+    doEvent(event, param);
+}
+
 Variant Entity::doGetValue(const std::string & key) const
 {
     // TODO Protect lua calls, or check LuaObject
@@ -73,6 +79,31 @@ void Entity::doSetValue(const std::string & key, const Variant & value)
     l.pushVariant(value);
     lua_rawset(l, -3);
     lua_pop(l, 1);
+}
+
+void Entity::doEvent(const std::string & event, const Variant & param)
+{
+    // TODO Protect lua calls, or check LuaObject
+    IWBAN_ASSERT(getLuaObject().isValid());
+
+    Lua & l = getLua();
+
+    l.pushObject(getLuaObject());
+    lua_pushstring(l, event.c_str());
+    lua_rawget(l, -2);
+
+    if (lua_type(l, -1) == LUA_TFUNCTION)
+    {
+        lua_pushvalue(l, -2); // self
+        lua_remove(l, -3);
+        l.pushVariant(param); // param
+        l.pcall(2, 0);        // Call ENT:event(param)
+    }
+    else
+    {
+        lua_pop(l, 2);
+        IWBAN_LOG_WARNING("Unhandled event '%s' on Entity '%s'", event.c_str(), getName().c_str());
+    }
 }
 
 World & Entity::getWorld()
@@ -109,14 +140,16 @@ void Entity::addBody(phy::Body * body)
     IWBAN_ASSERT(_spawned);
 
     _bodies.insert(body);
-    getWorld().getSpace().attach(body);
+    body->setOwner(this);
+    getSpace().attach(body);
 }
 
 void Entity::removeBody(phy::Body * body)
 {
     IWBAN_ASSERT(_spawned);
 
-    getWorld().getSpace().detach(body);
+    getSpace().detach(body);
+    body->setOwner(nullptr);
     _bodies.erase(body);
 }
 
@@ -136,7 +169,10 @@ void Entity::despawn()
 
     // TODO Better cleanup
     for (phy::Body * body : _bodies)
-        getWorld().getSpace().detach(body);
+    {
+        // TODO body->setOwner(nullptr); ? Dangerous in destructor
+        getSpace().detach(body);
+    }
 
     _spawned = false;
 }

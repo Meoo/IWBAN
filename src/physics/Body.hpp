@@ -18,6 +18,12 @@
 
 #include <vector>
 
+namespace logic
+{
+class Entity;
+}
+// namespace logic
+
 namespace phy
 {
 
@@ -28,12 +34,14 @@ class Body : public boost::noncopyable
 {
 public:
     typedef ut::Vector      Vector;
+    typedef logic::Entity   Owner;
 
 
 private:
     // Data members
     const Mesh *    _mesh;
     Controller *    _controller     = nullptr;
+    Owner *         _owner          = nullptr;
 
     Group           _group          = GROUP_NONE;
     Group           _collision_mask = GROUP_WORLD | GROUP_OBJECTS;
@@ -51,6 +59,8 @@ public:
     Controller *    getController()                         { return _controller; }
     void            setController(Controller * controller)  { _controller = controller; }
 
+    Owner *         getOwner()                              { return _owner; }
+
     Group           getGroup() const                        { return _group; }
     void            setGroup(Group group)                   { _group = group; }
 
@@ -64,9 +74,14 @@ public:
     ut::Rectangle   getBounds() const;
 
     // Static function
-    static
-    void computeContacts(const Body & first, const Body & second,
-                         std::vector<Contact> & output);
+    static void     computeContacts(const Body & first, const Body & second,
+                                    std::vector<Contact> & output);
+
+
+protected:
+    friend Owner;
+
+    void            setOwner(Owner * owner)                 { _owner = owner; }
 
 };
 // class Body
