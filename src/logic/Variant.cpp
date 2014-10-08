@@ -138,9 +138,10 @@ Variant::Vector Variant::toVector() const
     case TYPE_VECTOR:
         return _vector_value;
 
-    default:
-        return Vector();
+    default: break;
     }
+
+    return Vector();
 }
 
 Variant::String Variant::toString() const
