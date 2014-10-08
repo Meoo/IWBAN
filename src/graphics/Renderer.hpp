@@ -56,6 +56,7 @@ private:
 
     data::Shader        _light_mix;
     sf::Color           _overlay_color;
+    sf::Color           _color_correction;
 
     IWBAN_DEBUG(bool    d_active);
 
@@ -84,6 +85,7 @@ public:
     void end();
 
     void setOverlayColor(const sf::Color & color)   { _overlay_color = color; }
+    void setColorCorrection(const sf::Color & color){ _color_correction = color; }
 
     void setRotation(float angle);
     void setOffset(float x, float y);

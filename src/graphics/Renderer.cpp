@@ -16,7 +16,8 @@ namespace gfx
 Renderer::Renderer(sf::RenderTarget & target)
     : _target(target),
       _screen_shape(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT)),
-      _overlay_color(sf::Color::Transparent)
+      _overlay_color(sf::Color::Transparent),
+      _color_correction(sf::Color::White)
 {
     IWBAN_DEBUG(d_active = false);
 
@@ -130,21 +131,19 @@ void Renderer::end()
 
     if (_overlay_color.a != 0)
     {
+        _screen_shape.setTexture(nullptr);
         _screen_shape.setFillColor(_overlay_color);
 
         _target.draw(_screen_shape);
-
-        _screen_shape.setFillColor(sf::Color::White);
     }
 
 #ifndef NDEBUG
     if (_debug_enabled)
     {
         _screen_shape.setTexture(&_debug_context->getTexture());
+        _screen_shape.setFillColor(sf::Color::White);
 
         _target.draw(_screen_shape);
-
-        _screen_shape.setTexture(nullptr);
     }
 #endif
 
@@ -160,6 +159,7 @@ void Renderer::flushDrawLight()
         sf::RenderStates state(sf::BlendNone);
 
         _screen_shape.setTexture(&_draw_context->getTexture());
+        _screen_shape.setFillColor(_color_correction);
 
         // Lighting
         if (_light_enabled)
@@ -169,8 +169,6 @@ void Renderer::flushDrawLight()
         }
 
         _target.draw(_screen_shape, state);
-
-        _screen_shape.setTexture(nullptr);
     }
 
     _flushed = true;
