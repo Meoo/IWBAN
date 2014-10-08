@@ -57,7 +57,7 @@ LuaObject::LuaObject(Lua * lua, LuaRegistry registry)
     : _lua(lua), _registry(registry)
 {
     lua_rawgeti(*_lua, LUA_REGISTRYINDEX, _registry);
-    _index = lua_rawlen(*_lua, -1);
+    _index = lua_rawlen(*_lua, -1) + 1;
 
     lua_newtable(*_lua);
     lua_rawseti(*_lua, -2, _index);
