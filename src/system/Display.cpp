@@ -38,7 +38,9 @@ namespace sys
 Display::Display()
     : _background_mesh(sf::Quads, 4)
 {
-    IWBAN_DEBUG(d_ready = false);
+#ifndef NDEBUG
+    _debug_ready = false;
+#endif
 
     _background_view.setCenter(0.5f, 0.5f);
     _background_view.setSize(1, 1);
@@ -48,7 +50,9 @@ Display::Display()
 
 void Display::open()
 {
-    IWBAN_PRE(!d_ready);
+#ifndef NDEBUG
+    IWBAN_PRE(!_debug_ready);
+#endif
 
     if (cfg::fullscreen == 1)
         // Fullscreen
@@ -99,7 +103,9 @@ void Display::open()
         _background_mesh[3].position = sf::Vector2f(0, 1);
     }
 
-    IWBAN_DEBUG(d_ready = true);
+#ifndef NDEBUG
+    _debug_ready = true;
+#endif
 }
 // Display::open()
 
@@ -107,18 +113,24 @@ void Display::open()
 
 void Display::close()
 {
-    IWBAN_PRE(d_ready);
+#ifndef NDEBUG
+    IWBAN_PRE(_debug_ready);
+#endif
 
     _window.close();
 
-    IWBAN_DEBUG(d_ready = false);
+#ifndef NDEBUG
+    _debug_ready = false;
+#endif
 }
 
 // ---- ---- ---- ----
 
 void Display::run(sys::Projector & projector)
 {
-    IWBAN_PRE(d_ready);
+#ifndef NDEBUG
+    IWBAN_PRE(_debug_ready);
+#endif
 
     updateSceneView();
 

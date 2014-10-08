@@ -48,6 +48,7 @@ private:
 #ifndef NDEBUG
     std::unique_ptr<DebugContext>   _debug_context;
     bool                            _debug_enabled;
+    bool                            _debug_active;
 #endif
 
     sf::RectangleShape  _screen_shape;
@@ -57,8 +58,6 @@ private:
     data::Shader        _light_mix;
     sf::Color           _overlay_color;
     sf::Color           _color_correction;
-
-    IWBAN_DEBUG(bool    d_active);
 
 
 public:

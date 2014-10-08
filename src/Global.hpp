@@ -77,18 +77,6 @@
 
 // ---- ---- ---- ----
 
-/**
- * @def IWBAN_DEBUG
- * Macro to enable a statement in Debug mode only.
- */
-#ifdef NDEBUG
-#  define IWBAN_DEBUG(x)
-#else
-#  define IWBAN_DEBUG(x) x
-#endif
-
-// ---- ---- ---- ----
-
 // Precondition asserts
 #define IWBAN_PRE(x)                    BOOST_ASSERT(x)
 #define IWBAN_PRE_PTR(x)                BOOST_ASSERT((x) != nullptr)

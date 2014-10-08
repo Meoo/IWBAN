@@ -42,7 +42,9 @@ namespace
 
     bool                threading_enabled;
 
-    IWBAN_DEBUG(bool    d_ready = false);
+#ifndef NDEBUG
+    bool                debug_ready = false;
+#endif
 
     Thread *            worker_pool[WORKERS_MAX];
 
@@ -147,8 +149,10 @@ namespace async
 
 void initialize(bool enable_threading)
 {
-    BOOST_ASSERT_MSG(!d_ready, "Async module is already initialized");
-    IWBAN_DEBUG(d_ready = true);
+#ifndef NDEBUG
+    BOOST_ASSERT_MSG(!debug_ready, "Async module is already initialized");
+    debug_ready = true;
+#endif
 
     threading_enabled = enable_threading;
 
@@ -194,8 +198,10 @@ void initialize(bool enable_threading)
 
 void terminate()
 {
-    BOOST_ASSERT_MSG(d_ready, "Async module is not initialized yet");
-    IWBAN_DEBUG(d_ready = false);
+#ifndef NDEBUG
+    BOOST_ASSERT_MSG(debug_ready, "Async module is not initialized yet");
+    debug_ready = false;
+#endif
 
     if (!threading_enabled)
         return;
@@ -215,7 +221,9 @@ void terminate()
 
 void run(const AsyncFunction & function, void * param, bool priority)
 {
-    BOOST_ASSERT_MSG(d_ready, "Async module is not initialized yet");
+#ifndef NDEBUG
+    BOOST_ASSERT_MSG(debug_ready, "Async module is not initialized yet");
+#endif
 
     if (!threading_enabled)
         function(param);

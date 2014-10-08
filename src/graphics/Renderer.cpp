@@ -19,7 +19,9 @@ Renderer::Renderer(sf::RenderTarget & target)
       _overlay_color(sf::Color::Transparent),
       _color_correction(sf::Color::White)
 {
-    IWBAN_DEBUG(d_active = false);
+#ifndef NDEBUG
+    _debug_active = false;
+#endif
 
     _screen_shape.setOrigin(IWBAN_FRAME_WIDTH / 2, IWBAN_FRAME_HEIGHT / 2);
     _screen_shape.setPosition(IWBAN_FRAME_WIDTH / 2, IWBAN_FRAME_HEIGHT / 2);
@@ -31,7 +33,7 @@ Renderer::Renderer(sf::RenderTarget & target)
 
 DrawContext & Renderer::openDrawContext()
 {
-    IWBAN_PRE(d_active);
+    IWBAN_PRE(_debug_active);
     IWBAN_PRE_MSG(!_draw_enabled, "Cannot open a context twice in a frame");
     IWBAN_PRE_MSG(!_gui_enabled, "Cannot open draw context after gui context");
 
@@ -46,7 +48,7 @@ DrawContext & Renderer::openDrawContext()
 
 LightContext & Renderer::openLightContext(const sf::Color & ambient_light)
 {
-    IWBAN_PRE(d_active);
+    IWBAN_PRE(_debug_active);
     IWBAN_PRE_MSG(!_light_enabled, "Cannot open a context twice in a frame");
     IWBAN_PRE_MSG(!_gui_enabled, "Cannot open light context after gui context");
 
@@ -61,7 +63,7 @@ LightContext & Renderer::openLightContext(const sf::Color & ambient_light)
 
 GuiContext & Renderer::openGuiContext()
 {
-    IWBAN_PRE(d_active);
+    IWBAN_PRE(_debug_active);
     IWBAN_PRE_MSG(!_gui_enabled, "Cannot open a context twice in a frame");
 
     IWBAN_PRE_MSG(!_current_context || !_current_context->isOpen(),
@@ -79,7 +81,7 @@ GuiContext & Renderer::openGuiContext()
 #ifndef NDEBUG
 DebugContext & Renderer::openDebugContext()
 {
-    IWBAN_PRE(d_active);
+    IWBAN_PRE(_debug_active);
     IWBAN_PRE_MSG(!_debug_enabled, "Cannot open a context twice in a frame");
 
     IWBAN_PRE_MSG(!_current_context || !_current_context->isOpen(),
@@ -94,18 +96,20 @@ DebugContext & Renderer::openDebugContext()
 
 void Renderer::reloadConfiguration()
 {
-    IWBAN_PRE(!d_active);
+    IWBAN_PRE(!_debug_active);
 
     _draw_context.reset(new DrawContext());
     _light_context.reset(new LightContext());
     _gui_context.reset(new GuiContext(_target));
 
-    IWBAN_DEBUG(_debug_context.reset(new DebugContext()));
+#ifndef NDEBUG
+    _debug_context.reset(new DebugContext());
+#endif
 }
 
 void Renderer::begin()
 {
-    IWBAN_PRE(!d_active);
+    IWBAN_PRE(!_debug_active);
 
     _current_context = nullptr;
 
@@ -113,16 +117,18 @@ void Renderer::begin()
     _light_enabled  = false;
     _gui_enabled    = false;
 
-    IWBAN_DEBUG(_debug_enabled = false);
 
     _flushed        = false;
 
-    IWBAN_DEBUG(d_active = true);
+#ifndef NDEBUG
+    _debug_enabled  = false;
+    _debug_active   = true;
+#endif
 }
 
 void Renderer::end()
 {
-    IWBAN_PRE(d_active);
+    IWBAN_PRE(_debug_active);
 
     IWBAN_PRE_MSG(!_current_context || !_current_context->isOpen(),
                   "You must close the current context in order to finish rendering");
@@ -145,9 +151,9 @@ void Renderer::end()
 
         _target.draw(_screen_shape);
     }
-#endif
 
-    IWBAN_DEBUG(d_active = false);
+    _debug_active = false;
+#endif
 }
 
 void Renderer::flushDrawLight()

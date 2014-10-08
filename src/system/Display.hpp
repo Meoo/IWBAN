@@ -36,7 +36,9 @@ private:
     sf::View            _render_view;
 
     // Debug variable
-    IWBAN_DEBUG(bool    d_ready);
+#ifndef NDEBUG
+    bool                _debug_ready;
+#endif
 
 
 public:
