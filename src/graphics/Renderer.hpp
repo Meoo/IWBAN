@@ -50,6 +50,8 @@ private:
     bool                            _debug_enabled;
 #endif
 
+    sf::RectangleShape  _screen_shape;
+
     bool                _flushed;
 
     data::Shader        _light_mix;
@@ -81,12 +83,15 @@ public:
 
     void end();
 
-    void setOverlayColor(const sf::Color & color) { _overlay_color = color; }
+    void setOverlayColor(const sf::Color & color)   { _overlay_color = color; }
 
-          Camera & getCamera()          { return _camera; }
-    const Camera & getCamera() const    { return _camera; }
+    void setRotation(float angle);
+    void setOffset(float x, float y);
 
-    void setCamera(const Camera & camera) { _camera = camera; }
+          Camera & getCamera()                      { return _camera; }
+    const Camera & getCamera() const                { return _camera; }
+
+    void setCamera(const Camera & camera)           { _camera = camera; }
 
 
 private:

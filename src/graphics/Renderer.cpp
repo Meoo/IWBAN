@@ -14,9 +14,14 @@ namespace gfx
 {
 
 Renderer::Renderer(sf::RenderTarget & target)
-    : _target(target), _overlay_color(sf::Color::Transparent)
+    : _target(target),
+      _screen_shape(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT)),
+      _overlay_color(sf::Color::Transparent)
 {
     IWBAN_DEBUG(d_active = false);
+
+    _screen_shape.setOrigin(IWBAN_FRAME_WIDTH / 2, IWBAN_FRAME_HEIGHT / 2);
+    _screen_shape.setPosition(IWBAN_FRAME_WIDTH / 2, IWBAN_FRAME_HEIGHT / 2);
 
     _light_mix = data::getShader("system/light.gls");
 
@@ -125,14 +130,22 @@ void Renderer::end()
 
     if (_overlay_color.a != 0)
     {
-        sf::RectangleShape sprite(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT));
-        sprite.setFillColor(_overlay_color);
-        _target.draw(sprite);
+        _screen_shape.setFillColor(_overlay_color);
+
+        _target.draw(_screen_shape);
+
+        _screen_shape.setFillColor(sf::Color::White);
     }
 
 #ifndef NDEBUG
     if (_debug_enabled)
-        _target.draw(sf::Sprite(_debug_context->getTexture()));
+    {
+        _screen_shape.setTexture(&_debug_context->getTexture());
+
+        _target.draw(_screen_shape);
+
+        _screen_shape.setTexture(nullptr);
+    }
 #endif
 
     IWBAN_DEBUG(d_active = false);
@@ -146,8 +159,7 @@ void Renderer::flushDrawLight()
     {
         sf::RenderStates state(sf::BlendNone);
 
-        sf::RectangleShape sprite(sf::Vector2f(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT));
-        sprite.setTexture(&_draw_context->getTexture());
+        _screen_shape.setTexture(&_draw_context->getTexture());
 
         // Lighting
         if (_light_enabled)
@@ -156,10 +168,23 @@ void Renderer::flushDrawLight()
             state.shader = _light_mix;
         }
 
-        _target.draw(sprite, state);
+        _target.draw(_screen_shape, state);
+
+        _screen_shape.setTexture(nullptr);
     }
 
     _flushed = true;
+}
+
+void Renderer::setRotation(float angle)
+{
+    _screen_shape.setRotation(angle);
+}
+
+void Renderer::setOffset(float x, float y)
+{
+    _screen_shape.setPosition(IWBAN_FRAME_WIDTH / 2 + x,
+                              IWBAN_FRAME_HEIGHT / 2 + y);
 }
 
 }

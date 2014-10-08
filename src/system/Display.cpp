@@ -328,27 +328,24 @@ void Display::run(sys::Projector & projector)
         sf::Time render_time = getGlobalTime();
 
         // Background rendering
-        if (_draw_background)
-        {
-            _window.setView(_background_view);
+        _window.setView(_background_view);
 
-            float t = render_time.asSeconds();
-            float t2 = - t/2;
+        float t = render_time.asSeconds();
+        float t2 = - t/2;
 
-            _background_mesh[0].texCoords.x = t;
-            _background_mesh[1].texCoords.x = _half_width + t;
-            _background_mesh[2].texCoords.x = _half_width + t;
-            _background_mesh[3].texCoords.x = t;
+        _background_mesh[0].texCoords.x = t;
+        _background_mesh[1].texCoords.x = _half_width + t;
+        _background_mesh[2].texCoords.x = _half_width + t;
+        _background_mesh[3].texCoords.x = t;
 
-            _background_mesh[0].texCoords.y = t2;
-            _background_mesh[1].texCoords.y = t2;
-            _background_mesh[2].texCoords.y = _half_height + t2;
-            _background_mesh[3].texCoords.y = _half_height + t2;
+        _background_mesh[0].texCoords.y = t2;
+        _background_mesh[1].texCoords.y = t2;
+        _background_mesh[2].texCoords.y = _half_height + t2;
+        _background_mesh[3].texCoords.y = _half_height + t2;
 
-            _window.draw(_background_mesh, &_background_texture);
+        _window.draw(_background_mesh, &_background_texture);
 
-            _window.setView(_render_view);
-        }
+        _window.setView(_render_view);
 
         // Scene rendering
         renderer.begin();
@@ -419,8 +416,6 @@ void Display::updateSceneView()
 
     int marginX = (_window.getSize().x - _scene_width) / 2;
     int marginY = (_window.getSize().y - _scene_height) / 2;
-
-    _draw_background = marginX > 0 || marginY > 0;
 
     _render_view.setCenter(IWBAN_FRAME_WIDTH / 2, IWBAN_FRAME_HEIGHT / 2);
     _render_view.setSize(IWBAN_FRAME_WIDTH + marginX * 2 / zoom,

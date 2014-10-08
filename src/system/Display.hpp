@@ -24,7 +24,6 @@ private:
 
     // Icon and background data
     sf::Image           _window_icon;
-    bool                _draw_background    = false;
     sf::Texture         _background_texture;
     sf::VertexArray     _background_mesh;
     sf::View            _background_view;
