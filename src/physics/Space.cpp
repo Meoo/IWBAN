@@ -203,6 +203,39 @@ std::vector<Contact> Space::traceBodyM(const Body & body) const
     return res;
 }
 
+Contact Space::traceBody(const Body & body, Group group_mask) const
+{
+    // TODO Optimize
+
+    std::vector<Contact> res;
+
+    for (Body * other : _bodies)
+    {
+        if (group_mask & other->getGroup())
+        {
+            Body::computeContacts(body, *other, res);
+
+            if (!res.empty())
+                return res[0];
+        }
+    }
+
+    return Contact();
+}
+
+std::vector<Contact> Space::traceBodyM(const Body & body, Group group_mask) const
+{
+    // TODO Optimize
+
+    std::vector<Contact> res;
+
+    for (Body * other : _bodies)
+        if (group_mask & other->getGroup())
+            Body::computeContacts(body, *other, res);
+
+    return res;
+}
+
 #ifndef NDEBUG
 void Space::drawDebug(gfx::DebugContext & debug) const
 {

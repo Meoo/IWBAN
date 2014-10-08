@@ -112,6 +112,9 @@ public:
     Contact             traceBody(const Body & body) const;
     std::vector<Contact> traceBodyM(const Body & body) const;
 
+    Contact             traceBody(const Body & body, Group group_mask) const;
+    std::vector<Contact> traceBodyM(const Body & body, Group group_mask) const;
+
     //TraceRayResult traceRay(const TraceRayQuery & query) const;
 
 #ifndef NDEBUG
