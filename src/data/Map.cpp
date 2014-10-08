@@ -27,12 +27,24 @@ std::unique_ptr<data::Map> loadMap(const std::string & filename)
         res::File file(res::openFile(filename));
         res::FileStream istr(file);
 
+        istr.exceptions(std::ios::eofbit
+                      | std::ios::failbit
+                      | std::ios::badbit);
+
         std::unique_ptr<data::Map> map(new data::Map(istr));
+
+        if (istr.tellg() != (int) file.getSize())
+            IWBAN_LOG_WARNING("Data left after reading '%s'", filename.c_str());
+
         return map;
     }
     catch (const sys::DataCorrupted & e)
     {
         throw sys::FileCorrupted(filename.c_str(), e);
+    }
+    catch (const std::ios::failure & e)
+    {
+        throw sys::FileCorrupted(filename.c_str(), "IO failure");
     }
 }
 // loadMap()
