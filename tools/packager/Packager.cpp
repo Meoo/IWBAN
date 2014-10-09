@@ -12,10 +12,15 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <stdexcept>
 #include <string>
 
 namespace fs = boost::filesystem;
 namespace pk = res;
+
+typedef std::runtime_error Exception;
+
+// ---- ---- ---- ----
 
 void print_help()
 {
@@ -28,7 +33,7 @@ void print_help()
 
 // ---- ---- ---- ----
 
-int process_folder(const char * path_name)
+void process_folder(const char * path_name)
 {
     std::cout << "===== Processing " << path_name << " =====" << std::endl;
 
@@ -36,11 +41,8 @@ int process_folder(const char * path_name)
     fs::path _path(path_name);
 
     if (!fs::exists(fs::path(_path)))
-    {
-        std::cerr << "!!! Path " << path_name << " is not valid !!!"
-                  << std::endl << std::endl;
-        return 1;
-    }
+        throw Exception("Path " + std::string(path_name) + " is not valid");
+
 
     fs::path folder = fs::canonical(_path);
 
@@ -48,11 +50,8 @@ int process_folder(const char * path_name)
     unsigned flen = std::strlen(folder.string().c_str()) + 1;
 
     if (!fs::is_directory(folder))
-    {
-        std::cerr << "!!! File " << folder.string().c_str()
-                  << " is not a directory !!!" << std::endl << std::endl;
-        return 1;
-    }
+        throw Exception("File " + folder.string() + " is not a directory");
+
 
     // Path is a valid folder
     std::cout << "+++ Listing files +++" << std::endl;
@@ -78,10 +77,7 @@ int process_folder(const char * path_name)
 
             // Check for maximum number of files in a package
             if (index.size() > IWBAN_PKG_MAX_FILES)
-            {
-                std::cerr << "!!! Too many files in directory !!!" << std::endl;
-                return 1;
-            }
+                throw Exception("Too many files in directory");
         }
     }
 
@@ -106,11 +102,7 @@ int process_folder(const char * path_name)
                 std::ifstream::in | std::ifstream::binary);
 
         if (!file.is_open())
-        {
-            std::cerr << "!!! Error while opening file " << it->first.c_str()
-                      << " !!!" << std::endl;
-            return 1;
-        }
+            throw Exception("Error while opening file " + it->first);
 
         std::size_t file_size;
 
@@ -163,28 +155,20 @@ int process_folder(const char * path_name)
 
     std::cout << std::endl;
 
-    return 0;
-
 } // process_folder()
 
 // ---- ---- ---- ----
 
-int list_package(const char * packagefile)
+void list_package(const char * packagefile)
 {
     if (fs::is_directory(fs::path(packagefile)))
-    {
-        std::cerr << "!!! Given path is a directory !!!" << std::endl;
-        return 1;
-    }
+        throw Exception("Given path is a directory");
 
     std::ifstream package(packagefile,
             std::ifstream::in | std::ofstream::binary);
 
     if (!package.is_open())
-    {
-        std::cerr << "!!! Error while opening package !!!" << std::endl;
-        return 1;
-    }
+        throw Exception("Error while opening package");
 
     pk::Index index;
     try
@@ -193,8 +177,8 @@ int list_package(const char * packagefile)
     }
     catch (...)
     {
-        std::cerr << "!!! File is not a valid package !!!" << std::endl;
-        return 1;
+        // TODO Use readIndex exception instead?
+        throw Exception("File is not a valid package");
     }
 
     for (auto it = index.begin(); it != index.end(); ++it)
@@ -215,28 +199,22 @@ int list_package(const char * packagefile)
         }
     }
 
-    return 0;
-
 } // list_package()
 
 // ---- ---- ---- ----
 
-int extract_file(const char * file, const char * packagefile)
+void extract_file(const char * file, const char * packagefile)
 {
     if (fs::is_directory(fs::path(packagefile)))
-    {
-        std::cerr << "!!! Given path is a directory !!!" << std::endl;
-        return 1;
-    }
+        throw Exception("Given path is a directory");
+
 
     std::ifstream package(packagefile,
             std::ifstream::in | std::ofstream::binary);
 
     if (!package.is_open())
-    {
-        std::cerr << "!!! Error while opening package !!!" << std::endl;
-        return 1;
-    }
+        throw Exception("Error while opening package");
+
 
     pk::Index index;
     try
@@ -245,16 +223,13 @@ int extract_file(const char * file, const char * packagefile)
     }
     catch (...)
     {
-        std::cerr << "!!! File is not a valid package !!!" << std::endl;
-        return 1;
+        // TODO Use readIndex exception instead?
+        throw Exception("File is not a valid package");
     }
 
     auto it = index.find(std::string(file));
     if (it == index.end())
-    {
-        std::cerr << "!!! File not found in package !!!" << std::endl;
-        return 1;
-    }
+        throw Exception("File not found in package");
 
     package.seekg(it->second.offset);
 
@@ -272,58 +247,62 @@ int extract_file(const char * file, const char * packagefile)
         size -= package.gcount();
     }
 
-    return 0;
-
 } // extract_file()
 
 // ---- ---- ---- ----
 
 int main(int argc, char ** argv)
 {
-    if (argc == 1)
+    try
     {
-        print_help();
-        return 0;
-    }
-
-    if (argv[1][0] == '-')
-    {
-        switch(argv[1][1])
+        if (argc == 1)
         {
-        case 'l':
-            // List
-            if (argc != 3)
-            {
-                print_help();
-                return 0;
-            }
-            return list_package(argv[2]);
-
-        case 'x':
-            // Extract file
-            if (argc != 4)
-            {
-                print_help();
-                return 0;
-            }
-            return extract_file(argv[2], argv[3]);
-
-        case 'h':
-        default:
             print_help();
             return 0;
         }
-    }
 
-    // Default behavior : Package folders
-    for (int i = 1; i < argc; ++i)
+        if (argv[1][0] == '-')
+        {
+            switch(argv[1][1])
+            {
+            case 'l':
+                // List
+                if (argc != 3)
+                    print_help();
+
+                else
+                    list_package(argv[2]);
+
+                return 0;
+
+            case 'x':
+                // Extract file
+                if (argc != 4)
+                    print_help();
+
+                else
+                    extract_file(argv[2], argv[3]);
+
+                return 0;
+
+            case 'h':
+            default:
+                print_help();
+                return 0;
+            }
+        }
+
+        // Default behavior : Package folders
+        for (int i = 1; i < argc; ++i)
+            process_folder(argv[i]);
+
+        return 0;
+    }
+    catch (const Exception & e)
     {
-        int ret = process_folder(argv[i]);
+        std::cout << "!!! " << e.what() << " !!!" << std::endl;
 
-        if (ret != 0)
-            return ret;
+        return 1;
     }
-
-    return 0;
 }
 
