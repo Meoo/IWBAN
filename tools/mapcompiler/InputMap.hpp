@@ -6,6 +6,7 @@
 #ifndef _MAPC_MAPRAWDATA_HPP_
 #define _MAPC_MAPRAWDATA_HPP_
 
+#include <cstring>
 #include <map>
 #include <memory>
 #include <string>
@@ -71,8 +72,61 @@ public:
 class Layer
 {
 public:
-    // Types
-    typedef std::unique_ptr<Tile*[]> TileMap;
+    class TileMap
+    {
+    private:
+        // Data
+        unsigned                    width       = 0;
+        unsigned                    height      = 0;
+        std::unique_ptr<Tile*[]>    data;
+
+
+    public:
+        // Constructor / Copy etc
+        TileMap() = default;
+
+        TileMap(unsigned width, unsigned height)
+            : width(width), height(height)
+        {
+            data.reset(new Tile*[width * height]);
+        }
+
+        TileMap(const TileMap & copy)
+            : width(copy.width), height(copy.height)
+        {
+            data.reset(new Tile*[width * height]);
+            std::memcpy(data.get(), copy.data.get(), sizeof(Tile*[width * height]));
+        }
+
+        TileMap & operator = (TileMap && map)
+        {
+            width = map.width;
+            height = map.height;
+            data = std::move(map.data);
+
+            return *this;
+        }
+
+        // Functions
+        Tile * get(unsigned x, unsigned y) const
+        {
+            if (x < 0 || y < 0 || x >= width || y >= height)
+                return nullptr; // TODO Throw ?
+
+            return data[x + y * width];
+        }
+
+        void set(unsigned x, unsigned y, Tile * tile)
+        {
+            if (x < 0 || y < 0 || x >= width || y >= height)
+                return; // TODO Throw ?
+
+            data[x + y * width] = tile;
+        }
+
+    };
+    // class TileMap
+
 
     // Data
     std::string name;

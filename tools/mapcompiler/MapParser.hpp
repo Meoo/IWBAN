@@ -334,7 +334,6 @@ int parse_map(const char * filename, InputMap & output_map)
 
         unsigned map_data_size = output_map.width * output_map.height;
         std::unique_ptr<TileId[]> map_data(new TileId[map_data_size]);
-        std::unique_ptr<Tile*[]> map_data_ptr(new Tile*[map_data_size]);
 
         if (data->Attribute("encoding", "csv"))
         {
@@ -407,16 +406,22 @@ int parse_map(const char * filename, InputMap & output_map)
                 std::memcpy(map_data.get(), raw_data.c_str(), raw_data.length());
             }
 
+            Layer::TileMap tile_map(output_map.width, output_map.height);
+
             // Load pointers from indexes
-            for (unsigned i = 0; i < map_data_size; ++i)
+            for (unsigned y = 0; y < output_map.height; ++y)
+            for (unsigned x = 0; x < output_map.width; ++x)
             {
-                if (map_data[i] == 0)
-                    map_data_ptr[i] = nullptr;
+                TileId i = map_data[x + y * output_map.width];
+
+                if (i == 0)
+                    tile_map.set(x, y, nullptr);
+
                 else
-                    map_data_ptr[i] = output_map.tiles.at(map_data[i]);
+                    tile_map.set(x, y, output_map.tiles.at(i));
             }
 
-            output_layer->data = std::move(map_data_ptr);
+            output_layer->data = std::move(tile_map);
         }
         else
         {

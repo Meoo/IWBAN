@@ -62,7 +62,7 @@ int process_chunks(const InputMap & map, const Layer & layer, std::ostream & out
             {
                 for (unsigned x = min_x; x < max_x; ++x)
                 {
-                    Tile * tile = layer.data[x + y * map.width];
+                    Tile * tile = layer.data.get(x, y);
 
                     if (!tile) continue;
 
@@ -176,9 +176,7 @@ int process_bodies(const InputMap & map, const Layer & layer, std::ostream & out
     // ---- ---- ---- ----
 
     // Copy layer data in a temporary array
-    unsigned map_data_size = map.width * map.height;
-    Layer::TileMap map_data(new Tile*[map_data_size]);
-    std::memcpy(map_data.get(), layer.data.get(), sizeof(Tile*[map_data_size]));
+    Layer::TileMap map_data(layer.data);
 
 
     // Group tiles in bigger boxes
@@ -188,8 +186,7 @@ int process_bodies(const InputMap & map, const Layer & layer, std::ostream & out
     do
     {
         // Copy layer data in a temporary array again
-        Layer::TileMap avai_data(new Tile*[map_data_size]);
-        std::memcpy(avai_data.get(), map_data.get(), sizeof(Tile*[map_data_size]));
+        Layer::TileMap avai_data(map_data);
 
         avaiable_boxes.clear();
 
@@ -198,7 +195,7 @@ int process_bodies(const InputMap & map, const Layer & layer, std::ostream & out
         {
             for (unsigned x = 0; x < map.width; ++x)
             {
-                if (!avai_data[x + y * map.width]) continue;
+                if (!avai_data.get(x, y)) continue;
 
                 Box av;
 
@@ -208,7 +205,7 @@ int process_bodies(const InputMap & map, const Layer & layer, std::ostream & out
 unsigned ex = x;
 for (; ex < map.width; ++ex)
 {
-    if (avai_data[ex + y * map.width] == nullptr)
+    if (avai_data.get(ex, y) == nullptr)
         break;
 }
 unsigned ey = y;
@@ -217,7 +214,7 @@ for (; ey < map.height; ++ey)
     bool ok = true;
     for (unsigned tx = x; tx < ex; ++tx)
     {
-        if (avai_data[tx + ey * map.width] == nullptr)
+        if (avai_data.get(tx, ey) == nullptr)
         {
             ok = false; break;
         }
@@ -234,7 +231,7 @@ av.h = ey - y;
                 for (unsigned ly = av.y; ly < (av.y + av.h); ++ly)
                 for (unsigned lx = av.x; lx < (av.x + av.w); ++lx)
                 {
-                    avai_data[lx + ly * map.width] = nullptr;
+                    avai_data.set(lx, ly, nullptr);
                 }
 
                 avaiable_boxes.push_back(av);
@@ -258,7 +255,7 @@ av.h = ey - y;
         for (unsigned y = biggest.y; y < (biggest.y + biggest.h); ++y)
         for (unsigned x = biggest.x; x < (biggest.x + biggest.w); ++x)
         {
-            map_data[x + y * map.width] = nullptr;
+            map_data.set(x, y, nullptr);
         }
 
         boxes.push_back(biggest);
