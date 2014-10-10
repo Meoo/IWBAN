@@ -63,6 +63,8 @@ public:
     const std::string & getName() const             { return _name; }
     void        setName(const std::string & name)   { _name = name; }
 
+    bool        isSpawned() const                   { return _spawned; }
+
     // FIXME Debug
     void        testRender(gfx::DrawContext & draw);
 
