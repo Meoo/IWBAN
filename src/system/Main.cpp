@@ -78,7 +78,7 @@ int main(int argc, char ** argv)
 
             // IWBAN exception caught
             projector.setScreen(
-                new sys::ExceptionScreen(projector.getCurrentScreen()));
+                new sys::ExceptionScreen(exception.title(), exception.what()));
         }
         catch (const std::exception & exception)
         {
@@ -89,7 +89,7 @@ int main(int argc, char ** argv)
 
             // Standard exception caught
             projector.setScreen(
-                new sys::ExceptionScreen(projector.getCurrentScreen()));
+                new sys::ExceptionScreen("Error !", exception.what()));
         }
         catch (...)
         {
@@ -100,7 +100,7 @@ int main(int argc, char ** argv)
 
             // Unknown exception caught
             projector.setScreen(
-                new sys::ExceptionScreen(projector.getCurrentScreen()));
+                new sys::ExceptionScreen("Error !", "Unknown exception caught"));
         }
     }
 
