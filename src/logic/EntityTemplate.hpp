@@ -27,12 +27,14 @@ class EntityTemplate
 {
 private:
     std::string                     _entity_class;
+    std::string                     _entity_name;
     std::map<std::string, Variant>  _properties;
 
 
 public:
     explicit EntityTemplate(const std::string & entity_class);
 
+    void setName(const std::string & name) { _entity_name = name; }
     void setValue(const std::string & key, const Variant & value);
 
     std::unique_ptr<Entity> createEntity(EntityFactory & factory) const;

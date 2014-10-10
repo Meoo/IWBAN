@@ -35,6 +35,9 @@ std::unique_ptr<Entity> EntityTemplate::createEntity(EntityFactory & factory) co
 {
     std::unique_ptr<Entity> entity = factory.createEntity(_entity_class);
 
+    if (!_entity_name.empty())
+        entity->setName(_entity_name);
+
     for (const auto & it : _properties)
         entity->setValue(it.first, it.second);
 
