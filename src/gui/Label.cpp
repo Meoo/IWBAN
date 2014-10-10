@@ -53,6 +53,12 @@ void Label::loadText(const std::string & string_key)
     _text.setString(data::getLocale().getString(string_key));
 }
 
+void Label::setText(const std::string & text)
+{
+    _key = "";
+    _text.setString(text);
+}
+
 void Label::refresh()
 {
     if (!_key.empty())
