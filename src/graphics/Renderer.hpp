@@ -48,6 +48,8 @@ private:
 #ifndef NDEBUG
     std::unique_ptr<DebugContext>   _debug_context;
     bool                            _debug_enabled;
+
+    // Flag that is enabled between begin and end (precondition checks)
     bool                            _debug_active;
 #endif
 
@@ -62,42 +64,44 @@ private:
 
 public:
     // Constructor
-    Renderer(sf::RenderTarget & target);
+                        Renderer(sf::RenderTarget & target);
 
-    // Functions
-    DrawContext &   openDrawContext();
+    // Context opening functions
+    DrawContext &       openDrawContext();
 
-    LightContext &  openLightContext(const sf::Color & ambient_light);
+    LightContext &      openLightContext(const sf::Color & ambient_light);
 
     // Gui context must be opened last
-    GuiContext &    openGuiContext();
+    GuiContext &        openGuiContext();
 
 #ifndef NDEBUG
     // Debug context can be opened at any time (even after Gui)
-    DebugContext &  openDebugContext();
+    DebugContext &      openDebugContext();
 #endif
 
-    void reloadConfiguration();
+    // Functions
+    void                reloadConfiguration();
 
-    void begin();
+    void                begin();
+    void                end();
 
-    void end();
+    void                setOverlayColor(const sf::Color & color)
+                                { _overlay_color = color; }
+    void                setColorCorrection(const sf::Color & color)
+                                { _color_correction = color; }
 
-    void setOverlayColor(const sf::Color & color)   { _overlay_color = color; }
-    void setColorCorrection(const sf::Color & color){ _color_correction = color; }
+    void                setRotation(float angle);
+    void                setOffset(float x, float y);
 
-    void setRotation(float angle);
-    void setOffset(float x, float y);
+          Camera &      getCamera()                      { return _camera; }
+    const Camera &      getCamera() const                { return _camera; }
 
-          Camera & getCamera()                      { return _camera; }
-    const Camera & getCamera() const                { return _camera; }
-
-    void setCamera(const Camera & camera)           { _camera = camera; }
+    void                setCamera(const Camera & camera) { _camera = camera; }
 
 
 private:
     // Flush draw and light contexts to the screen
-    void flushDrawLight();
+    void                flushDrawLight();
 
 };
 // class Renderer
