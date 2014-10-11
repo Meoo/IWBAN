@@ -17,6 +17,12 @@ Body::Body(const Mesh * mesh, Controller * controller)
     IWBAN_PRE_PTR(mesh);
 }
 
+Body::~Body()
+{
+    if (_space)
+        _space->remove(this);
+}
+
 ut::Rectangle Body::getBounds() const
 {
     if (!_mesh)
@@ -66,6 +72,18 @@ void Body::computeContacts(const Body & first, const Body & second,
         contact.normal = ut::normalize(contact.impulse);
 
     output.push_back(contact);
+}
+
+void Body::init(Space * space, Owner * owner)
+{
+    _space = space;
+    _owner = owner;
+}
+
+void Body::deinit()
+{
+    _space = nullptr;
+    _owner = nullptr;
 }
 
 }

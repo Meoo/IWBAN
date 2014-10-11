@@ -118,6 +118,11 @@ private:
     void        update();
 
 
+    // Try to cleanup the Entity's components
+    // Called on destruction and on despawn
+    void        emergencyCleanup();
+
+
 };
 // class Entity
 

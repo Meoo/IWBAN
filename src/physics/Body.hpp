@@ -18,12 +18,6 @@
 
 #include <vector>
 
-namespace logic
-{
-class Entity;
-}
-// namespace logic
-
 namespace phy
 {
 
@@ -33,12 +27,14 @@ class Mesh;
 class Body : public boost::noncopyable
 {
 public:
-    typedef ut::Vector      Vector;
-    typedef logic::Entity   Owner;
+    typedef ut::Vector          Vector;
+    typedef Space::BodyOwner    Owner;
 
 
 private:
     // Data members
+    Space *         _space          = nullptr;
+
     const Mesh *    _mesh;
     Controller *    _controller     = nullptr;
     Owner *         _owner          = nullptr;
@@ -52,6 +48,9 @@ private:
 public:
     // Constructor
     explicit        Body(const Mesh * mesh, Controller * controller = nullptr);
+
+    // Destructor
+                    ~Body();
 
     // Getters / setters
     const Mesh *    getMesh() const                         { return _mesh; }
@@ -79,9 +78,12 @@ public:
 
 
 protected:
-    friend Owner;
+    friend class Space;
 
-    void            setOwner(Owner * owner)                 { _owner = owner; }
+    Space *         getSpace() const                        { return _space; }
+
+    void            init(Space * space, Owner * owner);
+    void            deinit();
 
 };
 // class Body

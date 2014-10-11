@@ -130,7 +130,7 @@ Lua::~Lua()
 
 void Lua::run(const LuaScript & script)
 {
-    IWBAN_ASSERT(script.isValid());
+    IWBAN_PRE(script.isValid());
 
     luaL_loadbuffer(_state, script.getData(), script.getSize(), script.getSource());
     pcall(0, 0);

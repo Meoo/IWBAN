@@ -22,8 +22,10 @@ Entity::Entity()
 Entity::~Entity()
 {
     // TODO Exception safe?
-    if (_spawned)
-        despawn();
+    if (isSpawned())
+        IWBAN_LOG_ERROR("Destroying entity '%s' that is still spawned", getName().c_str());
+
+    emergencyCleanup();
 
     // TODO Better state machine ?
     getWorld().remove(this);
@@ -54,7 +56,7 @@ void Entity::sendEvent(const std::string & event, const Variant & param)
 Variant Entity::doGetValue(const std::string & key) const
 {
     // TODO Protect lua calls, or check LuaObject
-    IWBAN_ASSERT(getLuaObject().isValid());
+    IWBAN_PRE(getLuaObject().isValid());
 
     Lua & l = getLua();
 
@@ -70,7 +72,7 @@ Variant Entity::doGetValue(const std::string & key) const
 void Entity::doSetValue(const std::string & key, const Variant & value)
 {
     // TODO Protect lua calls, or check LuaObject
-    IWBAN_ASSERT(getLuaObject().isValid());
+    IWBAN_PRE(getLuaObject().isValid());
 
     Lua & l = getLua();
 
@@ -84,7 +86,7 @@ void Entity::doSetValue(const std::string & key, const Variant & value)
 void Entity::doEvent(const std::string & event, const Variant & param)
 {
     // TODO Protect lua calls, or check LuaObject
-    IWBAN_ASSERT(getLuaObject().isValid());
+    IWBAN_PRE(getLuaObject().isValid());
 
     Lua & l = getLua();
 
@@ -123,39 +125,37 @@ Lua & Entity::getLua() const
 
 void Entity::addDrawable(gfx::Drawable * drawable)
 {
-    IWBAN_ASSERT(_spawned);
+    IWBAN_PRE(_spawned);
 
     _drawables.insert(drawable);
 }
 
 void Entity::removeDrawable(gfx::Drawable * drawable)
 {
-    IWBAN_ASSERT(_spawned);
+    IWBAN_PRE(_spawned);
 
     _drawables.erase(drawable);
 }
 
 void Entity::addBody(phy::Body * body)
 {
-    IWBAN_ASSERT(_spawned);
+    IWBAN_PRE(_spawned);
 
+    getSpace().add(body, this);
     _bodies.insert(body);
-    body->setOwner(this);
-    getSpace().attach(body);
 }
 
 void Entity::removeBody(phy::Body * body)
 {
-    IWBAN_ASSERT(_spawned);
+    IWBAN_PRE(_spawned);
 
-    getSpace().detach(body);
-    body->setOwner(nullptr);
+    getSpace().remove(body);
     _bodies.erase(body);
 }
 
 void Entity::spawn()
 {
-    IWBAN_ASSERT(!_spawned);
+    IWBAN_PRE(!_spawned);
     _spawned = true;
 
     doSpawn();
@@ -163,16 +163,11 @@ void Entity::spawn()
 
 void Entity::despawn()
 {
-    IWBAN_ASSERT(_spawned);
+    IWBAN_PRE(_spawned);
 
     doDespawn();
 
-    // TODO Better cleanup
-    for (phy::Body * body : _bodies)
-    {
-        // TODO body->setOwner(nullptr); ? Dangerous in destructor
-        getSpace().detach(body);
-    }
+    emergencyCleanup();
 
     _spawned = false;
 }
@@ -180,6 +175,21 @@ void Entity::despawn()
 void Entity::update()
 {
     doUpdate();
+}
+
+void Entity::emergencyCleanup()
+{
+    if (!_bodies.empty())
+        IWBAN_LOG_ERROR("Entity '%s' has bodies left after despawn", getName().c_str());
+
+    if (!_drawables.empty())
+        IWBAN_LOG_ERROR("Entity '%s' has drawables left after despawn", getName().c_str());
+
+    if (!_shadows.empty())
+        IWBAN_LOG_ERROR("Entity '%s' has shadows left after despawn", getName().c_str());
+
+    if (!_lights.empty())
+        IWBAN_LOG_ERROR("Entity '%s' has lights left after despawn", getName().c_str());
 }
 
 }

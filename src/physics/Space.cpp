@@ -16,9 +16,12 @@
 namespace phy
 {
 
-void Space::attach(Body * body)
+void Space::add(Body * body, BodyOwner * owner)
 {
     IWBAN_PRE_PTR(body);
+    IWBAN_PRE_PTR(owner);
+
+    body->init(this, owner);
 
     auto it = _to_detach.find(body);
 
@@ -30,9 +33,12 @@ void Space::attach(Body * body)
 
 }
 
-void Space::detach(Body * body) noexcept
+void Space::remove(Body * body) noexcept
 {
     IWBAN_PRE_PTR(body);
+    IWBAN_PRE(body->getSpace() == this);
+
+    body->deinit();
 
     auto it = _to_attach.find(body);
 

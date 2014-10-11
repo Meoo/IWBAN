@@ -11,12 +11,20 @@
 #include <utils/Vector.hpp>
 #include <utils/Rectangle.hpp>
 
+#include <boost/noncopyable.hpp>
+
 #include <set>
 #include <vector>
 
 #ifndef NDEBUG
 #  include <graphics/contexts/debug/DebugContext.hpp>
 #endif
+
+namespace logic
+{
+class Entity;
+}
+// namespace logic
 
 namespace phy
 {
@@ -78,8 +86,12 @@ public:
 
 // ---- ---- ---- ----
 
-class Space
+class Space : public boost::noncopyable
 {
+public:
+    typedef logic::Entity   BodyOwner;
+
+
 private:
     typedef std::set<Body *> BodySet;
 
@@ -96,8 +108,8 @@ public:
 
 
     // Functions
-    void attach(Body * body);
-    void detach(Body * body) noexcept;
+    void add(Body * body, BodyOwner * owner);
+    void remove(Body * body) noexcept;
 
     void update();
 
