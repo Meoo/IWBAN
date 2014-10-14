@@ -76,12 +76,18 @@ void Body::computeContacts(const Body & first, const Body & second,
 
 void Body::init(Space * space, Owner * owner)
 {
+    IWBAN_PRE_PTR(space);
+    IWBAN_PRE_PTR(owner);
+    IWBAN_PRE(!_space);
+
     _space = space;
     _owner = owner;
 }
 
 void Body::deinit()
 {
+    IWBAN_PRE_PTR(_space);
+
     _space = nullptr;
     _owner = nullptr;
 }
