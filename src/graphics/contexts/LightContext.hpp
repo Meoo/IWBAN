@@ -44,6 +44,7 @@ public:
     bool isOpen() const override { return _open; }
     void close() override;
 
+
 private:
     // Internal functions
     void buildShadowMask(const gfx::Light & light,
