@@ -13,7 +13,7 @@
 #include <system/Controls.hpp>
 #include <system/Screen.hpp>
 #include <system/screens/options/OptionsMenuScreen.hpp>
-#include <system/screens/IntroScreen.hpp>
+#include <system/screens/DebugScreen.hpp>
 
 #include <gui/Button.hpp>
 #include <gui/Navigation.hpp>
@@ -104,7 +104,7 @@ protected:
     void onNewGame()
     {
         // TODO Go to new game screen
-        setNextScreen(new IntroScreen());
+        setNextScreen(new DebugScreen());
         dispose();
     }
 
