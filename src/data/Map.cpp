@@ -116,18 +116,38 @@ class Layer::LayerDrawable final : public gfx::Drawable
 private:
     const Layer * _layer;
 
+    ut::Rectangle _bounds;
+
 
 public:
     LayerDrawable(const Layer * layer)
-        : _layer(layer) {}
+        : _layer(layer)
+    {
+        for (const auto & chunk : _layer->getChunks())
+            _bounds.expand(chunk->getBounds());
+    }
+
+    ut::Rectangle getBounds() const override
+    {
+        return _bounds;
+    }
 
 
 protected:
     void draw(sf::RenderTarget & target, sf::RenderStates states) const override
     {
-        // TODO Cull chunks based on camera view
+        // TODO Use Parallax when requested, and culling may not work well when parallax is active
+
+        // Cull chunks based on camera view
+        const sf::View & view = target.getView();
+        ut::Rectangle bounds =
+                ut::Rectangle::fromSize(
+                        view.getCenter() - ut::Vector(view.getSize()) / 2,
+                        view.getSize());
+
         for (const auto & chunk : _layer->getChunks())
-            target.draw(*chunk, states);
+            if (bounds.isIntersecting(chunk->getBounds()))
+                target.draw(*chunk, states);
     }
 
 };
