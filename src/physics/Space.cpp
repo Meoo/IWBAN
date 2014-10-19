@@ -245,10 +245,9 @@ std::vector<Contact> Space::traceBodyM(const Body & body, Group group_mask) cons
 #ifndef NDEBUG
 void Space::drawDebug(gfx::DebugContext & debug) const
 {
-    sf::RenderStates r;
     for (Body * body : _bodies)
     {
-        r.transform = sf::Transform::Identity;
+        sf::RenderStates r;
         r.transform.translate(body->getPosition());
         body->getMesh()->drawDebug(debug, r);
     }
