@@ -24,8 +24,11 @@ private:
     {
     public:
         std::string             name;
+        bool                    enable      = true;
+
         std::vector<BodyPtr>    bodies;
         DrawablePtr             drawable;
+
     };
     // class MapLayer
 
@@ -38,9 +41,14 @@ private:
 public:
     explicit MapEntity(const data::Map * map);
 
+    void enableLayer(const std::string & layer_name);
+    void disableLayer(const std::string & layer_name);
 
 protected:
     void doSpawn() override;
+    void doDespawn() override;
+
+    void doEvent(const std::string & event, const logic::Variant & param) override;
 
 };
 // class MapEntity
