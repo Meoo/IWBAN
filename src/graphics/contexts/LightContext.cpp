@@ -25,6 +25,7 @@ namespace gfx
 {
 
 LightContext::LightContext()
+    : _shadow_volumes(nullptr)
 {
     _render_light.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
     _render_light_mask.create(IWBAN_FRAME_WIDTH, IWBAN_FRAME_HEIGHT);
@@ -43,7 +44,7 @@ void LightContext::draw(const gfx::Light & light)
 
     if (/* TODO mask enabled */ false)
     {
-        buildShadowMask(light, /* TODO shadow volumes list */ {});
+        buildShadowMask(light);
         _light_mix->setParameter("light_map", _render_light_mask.getTexture());
         state.shader = _light_mix;
     }
@@ -51,44 +52,25 @@ void LightContext::draw(const gfx::Light & light)
     // TODO Draw light (use shadow mask if necessary)
 }
 
-void LightContext::open(const sf::View & view, const sf::Color & ambient_color)
+void LightContext::buildShadowMask(const gfx::Light & light)
 {
-    IWBAN_PRE(!_open);
+    if (!_shadow_volumes) return;
 
-    _render_light.setView(view);
-    _render_light.clear(ambient_color);
-
-    _open = true;
-}
-
-void LightContext::close()
-{
-    IWBAN_PRE(_open);
-
-    _render_light.display();
-
-    _open = false;
-}
-
-const sf::Texture & LightContext::getTexture() const
-{
-    return _render_light.getTexture();
-}
-
-void LightContext::buildShadowMask(const gfx::Light & light,
-                                   const std::vector<ShadowVolume *> & list)
-{
     _render_light_mask.clear(sf::Color::Black);
 
     // Keep the vertex array here to avoid many memory allocations
     // TODO Static or member data?
     static sf::VertexArray vertices(sf::Quads);
 
-    ut::Vector origin = light.getOrigin();
+    const ut::Vector & origin   = light.getOrigin();
+    const ut::Rectangle bounds  = light.getBounds();
 
     // Draw the mask we want to use
-    for (const ShadowVolume * shadow : list)
+    for (const ShadowVolume * shadow : *_shadow_volumes)
     {
+        if (!shadow->getBounds().isIntersecting(bounds))
+            continue;
+
         bool       last_valid = false;
         ut::Vector last_vert;
         ut::Vector last_delta;
@@ -134,6 +116,31 @@ void LightContext::buildShadowMask(const gfx::Light & light,
         _render_light_mask.draw(vertices, sf::RenderStates(sf::BlendAdd));
         vertices.clear();
     }
+}
+
+void LightContext::open(const sf::View & view, const sf::Color & ambient_color)
+{
+    IWBAN_PRE(!_open);
+
+    _render_light.setView(view);
+    _render_light.clear(ambient_color);
+    _shadow_volumes = nullptr;
+
+    _open = true;
+}
+
+void LightContext::close()
+{
+    IWBAN_PRE(_open);
+
+    _render_light.display();
+
+    _open = false;
+}
+
+const sf::Texture & LightContext::getTexture() const
+{
+    return _render_light.getTexture();
 }
 
 }

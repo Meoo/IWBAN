@@ -29,13 +29,6 @@ void World::update()
     }
 }
 
-// FIXME Debug
-void World::testRender(gfx::DrawContext & draw)
-{
-    for (Entity * entity : _entities)
-        entity->testRender(draw);
-}
-
 void World::add(Entity * entity)
 {
     _new_entities.insert(entity);

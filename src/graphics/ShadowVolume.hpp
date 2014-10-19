@@ -13,15 +13,21 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <boost/noncopyable.hpp>
+
 #include <vector>
 
 namespace gfx
 {
 
-class ShadowVolume
+class Scene;
+
+class ShadowVolume : public boost::noncopyable
 {
 private:
     // Data members
+    Scene *                 _scene      = nullptr;
+
     // Vertices must be listed clockwise
     // Last and first vertices are not considered as connected,
     // so they should be duplicates if the volume needs to be a closed polygon
@@ -29,13 +35,21 @@ private:
 
     ut::Vector              _position;
 
+    ut::Rectangle           _bounds;
+
+    // Colors that are filtered by this volume
+    // Default is White : no light can pass through the volume
     sf::Color               _color      = sf::Color::White;
 
 
 public:
+    // Destructor
+                        ~ShadowVolume();
+
     // Functions
-    // TODO ? ut::Rectangle getBoundingBox() const;
-    void dbgAddVertex(const ut::Vector & vec) { _vertices.push_back(vec); }
+
+    // FIXME Debug function
+    void                dbgAddVertex(const ut::Vector & vec)        { _vertices.push_back(vec); }
 
     // Accessors
     std::size_t         getVertexCount() const                      { return _vertices.size(); }
@@ -46,6 +60,17 @@ public:
 
     const sf::Color &   getShadowColor() const                      { return _color; }
     void                setShadowColor(const sf::Color & color)     { _color = color; }
+
+    ut::Rectangle       getBounds() const                           { auto b = _bounds; b.translate(_position); return b; }
+
+
+private:
+    friend class Scene;
+
+    Scene *     getScene()                  { return _scene; }
+
+    void        init(Scene * scene);
+    void        deinit();
 
 };
 // class ShadowVolume

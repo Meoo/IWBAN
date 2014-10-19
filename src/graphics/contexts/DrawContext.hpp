@@ -15,6 +15,7 @@
 namespace gfx
 {
 
+class Drawable;
 class Renderer;
 
 class DrawContext : public Context
@@ -29,6 +30,9 @@ private:
 public:
     DrawContext();
 
+    void draw(const Drawable & drawable);
+
+    // TODO Remove sf::Drawable functions
     void draw(const sf::Drawable & drawable,
               const sf::RenderStates & states = sf::RenderStates::Default);
 

@@ -9,6 +9,7 @@
 #include <Global.hpp>
 
 #include <utils/Vector.hpp>
+#include <utils/Rectangle.hpp>
 
 #include <SFML/Graphics/View.hpp>
 #include <SFML/System/Time.hpp>
@@ -26,21 +27,22 @@ private:
 
 public:
     // Constructor
-                Camera();
-    explicit    Camera(const ut::Vector & center);
+                    Camera();
+    explicit        Camera(const ut::Vector & center);
 
     // Getters / setters
     const sf::View & getView() const                { return _view; }
+    ut::Rectangle   getViewBounds() const;
 
-    void        setCenter(const ut::Vector & center);
+    void            setCenter(const ut::Vector & center);
 
     // Functions
-    ut::Vector  screenToWorld(const ut::Vector & screen_coord) const;
-    ut::Vector  worldToScreen(const ut::Vector & world_coord) const;
+    ut::Vector      screenToWorld(const ut::Vector & screen_coord) const;
+    ut::Vector      worldToScreen(const ut::Vector & world_coord) const;
 
 
 private:
-    void        updateView();
+    void            updateView();
 
 };
 // class Camera

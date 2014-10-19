@@ -18,6 +18,13 @@ Camera::Camera()
     updateView();
 }
 
+ut::Rectangle Camera::getViewBounds() const
+{
+    return ut::Rectangle::fromSize(
+        _view.getCenter() - ut::Vector(_view.getSize()) / 2,
+        _view.getSize());
+}
+
 void Camera::setCenter(const ut::Vector & center)
 {
     _center = center;

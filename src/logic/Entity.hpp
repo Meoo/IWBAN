@@ -23,6 +23,11 @@
 // FIXME Debug
 #include <graphics/contexts/DrawContext.hpp>
 
+namespace gfx
+{
+class Scene;
+}
+
 namespace phy
 {
 class Body;
@@ -65,9 +70,6 @@ public:
 
     bool        isSpawned() const                   { return _spawned; }
 
-    // FIXME Debug
-    void        testRender(gfx::DrawContext & draw);
-
     // Values and events
     Variant     getValue(const std::string & key) const;
     void        setValue(const std::string & key, const Variant & value);
@@ -80,6 +82,7 @@ public:
 protected:
     // Shorthands for systems
     World &     getWorld();
+    gfx::Scene & getScene();
     phy::Space & getSpace();
     Lua &       getLua() const;
 

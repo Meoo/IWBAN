@@ -9,6 +9,7 @@
 #include <Global.hpp>
 
 #include <logic/Lua.hpp>
+#include <graphics/Scene.hpp>
 #include <physics/Space.hpp>
 
 #include <set>
@@ -19,6 +20,7 @@ namespace logic
 class World
 {
 private:
+    gfx::Scene          _scene;
     phy::Space          _space;
     Lua                 _lua;
 
@@ -34,10 +36,8 @@ public:
 
     void    update();
 
-    // FIXME Debug
-    void    testRender(gfx::DrawContext & draw);
-
     // TODO Private for Entity ? Debug draw ?
+    gfx::Scene & getScene() { return _scene; }
     phy::Space & getSpace() { return _space; }
 
 

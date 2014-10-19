@@ -11,25 +11,45 @@
 #include <utils/Rectangle.hpp>
 #include <utils/Vector.hpp>
 
+#include <SFML/Graphics.hpp>
+
+#include <boost/noncopyable.hpp>
+
 namespace gfx
 {
 
-class Light
+class Scene;
+
+// TODO Remove sf::Drawable inheritance?
+class Light : public sf::Drawable, public boost::noncopyable
 {
 private:
     // Data members
+    Scene *     _scene      = nullptr;
+
     bool        _cast_shadows;
 
     ut::Vector  _origin;
 
 
 public:
-    // Virtual destructor
-    virtual ~Light()     {}
+    // Destructor
+                 ~Light();
 
-    const ut::Vector & getOrigin() const { return _origin; }
+    // Getters
+    const ut::Vector & getOrigin() const    { return _origin; }
 
-    ut::Rectangle getBounds() const;
+    // TODO Light:getBounds
+    ut::Rectangle getBounds() const         { return ut::Rectangle(); }
+
+
+private:
+    friend class Scene;
+
+    Scene *     getScene()                  { return _scene; }
+
+    void        init(Scene * scene);
+    void        deinit();
 
 };
 // class Light

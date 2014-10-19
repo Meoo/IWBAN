@@ -7,7 +7,7 @@
 
 #include <config/DisplayConfig.hpp>
 #include <config/Settings.hpp>
-
+#include <graphics/Drawable.hpp>
 #include <graphics/contexts/DrawContext.hpp>
 
 namespace
@@ -29,6 +29,13 @@ DrawContext::DrawContext()
 
     if (!cfg::pixelated)
         _render_scene.setSmooth(true);
+}
+
+void DrawContext::draw(const Drawable & drawable)
+{
+    IWBAN_PRE(_open);
+
+    _render_scene.draw(drawable);
 }
 
 void DrawContext::draw(const sf::Drawable & drawable,

@@ -31,13 +31,6 @@ Entity::~Entity()
     getWorld().remove(this);
 }
 
-// FIXME Debug
-void Entity::testRender(gfx::DrawContext & draw)
-{
-    for (gfx::Drawable * drawable : _drawables)
-        draw.draw(*drawable);
-}
-
 Variant Entity::getValue(const std::string & key) const
 {
     return doGetValue(key);
@@ -113,6 +106,11 @@ World & Entity::getWorld()
     return logic::getWorld();
 }
 
+gfx::Scene & Entity::getScene()
+{
+    return logic::getWorld().getScene();
+}
+
 phy::Space & Entity::getSpace()
 {
     return logic::getWorld().getSpace();
@@ -127,6 +125,7 @@ void Entity::addDrawable(gfx::Drawable * drawable)
 {
     IWBAN_PRE(_spawned);
 
+    getScene().add(drawable);
     _drawables.insert(drawable);
 }
 
@@ -134,6 +133,7 @@ void Entity::removeDrawable(gfx::Drawable * drawable)
 {
     IWBAN_PRE(_spawned);
 
+    getScene().remove(drawable);
     _drawables.erase(drawable);
 }
 
@@ -180,16 +180,16 @@ void Entity::update()
 void Entity::emergencyCleanup()
 {
     if (!_bodies.empty())
-        IWBAN_LOG_ERROR("Entity '%s' has bodies left after despawn", getName().c_str());
+        IWBAN_LOG_ERROR("Entity '%s' has bodies left", getName().c_str());
 
     if (!_drawables.empty())
-        IWBAN_LOG_ERROR("Entity '%s' has drawables left after despawn", getName().c_str());
+        IWBAN_LOG_ERROR("Entity '%s' has drawables left", getName().c_str());
 
     if (!_shadows.empty())
-        IWBAN_LOG_ERROR("Entity '%s' has shadows left after despawn", getName().c_str());
+        IWBAN_LOG_ERROR("Entity '%s' has shadows left", getName().c_str());
 
     if (!_lights.empty())
-        IWBAN_LOG_ERROR("Entity '%s' has lights left after despawn", getName().c_str());
+        IWBAN_LOG_ERROR("Entity '%s' has lights left", getName().c_str());
 }
 
 }
