@@ -173,5 +173,33 @@ void PlayerEntity::doSpawn()
     addBody(&_body);
 }
 
+void PlayerEntity::doUpdate()
+{
+    // Activate triggers every frame
+    std::vector<phy::Contact> contacts = getSpace().traceBodyM(_body, phy::GROUP_TRIGGERS);
+
+    for (const phy::Contact & c : contacts)
+        c.second->getOwner()->sendEvent("activate");
+}
+
+logic::Variant PlayerEntity::doGetValue(const std::string & key) const
+{
+    if (key == "position")
+        return getPosition();
+
+    return Entity::doGetValue(key);
+}
+
+void PlayerEntity::doSetValue(const std::string & key, const logic::Variant & value)
+{
+    if (key == "position")
+    {
+        setPosition(value.toVector());
+        return;
+    }
+
+    Entity::doSetValue(key, value);
+}
+
 }
 // namespace game

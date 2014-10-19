@@ -58,6 +58,11 @@ public:
 protected:
     void doSpawn() override;
 
+    void doUpdate() override;
+
+    logic::Variant doGetValue(const std::string & key) const override;
+    void doSetValue(const std::string & key, const logic::Variant & value) override;
+
 };
 // class PlayerEntity
 
