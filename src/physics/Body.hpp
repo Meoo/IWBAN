@@ -72,10 +72,6 @@ public:
     // TODO getBounds
     ut::Rectangle   getBounds() const;
 
-    // Static function
-    static void     computeContacts(const Body & first, const Body & second,
-                                    std::vector<Contact> & output);
-
 
 protected:
     friend class Space;

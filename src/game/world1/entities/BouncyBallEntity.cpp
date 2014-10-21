@@ -61,15 +61,6 @@ void BouncyBallController::resolveContact(
 {
     ut::Vector impulse = contact.impulse;
 
-    if (impulse.x != 0 && impulse.y != 0)
-    {
-        if (std::abs(impulse.x) < std::abs(impulse.y))
-            impulse.y = 0;
-
-        else
-            impulse.x = 0;
-    }
-
     body.setPosition(body.getPosition() + impulse / 2);
 
     if (impulse.y != 0
@@ -105,8 +96,8 @@ void BouncyBallController::postUpdate(const phy::Space & space, phy::Body & body
 BouncyBallEntity::BouncyBallEntity()
     : _body(&BALL_MESH, &_controller)
 {
-    _body.setGroup(phy::GROUP_NONE);
-    _body.setCollisionMask(phy::GROUP_WORLD);
+    _body.setGroup(phy::GROUP_OBJECTS);
+    _body.setCollisionMask(phy::GROUP_WORLD | phy::GROUP_OBJECTS);
 
     // FIXME Debug
     _body.setPosition(ut::Vector(300, 300));

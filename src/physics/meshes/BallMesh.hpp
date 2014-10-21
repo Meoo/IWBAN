@@ -44,6 +44,11 @@ public:
         setRadius(radius);
     }
 
+    float   getRadius() const
+    {
+        return _radius;
+    }
+
     void    setRadius(float radius)
     {
         _radius         = radius;
@@ -61,6 +66,11 @@ public:
     const ut::Rectangle & getBounds() const override
     {
         return _bounds;
+    }
+
+    Type getType() const override
+    {
+        return MESH_BALL;
     }
 
 #ifndef NDEBUG

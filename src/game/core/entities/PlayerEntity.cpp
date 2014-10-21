@@ -117,7 +117,7 @@ void PlayerController::resolveContact(
 
     if (impulse.x != 0 && impulse.y != 0)
     {
-        if (std::abs(impulse.x) < std::abs(impulse.y))
+        if (std::abs(impulse.y) < std::abs(impulse.x))
             impulse.y = 0;
 
         else

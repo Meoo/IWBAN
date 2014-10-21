@@ -20,14 +20,24 @@ namespace phy
 class Mesh
 {
 public:
+    enum Type
+    {
+        MESH_AABOX,
+        MESH_BALL,
+        MESH_CONVEX,
+    };
+
+
     // Virtual destructor
-    virtual ~Mesh() {}
+    virtual         ~Mesh() {}
 
     // Virtual functions
     virtual const ut::Rectangle & getBounds() const = 0;
 
+    virtual Type    getType() const = 0;
+
 #ifndef NDEBUG
-    virtual void drawDebug(gfx::DebugContext & debug,
+    virtual void    drawDebug(gfx::DebugContext & debug,
                            const sf::RenderStates & states) const = 0;
 #endif
 

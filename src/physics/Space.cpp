@@ -6,6 +6,7 @@
 #include <Global.hpp>
 
 #include <physics/Body.hpp>
+#include <physics/Collision.hpp>
 #include <physics/Controller.hpp>
 #include <physics/Space.hpp>
 
@@ -101,7 +102,7 @@ void Space::update()
 
         // TODO Narrow phase : Compute contacts
         for (const Pair & pair : pairs)
-            Body::computeContacts(*(pair.first), *(pair.second), contacts);
+            computeContacts(*(pair.first), *(pair.second), contacts);
 
         // TODO Resolution
         for (const Contact & contact : contacts)
@@ -186,7 +187,7 @@ Contact Space::traceBody(const Body & body) const
     {
         if (body.getCollisionMask() & other->getGroup())
         {
-            Body::computeContacts(body, *other, res);
+            computeContacts(body, *other, res);
 
             if (!res.empty())
                 return res[0];
@@ -204,7 +205,7 @@ std::vector<Contact> Space::traceBodyM(const Body & body) const
 
     for (Body * other : _bodies)
         if (body.getCollisionMask() & other->getGroup())
-            Body::computeContacts(body, *other, res);
+            computeContacts(body, *other, res);
 
     return res;
 }
@@ -219,7 +220,7 @@ Contact Space::traceBody(const Body & body, Group group_mask) const
     {
         if (group_mask & other->getGroup())
         {
-            Body::computeContacts(body, *other, res);
+            computeContacts(body, *other, res);
 
             if (!res.empty())
                 return res[0];
@@ -237,7 +238,7 @@ std::vector<Contact> Space::traceBodyM(const Body & body, Group group_mask) cons
 
     for (Body * other : _bodies)
         if (group_mask & other->getGroup())
-            Body::computeContacts(body, *other, res);
+            computeContacts(body, *other, res);
 
     return res;
 }

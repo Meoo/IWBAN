@@ -1,34 +1,34 @@
 /**
- * @file   AABoxMesh.hpp
+ * @file   ConvexMesh.hpp
  * @author Bastien Brunnenstein
  */
 
-#ifndef _IWBAN_AABOXMESH_HPP_
-#define _IWBAN_AABOXMESH_HPP_
+#ifndef _IWBAN_CONVEXMESH_HPP_
+#define _IWBAN_CONVEXMESH_HPP_
 
 #include <Global.hpp>
 
 #include <physics/Mesh.hpp>
 
 #ifndef NDEBUG
-#  include <SFML/Graphics/RectangleShape.hpp>
+#  include <SFML/Graphics/ConvexShape.hpp>
 #endif
 
 namespace phy
 {
 
-class AABoxMesh : public Mesh
+class ConvexMesh : public Mesh
 {
 private:
-    ut::Rectangle       _box;
+    ut::Rectangle   _bounds;
 
 #ifndef NDEBUG
-    sf::RectangleShape  _shape;
+    sf::ConvexShape _shape;
 #endif
 
 
 public:
-            AABoxMesh()
+            ConvexMesh()
     {
 #ifndef NDEBUG
         _shape.setFillColor(sf::Color::Transparent);
@@ -37,28 +37,14 @@ public:
 #endif
     }
 
-            AABoxMesh(const ut::Rectangle & box) : AABoxMesh()
-    {
-        setBounds(box);
-    }
-
-    void    setBounds(const ut::Rectangle & bounds)
-    {
-        _box = bounds;
-#ifndef NDEBUG
-        _shape.setOrigin(- _box.left, - _box.top);
-        _shape.setSize(_box.getSize());
-#endif
-    }
-
     const ut::Rectangle & getBounds() const override
     {
-        return _box;
+        return _bounds;
     }
 
     Type getType() const override
     {
-        return MESH_AABOX;
+        return MESH_CONVEX;
     }
 
 #ifndef NDEBUG
@@ -70,9 +56,9 @@ public:
 #endif
 
 };
-// class AABoxMesh
+// class ConvexMesh
 
 }
 // namespace phy
 
-#endif // _IWBAN_AABOXMESH_HPP_
+#endif // _IWBAN_CONVEXMESH_HPP_
