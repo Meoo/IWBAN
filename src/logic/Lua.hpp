@@ -24,9 +24,10 @@ enum LuaRegistry : int
 {
     LUA_IWBAN_CLASSES   = LUA_RIDX_LAST + 1,
     LUA_IWBAN_ENTITIES,
+    LUA_IWBAN_SPECIAL,
 
     LUA_IWBAN__FIRST    = LUA_IWBAN_CLASSES,
-    LUA_IWBAN__LAST     = LUA_IWBAN_ENTITIES,
+    LUA_IWBAN__LAST     = LUA_IWBAN_SPECIAL,
 
 };
 // enum LuaRegistry
@@ -73,7 +74,7 @@ class LuaObject : public boost::noncopyable
 {
 private:
     // Data members
-    Lua *       _lua        = nullptr;
+    lua_State * _lua        = nullptr;
     LuaRegistry _registry;
     int         _index;
 
@@ -96,7 +97,7 @@ public:
 private:
     friend class Lua;
 
-    LuaObject(Lua * lua, LuaRegistry registry);
+    LuaObject(lua_State * lua, LuaRegistry registry);
 
     LuaRegistry getRegistry() const     { return _registry; }
     int         getIndex() const        { return _index; }
@@ -134,6 +135,27 @@ public:
 
     // Return false if the call returned in error
     bool        pcall(int narg, int nres);
+
+
+    // Static functions
+    static
+    void        runL(lua_State * l, const LuaScript & script);
+    static
+    void        runFileL(lua_State * l, const std::string & filename);
+
+    static
+    LuaObject   createObjectL(lua_State * l, LuaRegistry registry);
+    static
+    void        pushObjectL(lua_State * l, LuaObject & object);
+
+    static
+    Variant     toVariantL(lua_State * l, int index);
+    static
+    void        pushVariantL(lua_State * l, const Variant & variant);
+
+    // Return false if the call returned in error
+    static
+    bool        pcallL(lua_State * l, int narg, int nres);
 
 };
 // class logic

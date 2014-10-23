@@ -53,16 +53,16 @@ LuaObject::LuaObject(LuaObject && object)
     object._lua = nullptr;
 }
 
-LuaObject::LuaObject(Lua * lua, LuaRegistry registry)
+LuaObject::LuaObject(lua_State * lua, LuaRegistry registry)
     : _lua(lua), _registry(registry)
 {
-    lua_rawgeti(*_lua, LUA_REGISTRYINDEX, _registry);
-    _index = lua_rawlen(*_lua, -1) + 1;
+    lua_rawgeti(_lua, LUA_REGISTRYINDEX, _registry);
+    _index = lua_rawlen(_lua, -1) + 1;
 
-    lua_newtable(*_lua);
-    lua_rawseti(*_lua, -2, _index);
+    lua_newtable(_lua);
+    lua_rawseti(_lua, -2, _index);
 
-    lua_pop(*_lua, 1);
+    lua_pop(_lua, 1);
 }
 
 LuaObject::~LuaObject()
@@ -70,12 +70,12 @@ LuaObject::~LuaObject()
     if (isValid())
     {
         // TODO Exception safety?
-        lua_rawgeti(*_lua, LUA_REGISTRYINDEX, _registry);
+        lua_rawgeti(_lua, LUA_REGISTRYINDEX, _registry);
 
-        lua_pushnil(*_lua);
-        lua_rawseti(*_lua, -2, _index);
+        lua_pushnil(_lua);
+        lua_rawseti(_lua, -2, _index);
 
-        lua_pop(*_lua, 1);
+        lua_pop(_lua, 1);
     }
 }
 
@@ -130,73 +130,110 @@ Lua::~Lua()
 
 void Lua::run(const LuaScript & script)
 {
-    IWBAN_PRE(script.isValid());
-
-    luaL_loadbuffer(_state, script.getData(), script.getSize(), script.getSource());
-    pcall(0, 0);
+    runL(_state, script);
 }
 
 void Lua::runFile(const std::string & filename)
 {
-    {
-        res::File f = res::openFile(filename);
-        luaL_loadbuffer(_state, (const char*) f.getData(), f.getSize(), filename.c_str());
-    }
-    pcall(0, 0);
+    runFileL(_state, filename);
 }
 
 LuaObject Lua::createObject(LuaRegistry registry)
 {
-    return LuaObject(this, registry);
+    return createObjectL(_state, registry);
 }
 
 void Lua::pushObject(LuaObject & object)
 {
-    if (object.isValid())
-    {
-        lua_rawgeti(_state, LUA_REGISTRYINDEX, object.getRegistry());
-        lua_rawgeti(_state, -1, object.getIndex());
-        lua_remove(_state, -2);
-    }
-    else
-        lua_pushnil(_state);
+    return pushObjectL(_state, object);
 }
 
 Variant Lua::toVariant(int index)
 {
-    switch (lua_type(_state, index))
+    return toVariantL(_state, index);
+}
+
+void Lua::pushVariant(const Variant & variant)
+{
+    pushVariantL(_state, variant);
+}
+
+bool Lua::pcall(int narg, int nres)
+{
+    return pcallL(_state, narg, nres);
+}
+
+// ---- ---- ---- ----
+
+void Lua::runL(lua_State * l, const LuaScript & script)
+{
+    IWBAN_PRE(script.isValid());
+
+    luaL_loadbuffer(l, script.getData(), script.getSize(), script.getSource());
+    pcallL(l, 0, 0);
+}
+
+void Lua::runFileL(lua_State * l, const std::string & filename)
+{
+    {
+        res::File f = res::openFile(filename);
+        luaL_loadbuffer(l, (const char*) f.getData(), f.getSize(), filename.c_str());
+    }
+    pcallL(l, 0, 0);
+}
+
+LuaObject Lua::createObjectL(lua_State * l, LuaRegistry registry)
+{
+    return LuaObject(l, registry);
+}
+
+void Lua::pushObjectL(lua_State * l, LuaObject & object)
+{
+    if (object.isValid())
+    {
+        lua_rawgeti(l, LUA_REGISTRYINDEX, object.getRegistry());
+        lua_rawgeti(l, -1, object.getIndex());
+        lua_remove(l, -2);
+    }
+    else
+        lua_pushnil(l);
+}
+
+Variant Lua::toVariantL(lua_State * l, int index)
+{
+    switch (lua_type(l, index))
     {
     case LUA_TNUMBER:
-        return Variant((Variant::Float) lua_tonumber(_state, index));
+        return Variant((Variant::Float) lua_tonumber(l, index));
 
     case LUA_TBOOLEAN:
-        return Variant(lua_toboolean(_state, index));
+        return Variant(lua_toboolean(l, index));
 
     case LUA_TSTRING:
-        return Variant(lua_tostring(_state, index));
+        return Variant(lua_tostring(l, index));
 
     case LUA_TTABLE:
     {
         // Vector (x and y in a table)
         ut::Vector v;
 
-        lua_getfield(_state, index, "x");
-        if (!lua_isnumber(_state, -1))
+        lua_getfield(l, index, "x");
+        if (!lua_isnumber(l, -1))
         {
-            lua_pop(_state, 1);
+            lua_pop(l, 1);
             break;
         }
-        v.x = lua_tonumber(_state, -1);
-        lua_pop(_state, 1);
+        v.x = lua_tonumber(l, -1);
+        lua_pop(l, 1);
 
-        lua_getfield(_state, index, "y");
-        if (!lua_isnumber(_state, -1))
+        lua_getfield(l, index, "y");
+        if (!lua_isnumber(l, -1))
         {
-            lua_pop(_state, 1);
+            lua_pop(l, 1);
             break;
         }
-        v.y = lua_tonumber(_state, -1);
-        lua_pop(_state, 1);
+        v.y = lua_tonumber(l, -1);
+        lua_pop(l, 1);
 
         return Variant(v);
     }
@@ -208,49 +245,49 @@ Variant Lua::toVariant(int index)
     return Variant();
 }
 
-void Lua::pushVariant(const Variant & variant)
+void Lua::pushVariantL(lua_State * l, const Variant & variant)
 {
     switch (variant.getType())
     {
     case Variant::TYPE_INT:
-        lua_pushinteger(_state, variant.toInt());
+        lua_pushinteger(l, variant.toInt());
         break;
 
     case Variant::TYPE_FLOAT:
-        lua_pushnumber(_state, variant.toFloat());
+        lua_pushnumber(l, variant.toFloat());
         break;
 
     case Variant::TYPE_BOOL:
-        lua_pushboolean(_state, variant.toBool());
+        lua_pushboolean(l, variant.toBool());
         break;
 
     case Variant::TYPE_STRING:
-        lua_pushstring(_state, variant.toString().c_str());
+        lua_pushstring(l, variant.toString().c_str());
         break;
 
     case Variant::TYPE_VECTOR:
     {
         ut::Vector v = variant.toVector();
-        lua_createtable(_state, 0, 2);
-        lua_pushnumber(_state, v.x);
-        lua_setfield(_state, -2, "x");
-        lua_pushnumber(_state, v.y);
-        lua_setfield(_state, -2, "y");
+        lua_createtable(l, 0, 2);
+        lua_pushnumber(l, v.x);
+        lua_setfield(l, -2, "x");
+        lua_pushnumber(l, v.y);
+        lua_setfield(l, -2, "y");
         break;
     }
 
     default:
-        lua_pushnil(_state);
+        lua_pushnil(l);
     }
 }
 
-bool Lua::pcall(int narg, int nres)
+bool Lua::pcallL(lua_State * l, int narg, int nres)
 {
-    int ret = lua_pcall(_state, narg, nres, 0);
+    int ret = lua_pcall(l, narg, nres, 0);
 
     if (ret)
     {
-        const char * msg = lua_tostring(_state, -1);
+        const char * msg = lua_tostring(l, -1);
         const char * what;
         switch (ret)
         {
@@ -262,7 +299,7 @@ bool Lua::pcall(int narg, int nres)
 
         IWBAN_LOG_ERROR("Lua (%s): %s", what, msg);
 
-        lua_pop(_state, 1);
+        lua_pop(l, 1);
     }
 
     return ret == 0;
