@@ -11,6 +11,7 @@
 #include <cstring> // strlen
 #include <iostream>
 #include <string>
+#include <type_traits>
 
 namespace ut
 {
@@ -23,7 +24,8 @@ namespace ut
 template<typename T> inline
 T read(std::istream & stream)
 {
-    IWBAN_STATIC_ASSERT(std::is_integral<T>::value);
+    IWBAN_STATIC_ASSERT(std::is_integral<T>::value
+                     || std::is_floating_point<T>::value);
 
     // TODO Endianness should not be ignored
     T value;
@@ -58,21 +60,22 @@ void read(std::istream & stream, T & output)
 // ---- ---- ---- ----
 
 /**
- * Write a binary value from a stream.
+ * Write a binary value from a binary stream.
  *
  * All values are stored using little endian mode.
  */
 template<typename T> inline
 void write(std::ostream & stream, const T & value)
 {
-    IWBAN_STATIC_ASSERT(std::is_integral<T>::value);
+    IWBAN_STATIC_ASSERT(std::is_integral<T>::value
+                     || std::is_floating_point<T>::value);
 
     // TODO Endianness should not be ignored
     stream.write(reinterpret_cast<const char *>(&value), sizeof(T));
 }
 
 /**
- * Write a null terminated string to a stream.
+ * Write a null terminated string to a binary stream.
  *
  * If the string contains a null character, it is used as the end
  * of the string and the rest is discarded.
