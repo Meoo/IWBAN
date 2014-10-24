@@ -7,8 +7,6 @@
 #include "MapParser.hpp"
 #include "ProcessLayer.hpp"
 
-#include "tinf/tinf.h"
-
 #include <config/MapConfig.hpp>
 
 #include <utils/StreamIO.hpp>
@@ -105,8 +103,6 @@ process_failed:
 
 int main(int argc, char ** argv)
 {
-    tinf_init();
-
     if (argc == 1)
     {
         print_help();

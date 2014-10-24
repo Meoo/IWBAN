@@ -9,10 +9,10 @@
 #include "Base64.hpp"
 #include "InputMap.hpp"
 
-#include "tinf/tinf.h"
 #include "tinyxml/tinyxml2.h"
 
 #include <config/PathsConfig.hpp>
+#include <utils/external/miniz.h>
 
 #include <boost/filesystem.hpp>
 
@@ -373,23 +373,16 @@ int parse_map(const char * filename, InputMap & output_map)
             if (data->Attribute("compression") != 0)
             {
                 // Compressed data
-                unsigned dest_len = map_data_size * sizeof(TileId);
+                mz_ulong source_len = raw_data.length();
+                mz_ulong dest_len = map_data_size * sizeof(TileId);
 
                 if (data->Attribute("compression", "zlib"))
                 {
                     // TODO Endianness in map_data is system dependant, raw_data is little-endian
-                    if (tinf_zlib_uncompress(map_data.get(), &dest_len, raw_data.c_str(), raw_data.length()) == TINF_DATA_ERROR)
+                    if (uncompress((uint8_t *) map_data.get(), &dest_len,
+                                   (uint8_t *) raw_data.c_str(), source_len) != Z_OK)
                     {
                         std::cerr << "!!! Zlib uncompression failed !!!" << std::endl;
-                        return 1;
-                    }
-                }
-                else if (data->Attribute("compression", "gzip"))
-                {
-                    // TODO Endianness in map_data is system dependant, raw_data is little-endian
-                    if (tinf_gzip_uncompress(map_data.get(), &dest_len, raw_data.c_str(), raw_data.length()) == TINF_DATA_ERROR)
-                    {
-                        std::cerr << "!!! Gzip uncompression failed !!!" << std::endl;
                         return 1;
                     }
                 }
