@@ -15,8 +15,6 @@
 namespace
 {
 
-IWBAN_STATIC_ASSERT(LUA_VERSION_NUM == 502);
-
 const char * IWBAN_LUA_BANNED_FUNCTIONS[] =
 {
     "collectgarbage",
