@@ -174,3 +174,74 @@ Variant::String Variant::toString() const
 
 }
 // namespace logic
+
+namespace ut
+{
+
+template<>
+logic::Variant read<logic::Variant>(std::istream & stream)
+{
+    typedef logic::Variant  Variant;
+    typedef Variant::Type   Type;
+
+    Type t = (Type) ut::read<std::uint8_t>(stream);
+
+    switch (t)
+    {
+    case Type::TYPE_INT:
+        return Variant(ut::read<Variant::Int>(stream));
+
+    case Type::TYPE_FLOAT:
+        return Variant(ut::read<Variant::Float>(stream));
+
+    case Type::TYPE_BOOL:
+        return Variant(ut::read<bool>(stream));
+
+    case Type::TYPE_VECTOR:
+        return Variant(ut::read<ut::Vector>(stream));
+
+    case Type::TYPE_STRING:
+        return Variant(ut::read<Variant::String>(stream));
+
+    default: break;
+    }
+
+    return Variant();
+}
+
+template<>
+void write<logic::Variant>(std::ostream & stream, const logic::Variant & value)
+{
+    typedef logic::Variant  Variant;
+    typedef Variant::Type   Type;
+
+    ut::write<std::uint8_t>(stream, (std::uint8_t) value.getType());
+
+    switch (value.getType())
+    {
+    case Type::TYPE_INT:
+        ut::write<Variant::Int>(stream, value.toInt());
+        break;
+
+    case Type::TYPE_FLOAT:
+        ut::write<Variant::Float>(stream, value.toFloat());
+        break;
+
+    case Type::TYPE_BOOL:
+        ut::write<bool>(stream, value.toBool());
+        break;
+
+    case Type::TYPE_VECTOR:
+        ut::write<ut::Vector>(stream, value.toVector());
+        break;
+
+    case Type::TYPE_STRING:
+        ut::write<Variant::String>(stream, value.toString());
+        break;
+
+    default: break;
+    }
+}
+
+}
+// namespace ut

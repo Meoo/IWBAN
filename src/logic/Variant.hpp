@@ -9,6 +9,7 @@
 #include <Global.hpp>
 
 #include <utils/Vector.hpp>
+#include <utils/StreamIO.hpp>
 
 #include <string>
 
@@ -85,5 +86,23 @@ public:
 
 }
 // namespace logic
+
+namespace ut
+{
+
+/**
+ * Read a variant from a binary stream.
+ */
+template<>
+logic::Variant read<logic::Variant>(std::istream & stream);
+
+/**
+ * Write a variant to a binary stream.
+ */
+template<>
+void write<logic::Variant>(std::ostream & stream, const logic::Variant & value);
+
+}
+// namespace ut
 
 #endif // _IWBAN_VARIANT_HPP_

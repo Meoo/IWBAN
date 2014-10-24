@@ -8,6 +8,8 @@
 
 #include <Global.hpp>
 
+#include <utils/StreamIO.hpp>
+
 #include <SFML/System/Vector2.hpp>
 
 #include <cmath>
@@ -104,6 +106,29 @@ inline Vector normalize(const Vector & a)
 
     float len = a.getLength();
     return Vector(a.x / len, a.y / len);
+}
+
+// ---- ---- ---- ----
+
+/**
+ * Read a vector from a binary stream.
+ */
+template<> inline
+Vector read<Vector>(std::istream & stream)
+{
+    float x = read<float>(stream);
+    float y = read<float>(stream);
+    return Vector(x, y);
+}
+
+/**
+ * Write a vector to a binary stream.
+ */
+template<> inline
+void write<Vector>(std::ostream & stream, const Vector & value)
+{
+    write<float>(stream, value.x);
+    write<float>(stream, value.y);
 }
 
 }

@@ -34,7 +34,7 @@ T read(std::istream & stream)
 }
 
 /**
- * Read a null terminated string from a stream.
+ * Read a null terminated string from a binary stream.
  */
 template<> inline
 std::string read<std::string>(std::istream & stream)
@@ -47,7 +47,7 @@ std::string read<std::string>(std::istream & stream)
 // ---- ---- ---- ----
 
 /**
- * Read a binary value from a stream.
+ * Read a value from a binary stream.
  *
  * All values are stored using little endian mode.
  */
