@@ -26,5 +26,8 @@ Makefile
 # IWBAN settings
 iwban.cfg
 
+# Game saves
+saves
+
 # Log files
 *.log

@@ -12,6 +12,7 @@
 #define IWBAN_USER_FOLDER       "."
 
 #define IWBAN_CONFIG_FILE       IWBAN_USER_FOLDER "/iwban.cfg"
+#define IWBAN_SAVES_FOLDER      IWBAN_USER_FOLDER "/saves"
 
 #define IWBAN_DEFAULT_FONT      "system/poetsen_one.ttf"
 
