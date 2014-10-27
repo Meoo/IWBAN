@@ -39,10 +39,20 @@ void run(const AsyncFunction & function, void * param, bool priority = false);
 
 #ifndef NDEBUG
 
+/**
+ * Start standard input polling.
+ *
+ * Call this function only once.
+ * This function creates a thread that is collected on program exit.
+ */
 void startStdInputPolling();
 
-void stopStdInputPolling();
-
+/**
+ * Try to consume a line from standard input.
+ *
+ * @param[out] polled_input String that will contain the polled input.
+ * @return @c true if an input has been polled.
+ */
 bool pollStdInput(std::string & polled_input);
 
 #endif
