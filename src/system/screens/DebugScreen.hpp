@@ -17,6 +17,8 @@
 
 #include <logic/World.hpp>
 
+#include <resources/Async.hpp>
+
 #include <system/Screen.hpp>
 
 #define N 50
@@ -57,16 +59,25 @@ protected:
             map_entity->setName("map");
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        /*if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
         {
             map_entity->sendEvent("test");
-        }
+        }*/
 
         logic::getWorld().update();
 
         camera_op.setTarget(player->getPosition());
 
         last_update = update_time;
+
+#ifndef NDEBUG
+        std::string sin;
+        while (res::async::pollStdInput(sin))
+        {
+            IWBAN_LOG_DEBUG("Input : %s", sin.c_str());
+            logic::getWorld().getLua().run(logic::LuaScript("stdin", sin));
+        }
+#endif
     }
 
     void onRender(gfx::Renderer & renderer, const sf::Time & render_time) const override

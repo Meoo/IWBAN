@@ -13,7 +13,7 @@
 
 #include <game/core/InitialScreen.hpp>
 
-//#include <resources/Async.hpp>
+#include <resources/Async.hpp>
 
 #include <system/Display.hpp>
 #include <system/Exception.hpp>
@@ -33,6 +33,11 @@ int main(int argc, char ** argv)
     /*IWBAN_LOG_INFO("Initializing threads");
     res::async::initialize(cfg::threading);*/
 
+
+#ifndef NDEBUG
+    IWBAN_LOG_INFO("Starting std input polling");
+    res::async::startStdInputPolling();
+#endif
 
     IWBAN_LOG_INFO("Loading fonts");
     data::getLocale().loadFont(IWBAN_DEFAULT_FONT);

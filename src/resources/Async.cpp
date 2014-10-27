@@ -9,6 +9,10 @@
 
 #include <system/exceptions/ResourceError.hpp>
 
+#ifndef NDEBUG
+#   include <boost/lockfree/spsc_queue.hpp>
+#endif
+
 #include <condition_variable>
 #include <cstring> // memset
 #include <mutex>
@@ -137,6 +141,33 @@ namespace
         }
     }
 
+
+#ifndef NDEBUG
+
+    // Std input poller data and functions
+
+    typedef boost::lockfree::spsc_queue<std::string,
+                boost::lockfree::capacity<8>> LockfreeQueue;
+
+    Thread *        d_polling_thread    = nullptr;
+
+    LockfreeQueue   d_polled_input;
+
+    // Main function for polling thread
+    void polling_main()
+    {
+        while(true)
+        {
+            std::string s;
+            std::getline(std::cin, s);
+
+            if (!s.empty())
+                d_polled_input.push(s);
+        }
+    }
+
+#endif
+
 } // namespace
 
 // ---- ---- ---- ----
@@ -230,6 +261,26 @@ void run(const AsyncFunction & function, void * param, bool priority)
     else
         ::schedule_job(function, param, priority);
 }
+
+#ifndef NDEBUG
+
+void startStdInputPolling()
+{
+    if (d_polling_thread)
+    {
+        IWBAN_LOG_WARNING("Std input polling is already running");
+        return;
+    }
+
+    d_polling_thread = new Thread(polling_main);
+}
+
+bool pollStdInput(std::string & polled_input)
+{
+    return d_polled_input.pop(polled_input);
+}
+
+#endif
 
 }
 // namespace async

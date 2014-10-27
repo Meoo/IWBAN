@@ -10,6 +10,10 @@
 
 #include <functional>
 
+#ifndef NDEBUG
+#   include <string>
+#endif
+
 namespace res
 {
 
@@ -30,6 +34,18 @@ void terminate();
 // If threading is disabled in Config, using it "recursively" will probably cause errors
 // Throw sys::ResourceError if all job slots are in use
 void run(const AsyncFunction & function, void * param, bool priority = false);
+
+// ---- ---- ---- ----
+
+#ifndef NDEBUG
+
+void startStdInputPolling();
+
+void stopStdInputPolling();
+
+bool pollStdInput(std::string & polled_input);
+
+#endif
 
 }
 // namespace async
