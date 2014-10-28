@@ -74,7 +74,9 @@ protected:
         std::string sin;
         while (res::async::pollStdInput(sin))
         {
-            IWBAN_LOG_DEBUG("Input : %s", sin.c_str());
+            if (sin.at(0) == '=')
+                sin = "print(" + sin.substr(1) + ")";
+
             logic::getWorld().getLua().run(logic::LuaScript("stdin", sin));
         }
 #endif
