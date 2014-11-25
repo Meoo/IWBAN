@@ -71,6 +71,7 @@ protected:
         last_update = update_time;
 
 #ifndef NDEBUG
+        // Poll standard input and run commands on Lua
         std::string sin;
         while (res::async::pollStdInput(sin))
         {

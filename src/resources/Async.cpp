@@ -147,16 +147,17 @@ namespace
     // Std input poller data and functions
 
     typedef boost::lockfree::spsc_queue<std::string,
-                boost::lockfree::capacity<8>> LockfreeQueue;
+                boost::lockfree::capacity<8>>
+                    StdInputQueue;
 
     Thread *        d_polling_thread    = nullptr;
 
-    LockfreeQueue   d_polled_input;
+    StdInputQueue   d_polled_input;
 
     // Main function for polling thread
     void polling_main()
     {
-        while(true)
+        for (;;)
         {
             std::string s;
             std::getline(std::cin, s);
