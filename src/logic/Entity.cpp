@@ -121,6 +121,11 @@ Lua & Entity::getLua() const
     return logic::getWorld().getLua();
 }
 
+void Entity::scheduleNextUpdate(sys::FTimeOffset delay)
+{
+    scheduleNextUpdateAt(getWorld().getClock() + delay);
+}
+
 void Entity::addDrawable(gfx::Drawable * drawable)
 {
     IWBAN_PRE(_spawned);

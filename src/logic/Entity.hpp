@@ -20,9 +20,6 @@
 #include <set>
 #include <string>
 
-// FIXME Debug
-#include <graphics/contexts/DrawContext.hpp>
-
 namespace gfx
 {
 class Scene;
@@ -86,6 +83,10 @@ protected:
     phy::Space & getSpace();
     Lua &       getLua() const;
 
+    // Update scheduler
+    void        scheduleNextUpdate(sys::FTimeOffset delay);
+    void        scheduleNextUpdateAt(sys::FTime date)       { _next_update = date; }
+
     // Sub-systems
     void        addDrawable(gfx::Drawable * drawable);
     void        removeDrawable(gfx::Drawable * drawable);
@@ -119,6 +120,8 @@ private:
     void        despawn();
 
     void        update();
+
+    sys::FTime  getNextUpdateDate() const               { return _next_update; }
 
 
     // Try to cleanup the Entity's components

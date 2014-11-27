@@ -18,7 +18,7 @@ namespace logic
 {
 
 class Entity;
-class EntityFactory;
+class World;
 
 /**
  * @brief Class allowing to build entities with predefined parameters.
@@ -32,12 +32,13 @@ private:
 
 
 public:
-    explicit EntityTemplate(const std::string & entity_class);
+    explicit    EntityTemplate(const std::string & entity_class);
 
-    void setName(const std::string & name) { _entity_name = name; }
-    void setValue(const std::string & key, const Variant & value);
+    void        setName(const std::string & name) { _entity_name = name; }
+    void        setValue(const std::string & key, const Variant & value);
 
-    std::unique_ptr<Entity> createEntity(EntityFactory & factory) const;
+    std::unique_ptr<Entity> createEntity(World & world) const;
+    Entity *                createAndOwnEntity(World & factory) const;
 
 };
 // class EntityTemplate

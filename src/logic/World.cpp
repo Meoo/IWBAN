@@ -11,8 +11,27 @@
 namespace logic
 {
 
+std::unique_ptr<Entity> World::createEntity(const std::string & entity_class)
+{
+    // TODO World::createEntity
+    return std::unique_ptr<Entity>(nullptr);
+}
+
+Entity * World::ownEntity(std::unique_ptr<Entity> entity)
+{
+    // TODO World::ownEntity
+    return nullptr;
+}
+
+Entity * World::createAndOwnEntity(const std::string & entity_class)
+{
+    return ownEntity(createEntity(entity_class));
+}
+
 void World::update()
 {
+    ++_clock;
+
     for (Entity * entity : _new_entities)
     {
         entity->spawn();
@@ -23,10 +42,8 @@ void World::update()
     _space.update();
 
     for (Entity * ent : _entities)
-    {
-        // TODO Check next update value, or sort by next update
-        ent->update();
-    }
+        if (ent->getNextUpdateDate() == getClock())
+            ent->update();
 }
 
 void World::add(Entity * entity)
