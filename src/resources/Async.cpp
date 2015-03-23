@@ -15,6 +15,7 @@
 
 #include <condition_variable>
 #include <cstring> // memset
+#include <iostream> // cin
 #include <mutex>
 #include <thread>
 

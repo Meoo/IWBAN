@@ -100,4 +100,3 @@ function use_Boost(libs)
 
   configuration {}
 end
-
